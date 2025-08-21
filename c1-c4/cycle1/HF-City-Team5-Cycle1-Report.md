@@ -9,10 +9,13 @@
     Occupation: Adelaide Primary School Art Teacher
     Location: Adelaide Suburbs
 
+### Persona Images
+![Persona1 Sarah](../../project-docs/drafts/cycle1_persona/Persona_Sarah.png)
+
 #### Technology Profile:
 * Uses laptop at work and smartphone daily;
-* Comfortable with Google Maps, YouTube, Pinterest for lesson ideas;
-* Prefers simple, visual-based platforms without jargon.
+* Familiar with Google Maps, YouTube for lesson ideas;
+* Prefers simple, visual-based platforms without any jargon.
 
 #### Background:
 
@@ -31,11 +34,21 @@ Sarah is a primary school art teacher. In her teaching plan for this semester, s
 * Printable/shareable: Convenient for bringing work information into classroom demonstrations;
 * Usage Guidelines page: Help teachers convey cultural respect and sensitivity.
 
+#### Pain Points
+* It is difficult to collect teaching resources and it is hard to find high-quality indigenous art content
+* The resource platform is not updated fast enough to meet the teaching course schedule
+* Sometimes, technical tools are overly complex, which affects teaching efficiency
+
+#
+
 ### Persona 2
     Name: Jason
     Age: 42
     Occupation: Indigenous muralist & storyteller
     Location: Regional South Australia
+
+### Persona Images
+![Persona2 Jason](../../project-docs/drafts/cycle1_persona/Persona_Jason.png)
 
 #### Technology Profile:
 * Use social media (Facebook, Instagram) on smartphone;
@@ -57,9 +70,10 @@ Jason is an indigenous artist who documents the stories and cultures of indigeno
 * Multilingual support: Capable of multilingual conversion, facilitating browsing by people from diverse cultural backgrounds;
 * Web page security: Respect cultural sensitivity. The network environment should be stable and convenient for uploading works. There should be a privacy protection mechanism for user downloads.
 
-### Persona Images
-![Persona A](./imgs/persona-a.png)
-![Persona B](./imgs/persona-b.png)
+#### Pain points
+* Worried that his artworks might be misused when disseminated on the platform.
+* Concerns that the works may lack security mechanisms when displayed online, leading to unauthorized use.
+* There is concern that the platform may overlook the background and sensitivity of indigenous cultures when presenting works.
 
 ## 2. Key User Tasks and Flows
 
