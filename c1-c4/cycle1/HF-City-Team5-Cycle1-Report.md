@@ -10,7 +10,8 @@
     Location: Adelaide Suburbs
 
 ### Persona Images
-![Persona1 Sarah](../../project-docs/drafts/cycle1_persona/Persona_Sarah.png)
+![Persona1 Sarah](/c1-c4/cycle1/imgs/Persona_Sarah.png)
+> Persona_Sarah.png is stored under `./imgs/` for traceability.
 
 #### Technology Profile:
 * Uses laptop at work and smartphone daily;
@@ -48,7 +49,8 @@ Sarah is a primary school art teacher. In her teaching plan for this semester, s
     Location: Regional South Australia
 
 ### Persona Images
-![Persona2 Jason](../../project-docs/drafts/cycle1_persona/Persona_Jason.png)
+![Persona2 Jason](/c1-c4/cycle1/imgs/Persona_Jason.png)
+> Persona_Jason.png is stored under `./imgs/` for traceability.
 
 #### Technology Profile:
 * Use social media (Facebook, Instagram) on smartphone;
