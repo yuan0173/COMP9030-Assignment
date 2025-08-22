@@ -107,18 +107,17 @@ Provide a visual sitemap representing the structure of your website.
 
 ## 4. Low-Fidelity Wireframes
 
-Written by **Member C – Wireframe Designer**
-
-Include 2–3 wireframes representing key pages.
-
 ### Wireframe 1 – Homepage
-![Wireframe Home](./imgs/wf-home.png)
 
-### Wireframe 2 – Upload Page
-![Wireframe Upload](./imgs/wf-upload.png)
+The homepage is the main entry for all to display a visually appealing introduction to the "Indigenous Art Atlas.", public visitor can browse arts listings and filter their preference. The first part is a banner to show the Atlas profile with an abstract introduction. There is a prominent interactive map showcasing approved art locations under the banner. And then, featured arts showcase a selection of recently added or featured art entries with details includes title, description and author avatar. At the bottom part, there are many quick links include links to "About Us," "Usage Guidelines," and "Contact Us" pages.
 
-### Wireframe 3 – User Center
-![Wireframe User](./imgs/wf-user.png)
+![Wireframe Home](../../project-docs/drafts/c1/WireframesHomepage.png)
+
+### Wireframe 2 – Login Page
+
+The website is redirect to login page when visitor click the login button. The login feature requires visitor's email and password to authenticate the identity. And visitors can start registration here by click the link of sign up if they don't have an account. 
+
+![Wireframe Login](../../project-docs/drafts/c1/WireframesLogin.png)
 
 ## 5. Accessibility and Usability Considerations
 
