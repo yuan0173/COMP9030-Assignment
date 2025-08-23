@@ -113,31 +113,31 @@ Provide a visual sitemap representing the structure of your website.
 
 The homepage is the main entry for all to display a visually appealing introduction to the "Indigenous Art Atlas.", public visitor can browse arts listings and filter their preference. The first part is a banner to show the Atlas profile with an abstract introduction. There is a prominent interactive map showcasing approved art locations under the banner. And then, featured arts showcase a selection of recently added or featured art entries with details includes title, description and author avatar. At the bottom part, there are many quick links include links to "About Us," "Usage Guidelines," and "Contact Us" pages.
 
-![Wireframe Home](../../project-docs/drafts/c1/WireframesHomepage.png)
+![Wireframe Home](./imgs/WireframesHomepage.png)
 
 ### Wireframe 2 – Login Page (FlowDiagram 7.0)
 
 The website is redirect to login page when visitor click the login button. The login feature requires visitor's email and password to authenticate the identity. And visitors can start registration here by click the link of sign up if they don't have an account. 
 
-![Wireframe Login](../../project-docs/drafts/c1/WireframesLogin.png)
+![Wireframe Login](./imgs/WireframesLogin.png)
 
 ### Wireframe 3 – Art Listings (FlowDiagram 9.1)
 
 There is a dedicated page displaying all approved art entries in a gallery or list format. Each item display a thumbnail image, title, and a brief description. Visitor can fliter the arts by several options, and the default sorting method is by added date.
 
-![Wireframe Art Listings](../../project-docs/drafts/c1/WireframesArtListings.png)
+![Wireframe Art Listings](./imgs/WireframesArtListings.png)
 
 ### Wireframe 4 – Art Details (FlowDiagram 13.0)
 
 Each art entry have a unique page in the art detail pages, displaying all submitted details. At first, a carousel shows multiple high-resolution images of the art. Under that, left side is static map snippet showing the art's specific or general location (respecting sensitivity), and right side is comprehensive description, art type, estimated period, condition notes. After the map and description, the artist information with name and submission date is showed in the last part if the author isn't anonymous.
 
-![Wireframe Art Details](../../project-docs/drafts/c1/WireframesArtDetails.png)
+![Wireframe Art Details](./imgs/WireframesArtDetails.png)
 
 ### Wireframe 5 – Art Submission (FlowDiagram 8.0)
 
 The art submission design is a multi-step or multi-section form accessible only to logged-in users. Users can start a submission with the artwork’s title, description, select predefined categories for type and period, and add condition notes. They may also credit a known artist and link submissions to an artist profile when applicable. Location information is captured through an interactive map (Leaflet.js) that allow users to drop a pin and get latitude/longitude coordinates. A sensitivity flag is included to mark culturally sensitive or private land locations for admin review and potential public masking. The form also supports multiple image uploads (JPEG, PNG) with server-side file validation for type and size.
 
-![Wireframe Art Submission](../../project-docs/drafts/c1/WireframesArtSubmission.png)
+![Wireframe Art Submission](./imgs/WireframesArtSubmission.png)
 
 ## 5. Accessibility and Usability Considerations
 
