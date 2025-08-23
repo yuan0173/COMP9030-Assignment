@@ -109,7 +109,6 @@ Provide a visual sitemap representing the structure of your website.
 
 ## 4. Low-Fidelity Wireframes
 
-<<<<<<< HEAD
 ### Wireframe 1 – Homepage (FlowDiagram 9.0)
 
 The homepage is the main entry for all to display a visually appealing introduction to the "Indigenous Art Atlas.", public visitor can browse arts listings and filter their preference. The first part is a banner to show the Atlas profile with an abstract introduction. There is a prominent interactive map showcasing approved art locations under the banner. And then, featured arts showcase a selection of recently added or featured art entries with details includes title, description and author avatar. At the bottom part, there are many quick links include links to "About Us," "Usage Guidelines," and "Contact Us" pages.
@@ -139,19 +138,6 @@ Each art entry have a unique page in the art detail pages, displaying all submit
 The art submission design is a multi-step or multi-section form accessible only to logged-in users. Users can start a submission with the artwork’s title, description, select predefined categories for type and period, and add condition notes. They may also credit a known artist and link submissions to an artist profile when applicable. Location information is captured through an interactive map (Leaflet.js) that allow users to drop a pin and get latitude/longitude coordinates. A sensitivity flag is included to mark culturally sensitive or private land locations for admin review and potential public masking. The form also supports multiple image uploads (JPEG, PNG) with server-side file validation for type and size.
 
 ![Wireframe Art Submission](../../project-docs/drafts/c1/WireframesArtSubmission.png)
-=======
-### Wireframe 1 – Homepage
-
-The homepage is the main entry for all to display a visually appealing introduction to the "Indigenous Art Atlas.", public visitor can browse arts listings and filter their preference. The first part is a banner to show the Atlas profile with an abstract introduction. There is a prominent interactive map showcasing approved art locations under the banner. And then, featured arts showcase a selection of recently added or featured art entries with details includes title, description and author avatar. At the bottom part, there are many quick links include links to "About Us," "Usage Guidelines," and "Contact Us" pages.
-
-![Wireframe Home](../../project-docs/drafts/c1/WireframesHomepage.png)
-
-### Wireframe 2 – Login Page
-
-The website is redirect to login page when visitor click the login button. The login feature requires visitor's email and password to authenticate the identity. And visitors can start registration here by click the link of sign up if they don't have an account. 
-
-![Wireframe Login](../../project-docs/drafts/c1/WireframesLogin.png)
->>>>>>> origin/main
 
 ## 5. Accessibility and Usability Considerations
 
