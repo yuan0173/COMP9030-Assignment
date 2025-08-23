@@ -119,6 +119,18 @@ The website is redirect to login page when visitor click the login button. The l
 
 ![Wireframe Login](../../project-docs/drafts/c1/WireframesLogin.png)
 
+### Wireframe 3 – Art Listings
+
+There is a dedicated page displaying all approved art entries in a gallery or list format. Each item display a thumbnail image, title, and a brief description. Visitor can fliter the arts by several options, and the default sorting method is by added date.
+
+![Wireframe Art Listings](../../project-docs/drafts/c1/WireframesArtListings.png)
+
+### Wireframe 4 – Art Details
+
+Each art entry have a unique page in the art detail pages, displaying all submitted details. At first, a carousel shows multiple high-resolution images of the art. Under that, left side is static map snippet showing the art's specific or general location (respecting sensitivity), and right side is comprehensive description, art type, estimated period, condition notes. After the map and description, the artist information with name and submission date is showed in the last part if the author isn't anonymous.
+
+![Wireframe Art Details](../../project-docs/drafts/c1/WireframesArtDetails.png)
+
 ## 5. Accessibility and Usability Considerations
 
 Provided collaboratively.
