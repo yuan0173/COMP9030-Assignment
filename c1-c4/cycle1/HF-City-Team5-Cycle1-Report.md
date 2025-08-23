@@ -131,6 +131,12 @@ Each art entry have a unique page in the art detail pages, displaying all submit
 
 ![Wireframe Art Details](../../project-docs/drafts/c1/WireframesArtDetails.png)
 
+### Wireframe 5 – Art Submission (FlowDiagram 8.0)
+
+The art submission design is a multi-step or multi-section form accessible only to logged-in users. Users can start a submission with the artwork’s title, description, select predefined categories for type and period, and add condition notes. They may also credit a known artist and link submissions to an artist profile when applicable. Location information is captured through an interactive map (Leaflet.js) that allow users to drop a pin and get latitude/longitude coordinates. A sensitivity flag is included to mark culturally sensitive or private land locations for admin review and potential public masking. The form also supports multiple image uploads (JPEG, PNG) with server-side file validation for type and size.
+
+![Wireframe Art Submission](../../project-docs/drafts/c1/WireframesArtSubmission.png)
+
 ## 5. Accessibility and Usability Considerations
 
 Provided collaboratively.
