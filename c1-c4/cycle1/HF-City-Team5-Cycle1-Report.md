@@ -244,17 +244,18 @@ Written by **Yongheng Jia(Fan:jia0318) – Rationale Writer**
 Explain major design decisions and how they address personas’ goals and usability principles.
 Our design decisions are guided by the two personas: Sarah (primary school art teacher) and Jason (indigenous artist).
 We carried out an overall design based on the portraits of Sarah (a primary school art teacher) and Jason (an indigenous artist).
-"Home Page
+### Home Page
 We placed a clear banner of heroes and introduction text, which can better showcase the cultural and educational significance of the project. The highlight is the interactive map, which provides educators or other visitors with a direct way to plan field trips or identify artworks by region. The distinctive art at the bottom makes it convenient for people to access resources and prepare for different purposes.
-Art list and filters
+### Art list and filters
 We have designed a search and filter option module on the page (by state, art type, and period), enabling viewers to quickly find culturally relevant examples and ensuring that the works of artists like Jason reach the right audience without getting lost in a general directory.
-Art Details page
+### Art Details page
 Each work has a title, abstract, estimated period, status and space for comprehensive description to ensure academic and cultural accuracy. The author's comments added context and strengthened Jason's focus on the need to preserve cultural significance.
-Upload page
+### Upload page
 The uploaded form includes metadata (title, type, period, description) and checkboxes for cultural sensitivity, privacy, and copyright confirmation. This directly addressed Jason's demands for cultural respect and protection.
-Login page
+### Login page
 We have tried our best to simplify the login process, using only email and passwords to facilitate users' login and reduce the trouble for teachers and art staff who may not be tech-savvy. The "Registration" link encourages community development while maintaining secure access.
 Availability and accessibility
+
 All pages follow a consistent layout and navigation, using simple typesetting and high contrast. This ensures accessibility for different users and is consistent with usability principles and classroom Settings.
 
 ## 7. User Research and Evidence
@@ -263,20 +264,20 @@ Written by **Yongheng Jia(Fan:jia0318)**
 
 Briefly explain what user research methods were used and what insights were gained.
 Our design is based on user research through character roles:
-Personality development：
-We have constructed two characters:
-Sarah: A primary school art teacher, she wants to effectively integrate indigenous art into her teaching.
-Jason: An indigenous artist dedicated to preserving cultural significance and ensuring that artworks are respected.
-Sarah requires easy access to real teaching cases and culturally appropriate resources. This led to the inclusion of interactive maps, featured artworks and filtering systems, making the course plan faster and more reliable.
-Jason values cultural sensitivity and security, and is worried about the abuse and theft of local art. His requirements informed the guideline page, the cultural sensitivity check of the uploaded form, and the detailed description field to ensure that the appropriate context is retained.
-The application of research results
+### Personality development：
+#### We have constructed two characters:
+- Sarah: A primary school art teacher, she wants to effectively integrate indigenous art into her teaching.
+- Jason: An indigenous artist dedicated to preserving cultural significance and ensuring that artworks are respected.
+
+- Sarah requires easy access to real teaching cases and culturally appropriate resources. This led to the inclusion of interactive maps, featured artworks and filtering systems, making the course plan faster and more reliable.
+- Jason values cultural sensitivity and security, and is worried about the abuse and theft of local art. His requirements informed the guideline page, the cultural sensitivity check of the uploaded form, and the detailed description field to ensure that the appropriate context is retained.
+
+#### The application of research results：
 Both the map and the low-fidelity wireframes are directly displayed. The upload workflow reflects the cultural respect mentioned by users, and the main page also showcases the functional requirements of educators and artists, demonstrating educational significance and cultural value.
 
 ## 8. Known Limitations and Future Improvements
 
 Written by **Tian Yuan(yuan0173) – Project Coordinator**
-
-## 8. Known Limitations and Future Improvements
 
 ### Current Limitations
 - **Network dependency**: Limited offline functionality
@@ -300,9 +301,6 @@ Coordinated by **Tian Yuan(yuan0173) – Project Coordinator & Git Manager**
 | Tian Yuan    | yuan0173 | Git setup, report integration, final review        |
 
 
-## 10. AI Acknowledgment (if used)
+## 10. AI Acknowledgment
 
-We used ChatGPT solely for brainstorming and structuring (e.g., outlining personas sections, enumerating potential user flows, and listing accessibility checkpoints). No AI-generated sentences were directly used in the final report. Prompts and sample outputs are included in Appendix A.
-## Appendix A – AI Prompt History (If applicable)
-
-Include full prompt history and outputs here.
+We used ChatGPT solely for brainstorming and structuring (e.g., outlining personas sections, enumerating potential user flows, and listing accessibility checkpoints). No AI-generated sentences were directly used in the final report.
