@@ -1,0 +1,18 @@
+6eb103a,yuan0173,11 minutes ago,Fix image filename: rename Sitemap.png to sitemap.png (#13)
+25224ad,yuan0173,65 minutes ago,Final Submission: Cycle 1 UX Report (HF City Team 5) (#12)
+eff6a35,enpyth,2 days ago,docs: update wireframes image from draft to cycle1 (#11)
+062ad4e,lyu0061,2 days ago,docs(HF-City-Team5-Cycle1-Report) Put all the flows under /c1-c4/cycle1/imgs and update the paths in report (#10)
+adfaae9,enpyth,2 days ago,docs: add ArtListings and ArtDetails wireframes with description (#8)
+39b8bf2,enpyth,2 days ago,docs: add wireframe of art submission (#9)
+34c9418,enpyth,2 days ago,docs: add wireframe of homepage and login pages (#6)
+cb78e6a,lyu0061,2 days ago,Docs/lyu0061/update-user-tasks-and-flows (#7)
+29d4e1f,Jia0318,3 days ago,Feature/jia0318 cycle1 report (#5)
+7ae15b6,lyu0061,4 days ago,docs(HF-City-Team5-Cycle1-Report) Update 5 tasks in part 2 Key User Tasks and Flows (#4)
+f8d7062,lyu0061,4 days ago,feat(drafts): Create a new folder c1 under drafts and add new user flows Images (#3)
+85f7a92,Jia0318,4 days ago,(HF-City-Team5-Cycle1-Report.md) update personas section (#2)
+3891768,yuan0173,4 days ago,Merge pull request #1 from yuan0173/feature/yuan0173-cycle1-report
+fe7f4db,yuan0173,4 days ago,Add Cycle 1 Report for HF City Team 5 (by yuan0173)
+efb5aa4,yuan0173,5 days ago,Remove .DS_Store from project-docs
+824b7e6,yuan0173,5 days ago,Ignore all .DS_Store files
+52e402b,yuan0173,5 days ago,Add .gitkeep to retain empty documentation folders
+4ed83dd,yuan0173,5 days ago,Initial commit
