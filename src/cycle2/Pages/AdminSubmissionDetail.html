@@ -1,22 +1,20 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>New Submission</title>
+    <title>Submission Detail</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   </head>
   <body>
     <header>
-      <a href="./About.html">About</a>
-      <a href="./Guideline.html">Guidelines</a>
-      <a href="./Contact.html">Contact us</a>
-      <a href="./Disclaimer.html">Disclaimer</a>
-      <a href="https://google.com">My profile</a>
+      <a href="./AdminSubmissionList.html">Back To Submission List</a>
+      <a href="./AdminDashboard.html">Back To Dashboard</a>
+      <p>Hello! Dear Admin</p>
     </header>
     <main>
       <div>
         <div>
           <h2>Title</h2>
-          <input type="text"> 
+          <input type="text" placeholder="a title provided by submitter"> 
         </div>
         <div>
           <h2>Type</h2>
@@ -36,11 +34,11 @@
         </div>
         <div>
           <h2>Condition/Quality</h2>
-          <input type="text"> 
+          <input type="text" placeholder="some text enterred by submitter"> 
         </div>
         <div>
           <h2>Description</h2>
-          <input type="text"> 
+          <input type="text" placeholder="some text enterred by submitter"> 
         </div>
       </div>
 
@@ -52,30 +50,36 @@
       </div>
 
       <div>
-        <label>
-          <input type="checkbox"> Credit a known artist
-        </label>
-        <label>
-          <input type="checkbox"> This location is culturally sensitive
-        </label>
-        <label>
-          <input type="checkbox"> This location is private land
-        </label>
+        <h2>Creditted Artist</h2>
+        <p>Artist username</p>
+        <h2>cultural sensitive</h2>
+        <p>YES/NO</p>
+        <h2>private land</h2>
+        <p>YES/NO</p>
+        <div>
+          location sensitive setting
+          <label>
+            <input type="checkbox">Location sensitive
+          </label>
+        </div>
+        <div>
+          display options
+          <select>
+            <option>normally display location</option>
+            <option>optionB</option>
+            <option>optionC</option>
+          </select>
+        </div>
       </div>
 
       <div>
-        <button>Submit Your Art</button>
+        <button>Approve</button>
+        <button>reject</button>
+        <input type="text" placeholder="This is for rejecting use only, please conditionally render this">
       </div>
     </main>
 
     <footer>
-      <h3>Quick Links</h3>
-      <a href="./About.html">About</a>
-      <a href="./Guideline.html">Guidelines</a>
-      <a href="./Contact.html">Contact us</a>
-      <a href="./Disclaimer.html">Disclaimer</a>
-      <a href="./UserLogIn.html">Sign in</a>
-      <a href="./UserLogIn.html">Register</a>
     </footer>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
