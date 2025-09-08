@@ -1,0 +1,82 @@
+/* is used for a small number of overlay styles on individual pages, and a small number of personalized setting pages use */
+
+/* Home Page Layout */
+#map{ height:56vh; }   /* Adaptive viewport height; It can be fine-tuned as needed */
+
+
+/* ArtsResult Page Layout */
+.listings{
+  display:grid; gap:24px;
+}
+
+/* ≥1024px：left 280px side + right content */
+@media (min-width: 1024px){
+  .listings{
+    grid-template-columns: 280px 1fr;
+    align-items:start;
+  }
+  .listings__main{ min-width: 0; }
+}
+
+/* Small screen: Filter on top, grid at the bottom */
+@media (max-width: 1023.98px){
+  .filter{ margin-bottom: 8px; }
+}
+
+/* ArtDetail Page Layout */
+#detailMap{ height:48vh; }
+
+/* Submission Page Layout */
+#submissionMap{ height:56vh; } 
+
+/* Admin Dashboard Page Layout */
+.admin-grid{
+  display: grid;
+  gap: 16px;
+}
+@media (min-width: 1024px){
+  .admin-grid{
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+.admin-card{ padding: 16px; }
+
+.admin-list{ display: grid; gap: 8px; margin: 8px 0; }
+.admin-list__row{
+  display: flex; justify-content: space-between; align-items: center;
+  border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px;
+}
+.admin-sep{ border:none; border-top:1px solid var(--border); margin:16px 0; }
+
+
+/* Admin Report List Page Layout */
+.admin-table{
+  display:grid;
+  grid-template-columns: 2fr 2fr 1.5fr 1.2fr 1.8fr; /* Title / Reason / Link / Reporter / Actions */
+  gap: 12px;
+  align-items:center;
+  padding: 12px 16px;
+}
+.admin-table__header{
+  background:#f9fafb;
+  border-bottom:1px solid var(--border);
+  font-weight:600;
+}
+.admin-table__row{
+  border-bottom:1px solid var(--border);
+}
+.admin-actions{ display:flex; gap:8px; justify-content:flex-end; }
+.admin-cell__title{ font-weight:600; }
+
+/* Narrow screen: Hide Reporter and change the number of columns to 4 */
+@media (max-width: 767.98px){
+  .admin-table{
+    grid-template-columns: 1.6fr 1.6fr 1fr 1.6fr; /* Title / Reason / Link / Actions */
+  }
+}
+
+/* Admin Submission Detail Page Layout */
+#adminSubmissionMap{ height:56vh; } 
+
+
+

@@ -2,29 +2,89 @@
 <html>
   <head>
     <title>Guideline Page</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/pages.css">
   </head>
   <body>
-    <header>
-      <a href="./Home.html">Home</a>
-      <a href="./About.html">About</a>
-      <a href="./Contact.html">Contact us</a>
-      <a href="./Disclaimer.html">Disclaimer</a>
-      <a href="./UserLogIn.html">Sign in</a>
-      <a href="./UserRegistration.html">Register</a>
+    <!-- jia: Navigation -->
+    <header class="nav">
+      <div class="nav__inner container flex-between">
+        <div class="logo">IAA</div>
+        <nav class="nav__menu">
+          <a href="./Home.html">Home</a>
+          <a href="./About.html">About</a>
+          <a href="./ArtsResult.html">Arts</a>
+          <a href="./Map.html">Map</a>
+          <a href="./Contact.html">Contact</a>
+        </nav>
+        <div class="auth">
+          <a class="btn btn--ghost" href="./UserLogIn.html">Sign in</a>
+          <a class="btn" href="./UserRegistration.html">Register</a>
+        </div>
+      </div>
     </header>
-    <main>
-      <h1>How to use this website</h1>
-      <p>Users can </p>
+
+    <!-- jia: Main body -->
+    <main class="container" style="margin-top:32px; max-width:900px;">
+      <section class="card" style="padding:24px">
+        <h1 class="card__title" style="margin:0 0 12px">How to use this website</h1>
+        <p class="card__desc" style="margin:0 0 16px">
+          The following guidelines help ensure respectful, safe, and effective use of the Indigenous Art Atlas.
+        </p>
+
+        <div class="grid" style="gap:16px; margin-top:8px">
+          <div>
+            <h2 style="margin:.25rem 0">General Use</h2>
+            <ul style="margin:0; padding-left:1.2rem">
+              <li>Browse artwork listings and map locations</li>
+              <li>Filter and search using categories like type, state, and period</li>
+              <li>View detailed descriptions, comments, and related media</li>
+            </ul>
+          </div>
+          <div>
+            <h2 style="margin:.25rem 0">Submitting Artwork</h2>
+            <ul style="margin:0; padding-left:1.2rem">
+              <li>Create an account to contribute new entries</li>
+              <li>Provide accurate details (title, type, description, period, etc.)</li>
+              <li>Upload clear images and include location information</li>
+            </ul>
+          </div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid var(--border);margin:16px 0">
+
+        <div class="grid" style="gap:16px">
+          <div>
+            <h3 style="margin:.25rem 0">Respect Protocols</h3>
+            <p class="card__desc">
+              Do not share sensitive or sacred site information unless authorized. Respect privacy and cultural ownership.
+            </p>
+          </div>
+          <div>
+            <h3 style="margin:.25rem 0">Community Standards</h3>
+            <p class="card__desc">
+              Submissions must avoid offensive content. Moderators may remove entries that violate community guidelines.
+            </p>
+          </div>
+        </div>
+      </section>
     </main>
 
-    <footer>
-      <h3>Quick Links</h3>
-      <a href="./Home.html">Home</a>
-      <a href="./About.html">About</a>
-      <a href="./Contact.html">Contact us</a>
-      <a href="./Disclaimer.html">Disclaimer</a>
-      <a href="./UserLogIn.html">Sign in</a>
-      <a href="./UserRegistration.html">Register</a>
+    <!-- jia: Footer -->
+    <footer class="footer" style="margin-top:32px">
+      <div class="container flex-between">
+        <div>© IAA</div>
+        <nav>
+          <a href="./About.html">Introduction</a> ·
+          <a href="./Guideline.html" aria-current="page">Guidelines</a> ·
+          <a href="./ArtsResult.html">Art Listings</a> ·
+          <a href="./Map.html">Maps</a> ·
+          <a href="./Contact.html">Contact Us</a> ·
+          <a href="./Disclaimer.html">Disclaimers</a>
+        </nav>
+      </div>
     </footer>
   </body>
 </html>

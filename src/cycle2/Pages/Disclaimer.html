@@ -2,29 +2,85 @@
 <html>
   <head>
     <title>Disclaimer Page</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/pages.css">
   </head>
   <body>
-    <header>
-      <a href="./Home.html">Home</a>
-      <a href="./About.html">About</a>
-      <a href="./Guideline.html">Guidelines</a>
-      <a href="./Contact.html">Contact us</a>
-      <a href="./UserLogIn.html">Sign in</a>
-      <a href="./UserRegistration.html">Register</a>
+    <!-- jia: Navigation -->
+    <header class="nav">
+      <div class="nav__inner container flex-between">
+        <div class="logo">IAA</div>
+        <nav class="nav__menu">
+          <a href="./Home.html">Home</a>
+          <a href="./About.html">About</a>
+          <a href="./ArtsResult.html">Arts</a>
+          <a href="./Map.html">Map</a>
+          <a href="./Contact.html">Contact</a>
+        </nav>
+        <div class="auth">
+          <a class="btn btn--ghost" href="./UserLogIn.html">Sign in</a>
+          <a class="btn" href="./UserRegistration.html">Register</a>
+        </div>
+      </div>
     </header>
-    <main>
-      <h1>Ethical Considerations</h1>
-      <p>cultural sensitivity, permission for contemporary art, and the non-commercial nature of the platform</p>
+
+    <!-- jia: Main body -->
+    <main class="container" style="margin-top:32px; max-width:900px;">
+      <section class="card" style="padding:24px">
+        <h1 class="card__title" style="margin:0 0 12px">Disclaimer</h1>
+        <p class="card__desc" style="margin:0 0 16px">
+          The Indigenous Art Atlas strives to provide accurate and respectful information. However, the following disclaimers apply:
+        </p>
+
+        <div class="grid" style="gap:16px; margin-top:8px">
+          <div>
+            <h2 style="margin:.25rem 0">Accuracy of Information</h2>
+            <p>
+              While efforts are made to verify submissions, the IAA cannot guarantee that all data is correct, complete, or up to date.
+            </p>
+          </div>
+          <div>
+            <h2 style="margin:.25rem 0">Use of Content</h2>
+            <p>
+              Users are responsible for how they interpret and use the information provided. The IAA is not liable for damages arising from reliance on this data.
+            </p>
+          </div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid var(--border);margin:16px 0">
+
+        <div class="grid" style="gap:16px">
+          <div>
+            <h3 style="margin:.25rem 0">Cultural Sensitivity</h3>
+            <p class="card__desc">
+              Some artworks or locations may be culturally sensitive. Access or reproduction without permission may breach community protocols.
+            </p>
+          </div>
+          <div>
+            <h3 style="margin:.25rem 0">Third-Party Contributions</h3>
+            <p class="card__desc">
+              Content submitted by users reflects their own views. The IAA does not endorse or take responsibility for third-party materials.
+            </p>
+          </div>
+        </div>
+      </section>
     </main>
 
-    <footer>
-      <h3>Quick Links</h3>
-      <a href="./Home.html">Home</a>
-      <a href="./About.html">About</a>
-      <a href="./Guideline.html">Guidelines</a>
-      <a href="./Contact.html">Contact us</a>
-      <a href="./UserLogIn.html">Sign in</a>
-      <a href="./UserRegistration.html">Register</a>
+    <!-- jia: Footer -->
+    <footer class="footer" style="margin-top:32px">
+      <div class="container flex-between">
+        <div>© IAA</div>
+        <nav>
+          <a href="./About.html">Introduction</a> ·
+          <a href="./Guideline.html">Guidelines</a> ·
+          <a href="./ArtsResult.html">Art Listings</a> ·
+          <a href="./Map.html">Maps</a> ·
+          <a href="./Contact.html">Contact Us</a> ·
+          <a href="./Disclaimer.html" aria-current="page">Disclaimers</a>
+        </nav>
+      </div>
     </footer>
   </body>
 </html>
