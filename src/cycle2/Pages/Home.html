@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>HomePage</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  </head>
+  <body>
+    <header>
+      <a href="./About.html">About</a>
+      <a href="./Guideline.html">Guidelines</a>
+      <a href="./Contact.html">Contact us</a>
+      <a href="./Disclaimer.html">Disclaimer</a>
+      <a href="./UserLogIn.html">Sign in</a>
+      <a href="./UserLogIn.html">Register</a>
+    </header>
+    <main>
+      <p>This is a website designed to serve as a community-driven database for tracking and sharing indigenous art in various real-world settings, ranging from ancient cave art to contemporary gallery pieces and public installations.</p>
+      <div id="map" style="width: 1000px; height: 600px;"></div>
+      <div>
+        <h1>recent added arts</h1>
+        <div>
+          <div>
+            <img src="../test.jpg" style="width: 100px; height: 100px;">
+            <h2>Title</h2>
+            <p>Description</p>
+          </div>
+          <div>
+            <img src="../test.jpg" style="width: 100px; height: 100px;">
+            <h2>Title</h2>
+            <p>Description</p>
+          </div>
+          <div>
+            <img src="../test.jpg" style="width: 100px; height: 100px;">
+            <h2>Title</h2>
+            <p>Description</p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <h3>Quick Links</h3>
+      <a href="./About.html">About</a>
+      <a href="./Guideline.html">Guidelines</a>
+      <a href="./Contact.html">Contact us</a>
+      <a href="./Disclaimer.html">Disclaimer</a>
+      <a href="./UserLogIn.html">Sign in</a>
+      <a href="./UserLogIn.html">Register</a>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+      let map = L.map('map', {
+        center: [51.505, -0.09],
+        zoom: 13
+      })
+    </script>
+  </body>
+</html>
