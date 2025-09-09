@@ -2,38 +2,127 @@
 <html>
   <head>
     <title>Dashboard</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/pages.css">
   </head>
   <body>
-    <header>
-      <a href=".">Admin log in here</a>
+    <!-- jia: Navigation -->
+    <header class="nav">
+      <div class="nav__inner container flex-between">
+        <div class="logo">IAA • Admin</div>
+        <nav class="nav__menu">
+          <a href="./AdminDashboard.html" aria-current="page">Dashboard</a>
+          <a href="./AdminUserManagement.html">Users</a>
+          <a href="./AdminSubmissionList.html">Submissions</a>
+          <a href="./AdminReportList.html">Moderation</a>
+        </nav>
+        <div class="auth">
+          <a class="btn btn--ghost" href="./UserLogIn.html">Admin Sign in</a>
+        </div>
+      </div>
     </header>
-    <main>
-      <p>typeA</p>
-      <button>edit typeA</button>
-      <p>typeB</p>
-      <button>edit typeB</button>
-      <p>typeC</p>
-      <button>edit typeC</button>
-      
-      <button>Click here to create a new type</button>
-      <input type="text" placeholder="New type, please conditionally render this">
 
-      <p>periodA</p>
-      <button>edit periodA</button>
-      <p>periodB</p>
-      <button>edit periodB</button>
-      <p>periodC</p>
-      <button>edit periodC</button>
-      
-      <button>Click here to create a new period</button>
-      <input type="text" placeholder="New period, please conditionally render this">
+    <main class="container" style="margin-top:24px">
+      <h1 class="card__title" style="margin:0 0 12px">Admin Dashboard</h1>
+      <p class="card__desc" style="margin:0 0 16px">Manage taxonomies, users, and review queues.</p>
 
-      <a href="./AdminUserManagement.html">User management</a>
-      <a href="./AdminSubmissionList.html">View pending submissions</a>
-      <a href="./AdminReportList.html">view moderation queues</a>
+      <!-- jia: Three cards -->
+      <section class="admin-grid">
+        <!-- 1) type card -->
+        <article class="card admin-card">
+          <h2 style="margin:.25rem 0">Types</h2>
+
+          <div class="admin-list">
+            <div class="admin-list__row">
+              <span>typeA</span>
+              <button class="btn btn--ghost">Edit</button>
+            </div>
+            <div class="admin-list__row">
+              <span>typeB</span>
+              <button class="btn btn--ghost">Edit</button>
+            </div>
+            <div class="admin-list__row">
+              <span>typeC</span>
+              <button class="btn btn--ghost">Edit</button>
+            </div>
+          </div>
+
+          <hr class="admin-sep">
+
+          <div class="form" onsubmit="return false;">
+            <label>New type</label>
+            <input class="input" type="text" placeholder="e.g. Installation">
+            <div class="form__actions">
+              <button class="btn" type="button">Create Type</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- 2) Period card -->
+        <article class="card admin-card">
+          <h2 style="margin:.25rem 0">Periods</h2>
+
+          <div class="admin-list">
+            <div class="admin-list__row">
+              <span>periodA</span>
+              <button class="btn btn--ghost">Edit</button>
+            </div>
+            <div class="admin-list__row">
+              <span>periodB</span>
+              <button class="btn btn--ghost">Edit</button>
+            </div>
+            <div class="admin-list__row">
+              <span>periodC</span>
+              <button class="btn btn--ghost">Edit</button>
+            </div>
+          </div>
+
+          <hr class="admin-sep">
+
+          <div class="form" onsubmit="return false;">
+            <label>New period</label>
+            <input class="input" type="text" placeholder="e.g. Contemporary">
+            <div class="form__actions">
+              <button class="btn" type="button">Create Period</button>
+            </div>
+          </div>
+        </article>
+
+        <!-- 3) Quick link -->
+        <article class="card admin-card">
+          <h2 style="margin:.25rem 0">Quick Links</h2>
+          <div class="grid" style="gap:12px">
+            <a class="btn" href="./AdminUserManagement.html">User Management</a>
+            <a class="btn" href="./AdminSubmissionList.html">Pending Submissions</a>
+            <a class="btn" href="./AdminReportList.html">Moderation Queues</a>
+          </div>
+
+          <hr class="admin-sep">
+
+          <p class="card__desc">Tips</p>
+          <ul style="margin:0; padding-left:1.2rem">
+            <li>Use “Edit” to rename items</li>
+            <li>Create new taxonomy items on the left</li>
+            <li>Review sensitive reports promptly</li>
+          </ul>
+        </article>
+      </section>
     </main>
 
-    <footer>
+    <footer class="footer" style="margin-top:24px">
+      <div class="container flex-between">
+        <div>© IAA • Admin</div>
+        <nav>
+          <a href="./About.html">Introduction</a> ·
+          <a href="./Guideline.html">Guidelines</a> ·
+          <a href="./ArtsResult.html">Art Listings</a> ·
+          <a href="./Map.html">Maps</a> ·
+          <a href="./Contact.html">Contact Us</a> ·
+          <a href="./Disclaimer.html">Disclaimers</a>
+        </nav>
+      </div>
     </footer>
   </body>
 </html>

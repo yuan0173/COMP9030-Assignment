@@ -2,30 +2,121 @@
 <html>
   <head>
     <title>Pending Submission List</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/pages.css">
   </head>
   <body>
-    <header>
-      <a href="./AdminDashboard.html">Back To Dashboard</a>
-      <p>Hello! Dear Admin</p>
+    <!-- jia: navigation -->
+    <header class="nav">
+      <div class="nav__inner container flex-between">
+        <div class="logo">IAA • Admin</div>
+        <nav class="nav__menu">
+          <a href="./AdminDashboard.html">Dashboard</a>
+          <a href="./AdminUserManagement.html">Users</a>
+          <a href="./AdminSubmissionList.html" aria-current="page">Submissions</a>
+          <a href="./AdminReportList.html">Moderation</a>
+        </nav>
+        <div class="auth">
+          <a class="btn btn--ghost" href="./UserLogIn.html">Admin Sign in</a>
+        </div>
+      </div>
     </header>
-    <main>
-      <p>title</p>
-      <p>status</p>
-      <a href="./AdminSubmissionDetail.html">
-        <p>titleA</p>
-        <p>pending</p>
-      </a>
-      <a href="./AdminSubmissionDetail.html">
-        <p>titleB</p>
-        <p>pending</p>
-      </a>
-      <a href="./AdminSubmissionDetail.html">
-        <p>titleC</p>
-        <p>pending</p>
-      </a>
+
+    <main class="container" style="margin-top:24px">
+      <h1 class="card__title" style="margin:0 0 12px">Pending Submissions</h1>
+      <p class="card__desc" style="margin:0 0 16px">Review and approve/reject community submissions.</p>
+
+      <!-- jia: Topline, JS Todo later） -->
+      <section class="card" style="padding:16px; margin-bottom:16px">
+        <form class="form" onsubmit="return false;">
+          <div class="form__row">
+            <div>
+              <label>Keyword</label>
+              <input class="input" placeholder="Search title / user">
+            </div>
+            <div>
+              <label>Status</label>
+              <select class="input">
+                <option selected>Pending</option>
+                <option>Approved</option>
+                <option>Rejected</option>
+              </select>
+            </div>
+          </div>
+          <div class="form__actions">
+            <button class="btn" type="submit">Apply</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card" style="padding:0">
+        <!-- jia: head -->
+        <div class="admin-table admin-table__header">
+          <div>Title</div>
+          <div>Status</div>
+          <div class="hide-sm">Submitted By</div>
+          <div class="hide-sm">Submitted At</div>
+          <div>Actions</div>
+        </div>
+
+        <!-- Line A -->
+        <div class="admin-table admin-table__row">
+          <div class="admin-cell__title">titleA</div>
+          <div>Pending</div>
+          <div class="hide-sm">@alice</div>
+          <div class="hide-sm">2025-09-01</div>
+          <div class="admin-actions">
+            <a class="btn" href="./AdminSubmissionDetail.html">Open</a>
+          </div>
+        </div>
+
+        <!-- Line B -->
+        <div class="admin-table admin-table__row">
+          <div class="admin-cell__title">titleB</div>
+          <div>Pending</div>
+          <div class="hide-sm">@bob</div>
+          <div class="hide-sm">2025-09-02</div>
+          <div class="admin-actions">
+            <a class="btn" href="./AdminSubmissionDetail.html">Open</a>
+          </div>
+        </div>
+
+        <!-- line C -->
+        <div class="admin-table admin-table__row">
+          <div class="admin-cell__title">titleC</div>
+          <div>Pending</div>
+          <div class="hide-sm">@carol</div>
+          <div class="hide-sm">2025-09-03</div>
+          <div class="admin-actions">
+            <a class="btn" href="./AdminSubmissionDetail.html">Open</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Paging -->
+      <nav class="pagination" style="margin-top:16px;">
+        <span>← Previous</span>
+        <button class="page page--active" aria-current="page">1</button>
+        <button class="page">2</button>
+        <button class="page">3</button>
+        <span>Next →</span>
+      </nav>
     </main>
 
-    <footer>
+    <footer class="footer" style="margin-top:24px">
+      <div class="container flex-between">
+        <div>© IAA • Admin</div>
+        <nav>
+          <a href="./About.html">Introduction</a> ·
+          <a href="./Guideline.html">Guidelines</a> ·
+          <a href="./ArtsResult.html">Art Listings</a> ·
+          <a href="./Map.html">Maps</a> ·
+          <a href="./Contact.html">Contact Us</a> ·
+          <a href="./Disclaimer.html">Disclaimers</a>
+        </nav>
+      </div>
     </footer>
   </body>
 </html>

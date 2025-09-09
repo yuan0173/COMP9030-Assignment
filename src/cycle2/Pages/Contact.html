@@ -2,31 +2,98 @@
 <html>
   <head>
     <title>Contact Page</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/pages.css">
   </head>
   <body>
-    <header>
-      <a href="./Home.html">Home</a>
-      <a href="./About.html">About</a>
-      <a href="./Guideline.html">Guidelines</a>
-      <a href="./Disclaimer.html">Disclaimer</a>
-      <a href="./UserLogIn.html">Sign in</a>
-      <a href="./UserRegistration.html">Register</a>
+    <!-- jia: Navigation -->
+    <header class="nav">
+      <div class="nav__inner container flex-between">
+        <div class="logo">IAA</div>
+        <nav class="nav__menu">
+          <a href="./Home.html">Home</a>
+          <a href="./About.html">About</a>
+          <a href="./ArtsResult.html">Arts</a>
+          <a href="./Map.html">Map</a>
+          <a href="./Guideline.html">Guidelines</a>
+        </nav>
+        <div class="auth">
+          <a class="btn btn--ghost" href="./UserLogIn.html">Sign in</a>
+          <a class="btn" href="./UserRegistration.html">Register</a>
+        </div>
+      </div>
     </header>
-    <main>
-      <h1>Contact Us</h1>
-      <p>Address: xxx</p>
-      <p>Email: xxx@gmail.com</p>
-      <p>Phone: xxxxx</p>
+
+    <!-- jia: main body -->
+    <main class="container" style="margin-top:32px; max-width:900px;">
+      <section class="card" style="padding:24px">
+        <h1 class="card__title" style="margin:0 0 16px">Contact Us</h1>
+        <p class="card__desc" style="margin:0 0 24px">
+          Have questions, feedback, or contributions? Reach out using the form below or via our listed channels.
+        </p>
+
+        <!-- Contact form -->
+        <form class="form" onsubmit="return false;">
+          <div class="form__row">
+            <div>
+              <label>Your Name</label>
+              <input class="input" type="text" placeholder="Enter your name">
+            </div>
+            <div>
+              <label>Email</label>
+              <input class="input" type="email" placeholder="Enter your email">
+            </div>
+          </div>
+
+          <div>
+            <label>Subject</label>
+            <input class="input" type="text" placeholder="Subject">
+          </div>
+
+          <div>
+            <label>Message</label>
+            <textarea class="input" rows="5" placeholder="Write your message"></textarea>
+          </div>
+
+          <div class="form__actions">
+            <button class="btn" type="submit">Send Message</button>
+          </div>
+        </form>
+
+        <!-- Other contact -->
+        <hr style="border:none;border-top:1px solid var(--border);margin:24px 0">
+        <div class="grid" style="gap:16px">
+          <div>
+            <h3 style="margin:.25rem 0">Email</h3>
+            <p class="card__desc">support@iaa.org</p>
+          </div>
+          <div>
+            <h3 style="margin:.25rem 0">Phone</h3>
+            <p class="card__desc">+61 8 1234 5678</p>
+          </div>
+          <div>
+            <h3 style="margin:.25rem 0">Address</h3>
+            <p class="card__desc">123 Art Lane, Adelaide, SA, Australia</p>
+          </div>
+        </div>
+      </section>
     </main>
 
-    <footer>
-      <h3>Quick Links</h3>
-      <a href="./Home.html">Home</a>
-      <a href="./About.html">About</a>
-      <a href="./Guideline.html">Guidelines</a>
-      <a href="./Disclaimer.html">Disclaimer</a>
-      <a href="./UserLogIn.html">Sign in</a>
-      <a href="./UserRegistration.html">Register</a>
+    <!-- jia: Footer-->
+    <footer class="footer" style="margin-top:32px">
+      <div class="container flex-between">
+        <div>© IAA</div>
+        <nav>
+          <a href="./About.html">Introduction</a> ·
+          <a href="./Guideline.html">Guidelines</a> ·
+          <a href="./ArtsResult.html">Art Listings</a> ·
+          <a href="./Map.html">Maps</a> ·
+          <a href="./Contact.html" aria-current="page">Contact Us</a> ·
+          <a href="./Disclaimer.html">Disclaimers</a>
+        </nav>
+      </div>
     </footer>
   </body>
 </html>

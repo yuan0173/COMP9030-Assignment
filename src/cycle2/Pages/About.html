@@ -2,29 +2,88 @@
 <html>
   <head>
     <title>About</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/pages.css">
+
   </head>
   <body>
-    <header>
-      <a href="./Home.html">Home</a>
-      <a href="./Guideline.html">Guidelines</a>
-      <a href="./Contact.html">Contact us</a>
-      <a href="./Disclaimer.html">Disclaimer</a>
-      <a href="./UserLogIn.html">Sign in</a>
-      <a href="./UserRegistration.html">Register</a>
+    <!-- jia: Navigation -->
+    <header class="nav">
+      <div class="nav__inner container flex-between">
+        <div class="logo">IAA</div>
+        <nav class="nav__menu">
+          <a href="./Home.html">Home</a>
+          <a href="./Guideline.html">Guidelines</a>
+          <a href="./ArtsResult.html">Arts</a>
+          <a href="./Map.html">Map</a>
+          <a href="./Contact.html">Contact</a>
+        </nav>
+        <div class="auth">
+          <a class="btn btn--ghost" href="./UserLogIn.html">Sign in</a>
+          <a class="btn" href="./UserRegistration.html">Register</a>
+        </div>
+      </div>
     </header>
-    <main>
-      <h1>About Us</h1>
-      <p>The Indigenous Art Atlas is a website designed to serve as a community-driven database for tracking and sharing indigenous art in various real-world settings, ranging from ancient cave art to contemporary gallery pieces and public installations.</p>
+
+    <!-- jia: Main Body -->
+    <main class="container" style="margin-top:32px; max-width:900px;">
+      <section class="card" style="padding:24px">
+        <h1 class="card__title" style="margin:0 0 12px">About Us</h1>
+        <p class="card__desc" style="margin:0 0 16px">
+          The Indigenous Art Atlas is a community-driven database for tracking and sharing Indigenous art in real-world settings — from ancient cave art to contemporary galleries and public installations.
+        </p>
+
+        <div class="grid" style="gap:16px; margin-top:8px">
+          <div>
+            <h2 style="margin:.25rem 0">Our Mission</h2>
+            <p>
+              Preserve cultural heritage, support artists and communities, and promote respectful discovery through open, accessible information.
+            </p>
+          </div>
+          <div>
+            <h2 style="margin:.25rem 0">What You’ll Find</h2>
+            <ul style="margin:0; padding-left:1.2rem">
+              <li>Artwork listings with context and location</li>
+              <li>Submission portal for community contributions</li>
+              <li>Guidelines on cultural sensitivity and privacy</li>
+            </ul>
+          </div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid var(--border);margin:16px 0">
+
+        <div class="grid" style="gap:16px">
+          <div>
+            <h3 style="margin:.25rem 0">Respect & Sensitivity</h3>
+            <p class="card__desc">
+              We follow protocols for culturally sensitive and private locations. Please read the Guidelines before submitting.
+            </p>
+          </div>
+          <div>
+            <h3 style="margin:.25rem 0">How to Contribute</h3>
+            <p class="card__desc">
+              Create an account to submit artworks. Provide clear descriptions, context, and note any sensitivities or permissions.
+            </p>
+          </div>
+        </div>
+      </section>
     </main>
 
-    <footer>
-      <h3>Quick Links</h3>
-      <a href="./Home.html">Home</a>
-      <a href="./Guideline.html">Guidelines</a>
-      <a href="./Contact.html">Contact us</a>
-      <a href="./Disclaimer.html">Disclaimer</a>
-      <a href="./UserLogIn.html">Sign in</a>
-      <a href="./UserRegistration.html">Register</a>
+    <!-- jia: Footer -->
+    <footer class="footer" style="margin-top:32px">
+      <div class="container flex-between">
+        <div>© IAA</div>
+        <nav>
+          <a href="./About.html" aria-current="page">Introduction</a> ·
+          <a href="./Guideline.html">Guidelines</a> ·
+          <a href="./ArtsResult.html">Art Listings</a> ·
+          <a href="./Map.html">Maps</a> ·
+          <a href="./Contact.html">Contact Us</a> ·
+          <a href="./Disclaimer.html">Disclaimers</a>
+        </nav>
+      </div>
     </footer>
   </body>
 </html>

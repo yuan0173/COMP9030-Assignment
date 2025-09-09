@@ -3,91 +3,137 @@
   <head>
     <title>Submission Detail</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/pages.css">
   </head>
   <body>
-    <header>
-      <a href="./AdminSubmissionList.html">Back To Submission List</a>
-      <a href="./AdminDashboard.html">Back To Dashboard</a>
-      <p>Hello! Dear Admin</p>
+    <!-- jia: navigation -->
+    <header class="nav">
+      <div class="nav__inner container flex-between">
+        <div class="logo">IAA • Admin</div>
+        <nav class="nav__menu">
+          <a href="./AdminDashboard.html">Dashboard</a>
+          <a href="./AdminUserManagement.html">Users</a>
+          <a href="./AdminSubmissionList.html" aria-current="page">Submissions</a>
+          <a href="./AdminReportList.html">Moderation</a>
+        </nav>
+        <div class="auth">
+          <a class="btn btn--ghost" href="./UserLogIn.html">Admin Sign in</a>
+        </div>
+      </div>
     </header>
-    <main>
-      <div>
-        <div>
-          <h2>Title</h2>
-          <input type="text" placeholder="a title provided by submitter"> 
-        </div>
-        <div>
-          <h2>Type</h2>
-          <select>
-            <option>typeA</option>
-            <option>typeB</option>
-            <option>typeC</option>
-          </select>
-        </div>
-        <div>
-          <h2>Period</h2>
-          <select>
-            <option>PeriodA</option>
-            <option>PeriodB</option>
-            <option>PeriodC</option>
-          </select> 
-        </div>
-        <div>
-          <h2>Condition/Quality</h2>
-          <input type="text" placeholder="some text enterred by submitter"> 
-        </div>
-        <div>
-          <h2>Description</h2>
-          <input type="text" placeholder="some text enterred by submitter"> 
-        </div>
-      </div>
 
-      <div>
-        <div id="map" style="width: 1000px; height: 600px;"></div>
-        <div><input type="file"></div>
-        <p>descriptive location notes</p>
-        <input type="text">
-      </div>
+    <main class="container" style="margin-top:24px">
+      <h1 class="card__title" style="margin:0 0 12px">Submission Detail</h1>
+      <p class="card__desc" style="margin:0 0 16px">Review and edit submission info before approval.</p>
 
-      <div>
-        <h2>Creditted Artist</h2>
-        <p>Artist username</p>
-        <h2>cultural sensitive</h2>
-        <p>YES/NO</p>
-        <h2>private land</h2>
-        <p>YES/NO</p>
-        <div>
-          location sensitive setting
-          <label>
-            <input type="checkbox">Location sensitive
-          </label>
-        </div>
-        <div>
-          display options
-          <select>
-            <option>normally display location</option>
-            <option>optionB</option>
-            <option>optionC</option>
-          </select>
-        </div>
-      </div>
+      <!-- jia: Two-column layout: Information editing on the left + map/materials on the right -->
+      <section class="grid" style="gap:16px">
+        <!-- Leftside -->
+        <article class="card" style="padding:16px">
+          <form class="form" onsubmit="return false;">
+            <div class="form__row">
+              <div>
+                <label>Title</label>
+                <input class="input" type="text" placeholder="a title provided by submitter">
+              </div>
+              <div>
+                <label>Type</label>
+                <select class="input">
+                  <option>typeA</option>
+                  <option>typeB</option>
+                  <option>typeC</option>
+                </select>
+              </div>
+            </div>
 
-      <div>
-        <button>Approve</button>
-        <button>reject</button>
-        <input type="text" placeholder="This is for rejecting use only, please conditionally render this">
-      </div>
+            <div class="form__row">
+              <div>
+                <label>Period</label>
+                <select class="input">
+                  <option>PeriodA</option>
+                  <option>PeriodB</option>
+                  <option>PeriodC</option>
+                </select>
+              </div>
+              <div>
+                <label>Condition/Quality</label>
+                <input class="input" type="text" placeholder="some text entered by submitter">
+              </div>
+            </div>
+
+            <div>
+              <label>Description</label>
+              <textarea class="input" rows="4" placeholder="some text entered by submitter"></textarea>
+            </div>
+
+            <hr style="border:none;border-top:1px solid var(--border);margin:8px 0">
+
+            <div class="grid" style="gap:12px">
+              <div class="card" style="padding:12px">
+                <h3 style="margin:.25rem 0">Credits & Sensitivity</h3>
+                <div class="form__row">
+                  <div>
+                    <label>Credited Artist</label>
+                    <input class="input" type="text" placeholder="Artist username">
+                  </div>
+                  <div>
+                    <label>Display Options</label>
+                    <select class="input">
+                      <option>normally display location</option>
+                      <option>blur / coarse location</option>
+                      <option>hide location</option>
+                    </select>
+                  </div>
+                </div>
+                <label style="margin-top:8px"><input type="checkbox"> Location sensitive</label>
+                <div class="form__hint">If sensitive/private land, choose a safer display option.</div>
+              </div>
+            </div>
+          </form>
+        </article>
+
+        <!-- Rightside -->
+        <aside class="card" style="padding:16px">
+          <h3 style="margin:.25rem 0">Location</h3>
+          <div id="adminSubmissionMap" class="map-box"></div>
+          <div class="form__hint">descriptive location notes</div>
+          <input class="input" type="text" placeholder="Notes (optional)" style="margin-top:8px">
+
+          <hr style="border:none;border-top:1px solid var(--border);margin:16px 0">
+
+          <h3 style="margin:.25rem 0">Images</h3>
+          <input class="input" type="file" multiple>
+        </aside>
+      </section>
+
+      <!-- jia: Approval operation -->
+      <section class="card" style="padding:16px; margin-top:16px">
+        <div class="form__actions" style="gap:12px; flex-wrap:wrap">
+          <button class="btn" type="button">Approve</button>
+          <button class="btn btn--ghost" type="button">Reject</button>
+          <input class="input" type="text" placeholder="Rejection reason (shown only when rejecting)">
+        </div>
+      </section>
     </main>
 
-    <footer>
+    <footer class="footer" style="margin-top:24px">
+      <div class="container flex-between">
+        <div>© IAA • Admin</div>
+        <nav>
+          <a href="./AdminSubmissionList.html">Back to Submissions</a> ·
+          <a href="./AdminDashboard.html">Back to Dashboard</a>
+        </nav>
+      </div>
     </footer>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
-      let map = L.map('map', {
-        center: [51.505, -0.09],
-        zoom: 13
-      })
+      // Map height is set in pages.css (#adminSubmissionMap { height:56vh; })
+      const map = L.map('adminSubmissionMap', { center:[-34.9, 138.6], zoom: 11 });
+      // TODO: It will be connected by the JS role later: tileLayer、marker、draw/approve/reject API
     </script>
   </body>
 </html>

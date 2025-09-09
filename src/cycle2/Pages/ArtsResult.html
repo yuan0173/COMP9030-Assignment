@@ -2,105 +2,152 @@
 <html>
   <head>
     <title>ArtsResult</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/pages.css">
   </head>
   <body>
-    <header>
-      <a href="./About.html">About</a>
-      <a href="./Guideline.html">Guidelines</a>
-      <a href="./Contact.html">Contact us</a>
-      <a href="./Disclaimer.html">Disclaimer</a>
-      <a href="./UserLogIn.html">Sign in</a>
-      <a href="./UserLogIn.html">Register</a>
+
+    <!-- jia: Top navigation  -->
+    <header class="nav">
+      <div class="nav__inner container flex-between">
+        <!-- jia: need one logo pic -->
+        <div class="logo">logo</div> 
+        <nav class="nav__menu">
+          <a href="./About.html">About</a>
+          <a href="./Guideline.html">Guidelines</a>
+          <a href="./ArtsResult.html" aria-current="page">Arts</a>
+          <a href="./Map.html">Map</a>
+          <a href="./Contact.html">Contact</a>
+        </nav>
+        <div class="auth">
+          <a class="btn btn--ghost" href="./UserLogIn.html">Sign in</a>
+          <a class="btn" href="./UserRegistration.html">Register</a>
+        </div>
+      </div>
     </header>
-    <main>
-      <div>
-        <h2>State</h2>
-        <label>
-          <input type="checkbox"> NSW
-        </label>
-        <label>
-          <input type="checkbox"> VIC
-        </label>
-        <label>
-          <input type="checkbox"> SA
-        </label>
-        <h2>Type</h2>
-        <label>
-          <input type="checkbox"> TypeA
-        </label>
-        <label>
-          <input type="checkbox"> TypeB
-        </label>
-        <label>
-          <input type="checkbox"> TypeC
-        </label>
-        <h2>Period</h2>
-        <label>
-          <input type="checkbox"> PeriodA
-        </label>
-        <label>
-          <input type="checkbox"> PeriodB
-        </label>
-        <label>
-          <input type="checkbox"> PeriodC
-        </label>
-      </div>
-      <div>
-        <div>
-          <input type="text">
-          <button>search</button>
-          <button>date ascending</button>
-          <button>date descending</button>
-          <button>title ascending</button>
-          <button>title descending</button>
-        </div>
-        <div>
-          <a href="./ArtDetail.html">
-            <img src="../test.jpg" style="width: 100px; height: 100px;">
-            <h2>Title</h2>
-            <p>description</p>
-          </a>
-          <a href="./ArtDetail.html">
-            <img src="../test.jpg" style="width: 100px; height: 100px;">
-            <h2>Title</h2>
-            <p>description</p>
-          </a>
-          <a href="./ArtDetail.html">
-            <img src="../test.jpg" style="width: 100px; height: 100px;">
-            <h2>Title</h2>
-            <p>description</p>
-          </a>
-          <a href="./ArtDetail.html">
-            <img src="../test.jpg" style="width: 100px; height: 100px;">
-            <h2>Title</h2>
-            <p>description</p>
-          </a>
-          <a href="./ArtDetail.html">
-            <img src="../test.jpg" style="width: 100px; height: 100px;">
-            <h2>Title</h2>
-            <p>description</p>
-          </a>
-          <a href="./ArtDetail.html">
-            <img src="../test.jpg" style="width: 100px; height: 100px;">
-            <h2>Title</h2>
-            <p>description</p>
-          </a>
-        </div>
-        <div>
-          <button>1</button>
-          <button>2</button>
-        </div>
-      </div>
+
+
+    <!-- jia: Main body -->
+    <main class="container" style="margin-top:24px">
+
+      <section class="listings">
+        <!-- Left side filter -->
+        <aside class="filter">
+          <h4>State</h4>
+          <label><input type="checkbox" checked> NSW</label>
+          <label><input type="checkbox" checked> VIC</label>
+          <label><input type="checkbox" checked> SA</label>
+
+          <h4 style="margin-top:12px;">Type</h4>
+          <label><input type="checkbox" checked> Cave Art</label>
+          <label><input type="checkbox" checked> Mural</label>
+
+          <h4 style="margin-top:12px;">Periods</h4>
+          <label><input type="checkbox" checked> Ancient</label>
+          <label><input type="checkbox" checked> Contemporary</label>
+        </aside>
+
+        <!-- jia: Right side -->
+        <section class="listings__main">
+          <!-- Search and sort -->
+          <div class="flex-between" style="gap:16px; flex-wrap:wrap;">
+            <div class="searchbar" style="flex:1; min-width:260px;">
+              <input class="input searchbar__input" placeholder="Search">
+              <button class="btn" aria-label="Search">🔍</button>
+            </div>
+
+            <div class="pills" aria-label="Sort">
+              <button class="pill pill--active">New</button>
+              <button class="pill">Date ↑</button>
+              <button class="pill">Date ↓</button>
+              <button class="pill">Title ↑</button>
+              <button class="pill">Title ↓</button>
+            </div>
+          </div>
+
+          <!-- jia: card -->
+          <div class="cards" style="margin-top:16px;">
+            <!-- card 1 -->
+            <a class="card" href="./ArtDetail.html">
+              <div class="card__img"><img src="../test.jpg" alt="art"></div>
+              <div class="card__body">
+                <h3 class="card__title">Title</h3>
+                <p class="card__desc">Description</p>
+              </div>
+            </a>
+
+            <!-- jia: need copy 5 pics -->
+            <a class="card" href="./ArtDetail.html">
+              <div class="card__img"><img src="../test.jpg" alt="art"></div>
+              <div class="card__body">
+                <h3 class="card__title">Title</h3>
+                <p class="card__desc">Description</p>
+              </div>
+            </a>
+
+            <a class="card" href="./ArtDetail.html">
+              <div class="card__img"><img src="../test.jpg" alt="art"></div>
+              <div class="card__body">
+                <h3 class="card__title">Title</h3>
+                <p class="card__desc">Description</p>
+              </div>
+            </a>
+
+            <a class="card" href="./ArtDetail.html">
+              <div class="card__img"><img src="../test.jpg" alt="art"></div>
+              <div class="card__body">
+                <h3 class="card__title">Title</h3>
+                <p class="card__desc">Description</p>
+              </div>
+            </a>
+
+            <a class="card" href="./ArtDetail.html">
+              <div class="card__img"><img src="../test.jpg" alt="art"></div>
+              <div class="card__body">
+                <h3 class="card__title">Title</h3>
+                <p class="card__desc">Description</p>
+              </div>
+            </a>
+
+            <a class="card" href="./ArtDetail.html">
+              <div class="card__img"><img src="../test.jpg" alt="art"></div>
+              <div class="card__body">
+                <h3 class="card__title">Title</h3>
+                <p class="card__desc">Description</p>
+              </div>
+            </a>
+          </div>
+
+          <!-- jia: Paging -->
+          <nav class="pagination" style="margin-top:16px;">
+            <span>← Previous</span>
+            <button class="page page--active" aria-current="page">1</button>
+            <button class="page">2</button>
+            <button class="page">3</button>
+            <span>…</span>
+            <button class="page">68</button>
+            <span>Next →</span>
+          </nav>
+        </section>
+      </section>
+
     </main>
 
-    <footer>
-      <h3>Quick Links</h3>
-      <a href="./About.html">About</a>
-      <a href="./Guideline.html">Guidelines</a>
-      <a href="./Contact.html">Contact us</a>
-      <a href="./Disclaimer.html">Disclaimer</a>
-      <a href="./UserLogIn.html">Sign in</a>
-      <a href="./UserLogIn.html">Register</a>
+     <!-- jia: Footer -->
+    <footer class="footer" style="margin-top:24px">
+      <div class="container flex-between">
+        <div>© IAA</div>
+        <nav>
+          <a href="./About.html">Introduction</a> ·
+          <a href="./Guideline.html">Guidelines</a> ·
+          <a href="./ArtsResult.html" aria-current="page">Art Listings</a> ·
+          <a href="./Map.html">Maps</a> ·
+          <a href="./Contact.html">Contact Us</a> ·
+          <a href="./Disclaimer.html">Disclaimers</a>
+        </nav>
+      </div>
     </footer>
   </body>
 </html>
