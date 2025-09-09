@@ -13,6 +13,7 @@
       <div class="nav__inner container flex-between">
         <div class="logo">IAA</div>
         <nav class="nav__menu">
+          <a href="./Home.html">Home</a>
           <a href="./About.html">About</a>
           <a href="./Guideline.html">Guidelines</a>
           <a href="./ArtsResult.html">Arts</a>
@@ -32,6 +33,15 @@
         <h1 class="card__title" style="margin:0 0 16px; text-align:center;">Sign In</h1>
 
         <form class="form" onsubmit="return false;">
+          <div class="form__row" style="align-items:center; justify-content:space-between; margin-bottom:12px;">
+            <label style="margin:0">Login as</label>
+            <div style="display:flex; gap:8px;">
+              <label><input type="radio" name="loginMode" value="visitor" checked> Visitor</label>
+              <label><input type="radio" name="loginMode" value="artist"> Artist</label>
+              <label><input type="radio" name="loginMode" value="admin"> Admin</label>
+            </div>
+          </div>
+
           <div>
             <label>Email</label>
             <input class="input" type="email" placeholder="Enter your email">
@@ -68,5 +78,6 @@
         </nav>
       </div>
     </footer>
+    <script src="../js/login.js"></script>
   </body>
 </html>

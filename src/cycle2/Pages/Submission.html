@@ -14,6 +14,7 @@
       <div class="nav__inner container flex-between">
         <div class="logo">IAA</div>
         <nav class="nav__menu">
+          <a href="./Home.html">Home</a>
           <a href="./About.html">About</a>
           <a href="./Guideline.html">Guidelines</a>
           <a href="./ArtsResult.html">Arts</a>
@@ -32,19 +33,18 @@
       <h1 class="card__title" style="margin:0 0 12px">Submit Your Art</h1>
 
       <!-- jia：Form body -->
-      <form class="form" onsubmit="return false;">
+      <form class="form" id="submissionForm" onsubmit="return false;">
         <!-- Basic info: two rows -->
         <div class="form__row">
           <div>
             <label>Title</label>
-            <input class="input" type="text" placeholder="Title">
+            <input id="artTitle" class="input" type="text" placeholder="Title" required>
           </div>
           <div>
             <label>Type</label>
-            <select class="input">
-              <option>typeA</option>
-              <option>typeB</option>
-              <option>typeC</option>
+            <select id="artType" class="input" required>
+              <option value="Cave Art">Cave Art</option>
+              <option value="Mural">Mural</option>
             </select>
           </div>
         </div>
@@ -52,21 +52,20 @@
         <div class="form__row">
           <div>
             <label>Period</label>
-            <select class="input">
-              <option>PeriodA</option>
-              <option>PeriodB</option>
-              <option>PeriodC</option>
+            <select id="artPeriod" class="input" required>
+              <option value="Ancient">Ancient</option>
+              <option value="Contemporary">Contemporary</option>
             </select>
           </div>
           <div>
             <label>Condition/Quality</label>
-            <input class="input" type="text" placeholder="e.g. Good / Fair">
+            <input id="artCondition" class="input" type="text" placeholder="e.g. Good / Fair" required>
           </div>
         </div>
 
         <div>
           <label>Description</label>
-          <textarea class="input" rows="4" placeholder="Add a brief description"></textarea>
+          <textarea id="artDescription" class="input" rows="4" placeholder="Add a brief description" required></textarea>
           <div class="form__hint">Be mindful of cultural sensitivity and privacy.</div>
         </div>
 
@@ -76,28 +75,31 @@
             <label>Location</label>
             <div id="submissionMap" class="map-box"></div>
             <div class="form__hint">Descriptive location notes</div>
-            <input class="input" type="text" placeholder="Notes (optional)">
+            <input id="locationNotes" class="input" type="text" placeholder="Notes (optional)">
+            <input id="lat" type="hidden">
+            <input id="lng" type="hidden">
           </div>
 
           <div class="card" style="padding:16px">
             <label>Images</label>
-            <input class="input" type="file" multiple>
+            <input id="imageInput" class="input" type="file" accept="image/*">
             <div class="form__hint">You can select multiple images.</div>
+            <img id="imagePreview" alt="preview" style="margin-top:8px;max-width:100%;display:none;border-radius:8px" />
           </div>
         </section>
 
         <!-- Multiple options: Cultural sensitivity/Private Land/Signature -->
         <div class="form__row">
-          <label><input type="checkbox"> Credit a known artist</label>
-          <label><input type="checkbox"> This location is culturally sensitive</label>
+          <label><input id="creditKnownArtist" type="checkbox"> Credit a known artist</label>
+          <label><input id="sensitive" type="checkbox"> This location is culturally sensitive</label>
         </div>
         <div>
-          <label><input type="checkbox"> This location is private land</label>
+          <label><input id="privateLand" type="checkbox"> This location is private land</label>
         </div>
 
         <!-- Submit button -->
         <div class="form__actions">
-          <button class="btn" type="submit">Submit Your Art</button>
+          <button id="submitBtn" class="btn" type="submit">Submit Your Art</button>
         </div>
       </form>
     </main>
@@ -118,11 +120,6 @@
     </footer>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script>
-      let map = L.map('map', {
-        center: [51.505, -0.09],
-        zoom: 13
-      })
-    </script>
+    <script src="../js/submission.js"></script>
   </body>
 </html>

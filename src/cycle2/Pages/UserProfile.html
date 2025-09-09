@@ -13,6 +13,7 @@
       <div class="nav__inner container flex-between">
         <div class="logo">IAA</div>
         <nav class="nav__menu">
+          <a href="./Home.html">Home</a>
           <a href="./About.html">About</a>
           <a href="./Guideline.html">Guidelines</a>
           <a href="./ArtsResult.html">Arts</a>
@@ -47,10 +48,10 @@
           <h3 style="margin:.25rem 0">Bio</h3>
           <p class="card__desc" id="bioText">This is the bio part</p>
           <div class="form" onsubmit="return false;">
-            <input class="input" type="text" placeholder="Edit bio (conditionally render by JS)">
+            <input class="input" id="bioInput" type="text" placeholder="Edit bio (conditionally render by JS)">
             <div class="form__actions">
-              <button class="btn btn--ghost" type="button">Edit My Bio</button>
-              <button class="btn" type="button">Save</button>
+              <button class="btn btn--ghost" id="bioEditBtn" type="button">Edit My Bio</button>
+              <button class="btn" id="bioSaveBtn" type="button">Save</button>
             </div>
           </div>
 
@@ -61,20 +62,20 @@
           <div class="grid" style="gap:8px">
             <div>
               <div class="card__desc">This is the Email address other users can contact through</div>
-              <input class="input" type="text" placeholder="Edit email (conditionally by JS)">
+              <input class="input" id="contactEmailInput" type="text" placeholder="Edit email (conditionally by JS)">
             </div>
             <div>
               <div class="card__desc">This is your address of your office</div>
-              <input class="input" type="text" placeholder="Edit address (conditionally by JS)">
+              <input class="input" id="contactAddressInput" type="text" placeholder="Edit address (conditionally by JS)">
             </div>
             <div>
               <div class="card__desc">This is your phone number</div>
-              <input class="input" type="text" placeholder="Edit phone (conditionally by JS)">
+              <input class="input" id="contactPhoneInput" type="text" placeholder="Edit phone (conditionally by JS)">
             </div>
           </div>
           <div class="form__actions" style="margin-top:8px">
-            <button class="btn btn--ghost" type="button">Edit My Contact Details</button>
-            <button class="btn" type="button">Save</button>
+            <button class="btn btn--ghost" id="contactEditBtn" type="button">Edit My Contact Details</button>
+            <button class="btn" id="contactSaveBtn" type="button">Save</button>
           </div>
 
           <hr style="border:none;border-top:1px solid var(--border);margin:16px 0">
@@ -116,9 +117,8 @@
           </article>
 
           <!-- TODO: Sign as me (rendered by JS conditions only when the user is an Artist) -->
-          <article class="card" style="padding:16px">
+          <article id="artistSection" class="card" style="padding:16px; display:none">
             <h2 style="margin:.25rem 0">Works Credited to You</h2>
-            <p class="card__desc">Render this section only if user.type === "artist".</p>
             <div class="cards" style="margin-top:12px">
               <a class="card" href=".">
                 <div class="card__body">
@@ -164,5 +164,6 @@
         </nav>
       </div>
     </footer>
+    <script src="../js/profile.js"></script>
   </body>
 </html>
