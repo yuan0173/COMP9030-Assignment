@@ -6,9 +6,9 @@
 
   function setOutline(el, on){ if (el) el.style.outline = on ? '2px solid #ef4444' : '' }
 
-  // Static users with roles
-  var users = [
-    { role: 'admin', email: 'admin@gmail.com', password: 'admin1' },
+  // Static admin users (registered users are stored separately)
+  var adminUsers = [
+    { role: 'admin', email: 'admin@gmail.com', password: 'admin' },
     { role: 'visitor', email: 'visitor@gmail.com', password: 'visitor' },
     { role: 'artist', email: 'artist@gmail.com', password: 'artist' },
   ]
@@ -20,9 +20,15 @@
     var modeInputs = form.querySelectorAll('input[name="loginMode"][type="radio"]')
     var emailInput = form.querySelector('input[type="email"]')
     var passwordInput = form.querySelector('input[type="password"]')
+    var errorMessage = document.getElementById('errorMessage')
+    var errorText = document.getElementById('errorText')
 
-    // Users are static now
-    try{ console.log('[login] Loaded users:', users.length) }catch(_){ }
+    // Load users from storage
+    try{ 
+      var registeredUsers = window.UserStorage ? window.UserStorage.getUsers() : [];
+      console.log('[login] Loaded admin users:', adminUsers.length);
+      console.log('[login] Loaded registered users:', registeredUsers.length);
+    }catch(_){ }
 
     function validateEmail(val){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) }
 
@@ -36,9 +42,25 @@
       setOutline(passwordInput, false)
     }
 
+    function showError(message) {
+      if (errorText) {
+        errorText.textContent = message
+      }
+      if (errorMessage) {
+        errorMessage.style.display = 'block'
+      }
+    }
+
+    function hideError() {
+      if (errorMessage) {
+        errorMessage.style.display = 'none'
+      }
+    }
+
     form.addEventListener('submit', function(e){
       e.preventDefault()
       clearOutlines()
+      hideError()
 
       var mode = currentMode()
       var email = (emailInput && emailInput.value || '').trim()
@@ -46,30 +68,51 @@
 
       if (!email || !validateEmail(email)){
         setOutline(emailInput, true)
-        alert('Please enter a valid email.')
+        showError('Please enter a valid email.')
         return
       }
       if (!password){
         setOutline(passwordInput, true)
-        alert('Please enter your password.')
+        showError('Please enter your password.')
         return
       }
 
-      var match = users.find(function(u){
+      // First check admin users
+      var match = adminUsers.find(function(u){
         return u.role === mode && String(u.email || '').trim().toLowerCase() === email.toLowerCase() && String(u.password || '').trim() === password
       })
+      
+      // If not found in admin users, check registered users
+      if (!match && window.UserStorage) {
+        var registeredUser = window.UserStorage.findUser(email, password);
+        if (registeredUser) {
+          match = registeredUser;
+        }
+      }
+      
       if (match){
-        try {
-          localStorage.setItem('iaa_auth_v1', JSON.stringify({ role: match.role, email: match.email }))
-        } catch(_) { }
-        if (mode === 'admin') window.location.href = './AdminDashboard.html'
-        else if (mode === 'artist') window.location.href = './UserProfile.html'
-        else window.location.href = './UserProfile.html'
+        // Use SessionManager to handle login
+        if (SessionManager.login({ role: match.role, email: match.email })) {
+          SessionManager.redirectAfterLogin();
+        } else {
+          showError('Login failed. Please try again.')
+        }
         return
       }
       setOutline(emailInput, true)
       setOutline(passwordInput, true)
-      alert('Invalid credentials for selected role.')
+      showError('Invalid credentials for selected role.')
+    })
+
+    // Clear error when user starts typing or changes mode
+    if (emailInput) {
+      emailInput.addEventListener('input', hideError)
+    }
+    if (passwordInput) {
+      passwordInput.addEventListener('input', hideError)
+    }
+    modeInputs.forEach(function(input) {
+      input.addEventListener('change', hideError)
     })
   })
 })()
