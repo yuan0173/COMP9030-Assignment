@@ -15,6 +15,7 @@
         <!-- jia: need one logo pic -->
         <div class="logo">logo</div> 
         <nav class="nav__menu">
+          <a href="./Home.html">Home</a>
           <a href="./About.html">About</a>
           <a href="./Guideline.html">Guidelines</a>
           <a href="./ArtsResult.html" aria-current="page">Arts</a>
@@ -36,17 +37,17 @@
         <!-- Left side filter -->
         <aside class="filter">
           <h4>State</h4>
-          <label><input type="checkbox" checked> NSW</label>
-          <label><input type="checkbox" checked> VIC</label>
-          <label><input type="checkbox" checked> SA</label>
+          <label><input id="filterStateNSW" type="checkbox" checked> NSW</label>
+          <label><input id="filterStateVIC" type="checkbox" checked> VIC</label>
+          <label><input id="filterStateSA" type="checkbox" checked> SA</label>
 
           <h4 style="margin-top:12px;">Type</h4>
-          <label><input type="checkbox" checked> Cave Art</label>
-          <label><input type="checkbox" checked> Mural</label>
+          <label><input id="filterTypeCave" type="checkbox" checked> Cave Art</label>
+          <label><input id="filterTypeMural" type="checkbox" checked> Mural</label>
 
           <h4 style="margin-top:12px;">Periods</h4>
-          <label><input type="checkbox" checked> Ancient</label>
-          <label><input type="checkbox" checked> Contemporary</label>
+          <label><input id="filterPeriodAncient" type="checkbox" checked> Ancient</label>
+          <label><input id="filterPeriodContemporary" type="checkbox" checked> Contemporary</label>
         </aside>
 
         <!-- jia: Right side -->
@@ -68,57 +69,7 @@
           </div>
 
           <!-- jia: card -->
-          <div class="cards" style="margin-top:16px;">
-            <!-- card 1 -->
-            <a class="card" href="./ArtDetail.html">
-              <div class="card__img"><img src="../test.jpg" alt="art"></div>
-              <div class="card__body">
-                <h3 class="card__title">Title</h3>
-                <p class="card__desc">Description</p>
-              </div>
-            </a>
-
-            <!-- jia: need copy 5 pics -->
-            <a class="card" href="./ArtDetail.html">
-              <div class="card__img"><img src="../test.jpg" alt="art"></div>
-              <div class="card__body">
-                <h3 class="card__title">Title</h3>
-                <p class="card__desc">Description</p>
-              </div>
-            </a>
-
-            <a class="card" href="./ArtDetail.html">
-              <div class="card__img"><img src="../test.jpg" alt="art"></div>
-              <div class="card__body">
-                <h3 class="card__title">Title</h3>
-                <p class="card__desc">Description</p>
-              </div>
-            </a>
-
-            <a class="card" href="./ArtDetail.html">
-              <div class="card__img"><img src="../test.jpg" alt="art"></div>
-              <div class="card__body">
-                <h3 class="card__title">Title</h3>
-                <p class="card__desc">Description</p>
-              </div>
-            </a>
-
-            <a class="card" href="./ArtDetail.html">
-              <div class="card__img"><img src="../test.jpg" alt="art"></div>
-              <div class="card__body">
-                <h3 class="card__title">Title</h3>
-                <p class="card__desc">Description</p>
-              </div>
-            </a>
-
-            <a class="card" href="./ArtDetail.html">
-              <div class="card__img"><img src="../test.jpg" alt="art"></div>
-              <div class="card__body">
-                <h3 class="card__title">Title</h3>
-                <p class="card__desc">Description</p>
-              </div>
-            </a>
-          </div>
+          <div id="artsContainer" class="cards" style="margin-top:16px;"></div>
 
           <!-- jia: Paging -->
           <nav class="pagination" style="margin-top:16px;">
@@ -149,5 +100,6 @@
         </nav>
       </div>
     </footer>
+    <script src="../js/arts.js"></script>
   </body>
 </html>

@@ -1,47 +1,29 @@
 <?php
+// Serve the Cycle 2 Home page as the site's homepage, ensuring relative assets resolve correctly.
 
-require_once "./inc/dbconn.inc.php";
+header('Content-Type: text/html; charset=UTF-8');
 
-echo "<h1>COMP2030 Assignment Dev Environment Setup</h1><h2>Connected successfully to MySQL database!</h2>";
-
-// Create a table if it doesn't exist
-$sql = "CREATE TABLE IF NOT EXISTS messages (
-    id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    message VARCHAR(255) NOT NULL,
-    reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-)";
-
-if ($conn->query($sql) === TRUE) {
-    echo "<p>Table \"messages\" created successfully or already exists.</p>";
-} else {
-    echo "<p>Error creating table: " . $conn->error . "</p>";
+$homePath = __DIR__ . '/cycle2/Pages/Home.html';
+if (!is_file($homePath)) {
+    http_response_code(404);
+    echo 'Homepage not found.';
+    exit;
 }
 
-// Insert some data (only if table is empty for demonstration)
-$check_empty = $conn->query("SELECT COUNT(*) as count FROM messages");
-$row = $check_empty->fetch_assoc();
-if ($row['count'] == 0) {
-    $insert_sql = "INSERT INTO messages (message) VALUES ('Connection and insert into db successful')";
-    if ($conn->query($insert_sql) === TRUE) {
-        echo "<p>New record created successfully.</p>";
-    } else {
-        echo "<p>Error: " . $insert_sql . "<br>" . $conn->error . "</p>";
-    }
+$content = file_get_contents($homePath);
+if ($content === false) {
+    http_response_code(500);
+    echo 'Failed to load homepage.';
+    exit;
 }
 
-// Display messages
-$result = $conn->query("SELECT id, message, reg_date FROM messages");
-
-if ($result->num_rows > 0) {
-    echo "<h2>Messages:</h2>";
-    echo "<ul>";
-    while($row = $result->fetch_assoc()) {
-        echo "<li>" . $row["id"]. " - " . $row["message"]. " (" . $row["reg_date"]. ")</li>";
-    }
-    echo "</ul>";
-} else {
-    echo "<p>No messages yet.</p>";
+// Inject a <base> tag so that all relative links (CSS, images, anchors) resolve from cycle2/Pages/
+if (stripos($content, '<base ') === false) {
+    $baseHref = 'cycle2/Pages/';
+    $content = preg_replace('/<head(\s*)>/i', '<head$1><base href="' . $baseHref . '">', $content, 1);
 }
 
-$conn->close();
+echo $content;
 ?>
+
+
