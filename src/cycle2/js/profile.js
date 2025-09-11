@@ -18,11 +18,8 @@
   }
 
   function loadAuth(){
-    try{
-      var raw = localStorage.getItem('iaa_auth_v1')
-      if (!raw) return null
-      return JSON.parse(raw)
-    }catch(_){ return null }
+    // Use SessionManager instead of direct localStorage access
+    return SessionManager.getCurrentUser()
   }
 
   function saveProfile(profile){
@@ -56,10 +53,36 @@
     setDisabled(getEl('contactPhoneInput'), !isEditing)
   }
 
+  function updateUserDisplay(){
+    var user = SessionManager.getCurrentUser()
+    if (!user) return
+
+    // Update user name and role display
+    var userNameEl = document.querySelector('.profile-grid .card__desc')
+    if (userNameEl) {
+      userNameEl.textContent = '@' + user.email.split('@')[0] + ' · ' + user.role.charAt(0).toUpperCase() + user.role.slice(1)
+    }
+
+    // Update welcome message
+    var welcomeEl = document.querySelector('.profile-grid .card h3')
+    if (welcomeEl) {
+      welcomeEl.textContent = 'Hello! ' + user.email.split('@')[0]
+    }
+  }
+
   ready(function(){
+    // Check if user is logged in
+    if (!SessionManager.isLoggedIn()) {
+      window.location.href = './UserLogIn.html';
+      return;
+    }
+
     // Initialize default disabled state
     toggleEdit(false)
     hydrate()
+    
+    // Update user display with actual user data
+    updateUserDisplay()
 
     var bioEditBtn = getEl('bioEditBtn')
     var bioSaveBtn = getEl('bioSaveBtn')

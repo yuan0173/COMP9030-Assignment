@@ -123,5 +123,13 @@
         </nav>
       </div>
     </footer>
+    <script src="../js/session.js"></script>
+    <script>
+      // Check if user is logged in and has admin role
+      if (!SessionManager.requireRole('admin')) {
+        // SessionManager.requireRole will handle redirect
+        return;
+      }
+    </script>
   </body>
 </html>

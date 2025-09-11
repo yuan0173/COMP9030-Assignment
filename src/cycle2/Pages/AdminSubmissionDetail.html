@@ -130,7 +130,14 @@
     </footer>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="../js/session.js"></script>
     <script>
+      // Check if user is logged in and has admin role
+      if (!SessionManager.requireRole('admin')) {
+        // SessionManager.requireRole will handle redirect
+        return;
+      }
+      
       // Map height is set in pages.css (#adminSubmissionMap { height:56vh; })
       const map = L.map('adminSubmissionMap', { center:[-34.9, 138.6], zoom: 11 });
       // TODO: It will be connected by the JS role later: tileLayer、marker、draw/approve/reject API
