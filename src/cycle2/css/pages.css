@@ -2,7 +2,68 @@
 
 /* Home Page Layout */
 #map{ height:56vh; }   /* Adaptive viewport height; It can be fine-tuned as needed */
+.hero {
+  background: url("../imgs/Hero.jpg") no-repeat center center;
+  background-size: cover;
+  height: 500px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white; 
+}
 
+.hero__title {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.hero__subtitle {
+  font-size: 1.25rem;
+}
+
+/* Featured Arts */
+.featured-arts {
+  margin: 40px 0;
+}
+
+.featured-arts .section-title {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.featured-arts .cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+}
+
+.featured-arts .card {
+  border: 1px solid var(--border, #ddd);
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+  background: white;
+}
+
+.featured-arts .card__img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.featured-arts .card__title {
+  font-weight: 600;
+  margin: 8px 0 4px;
+}
+
+.featured-arts .card__desc {
+  font-size: 0.9rem;
+  color: #555;
+}
 
 /* ArtsResult Page Layout */
 .listings{
