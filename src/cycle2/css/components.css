@@ -31,5 +31,12 @@
 
 /* pagination */
 .pagination{display:flex;gap:8px;justify-content:center;align-items:center;color:#6b7280}
+<<<<<<< HEAD
 .pagination .page{min-width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--border);border-radius:8px;background:#fff}
 .pagination .page--active{background:#111;color:#fff;border-color:#111}
+=======
+.pagination .page{min-width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--border);border-radius:8px;background:#fff;cursor:pointer;transition:all 0.2s ease;text-decoration:none;font-size:14px;font-weight:500}
+.pagination .page:hover:not(:disabled){background:#f3f4f6;border-color:#d1d5db}
+.pagination .page--active{background:#111;color:#fff;border-color:#111}
+.pagination .page:disabled{opacity:0.5;cursor:not-allowed;background:#f9fafb}
+>>>>>>> main

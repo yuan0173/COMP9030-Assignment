@@ -2,6 +2,7 @@
 
 /* Home Page Layout */
 #map{ height:56vh; }   /* Adaptive viewport height; It can be fine-tuned as needed */
+<<<<<<< HEAD
 .hero {
   background: url("../imgs/Hero.jpg") no-repeat center center;
   background-size: cover;
@@ -64,6 +65,9 @@
   font-size: 0.9rem;
   color: #555;
 }
+=======
+
+>>>>>>> main
 
 /* ArtsResult Page Layout */
 .listings{
