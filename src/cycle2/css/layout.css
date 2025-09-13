@@ -14,3 +14,10 @@
 .btn{display:inline-block;padding:.625rem 1rem;border-radius:var(--radius);background:#111;color:#fff;border:1px solid transparent;box-shadow:var(--shadow)}
 .card{background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
 .footer{border-top:1px solid var(--border);padding:var(--space-8) 0}
+
+/* # START COMMENT BLOCK #
+ChatGPT (OpenAI, 2025)
+Line number in AI-Acknowledgement.md: 8-11
+Interpretation: ChatGPT helped me generate the initial structure, such as grid, spacing, and reusable class names.  
+I then customized colors, fonts, and responsiveness to match Cycle 1’s style.
+# END COMMENT BLOCK # */
