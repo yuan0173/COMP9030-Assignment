@@ -12,7 +12,7 @@
     imgWrap.className = 'card__img'
     var img = document.createElement('img')
     img.src = item.image || '../test.jpg'
-    img.alt = 'art'
+    img.alt = (item.title || 'Artwork')
     imgWrap.appendChild(img)
 
     var body = document.createElement('div')
@@ -36,6 +36,7 @@
   var currentPage = 1
   var itemsPerPage = 6
   var totalPages = 1
+  var currentQuery = '' // Search query (case-insensitive)
   
   // Function to extract state from locationNotes
   function extractState(locationNotes) {
@@ -176,8 +177,8 @@
     container.innerHTML = ''
     if (!Array.isArray(list) || list.length === 0) {
       var empty = document.createElement('div')
-      empty.className = 'card__desc'
-      empty.textContent = 'No arts yet. Be the first to submit!'
+      empty.className = 'notice notice--empty'
+      empty.textContent = 'No arts found. Try different filters or keywords.'
       container.appendChild(empty)
       updatePagination(0)
       return
@@ -203,13 +204,16 @@
   function applyFilters(options){
     options = options || {}
     var f = readFilters()
+    var q = (currentQuery || '').trim().toLowerCase()
     var filtered = cache.filter(function(item){
       var t = (item.type || '').toLowerCase()
       var p = (item.period || '').toLowerCase()
       var state = extractState(item.locationNotes)
+      var haystack = ((item.title || '') + ' ' + (item.description || '') + ' ' + (item.locationNotes || '')).toLowerCase()
       
       var typeOk = (t === 'cave art' && f.type.cave) || (t === 'mural' && f.type.mural) || (!t)
       var periodOk = (p === 'ancient' && f.period.ancient) || (p === 'contemporary' && f.period.contemporary) || (!p)
+      var queryOk = !q || haystack.indexOf(q) !== -1
       
       // State filtering logic
       var stateOk = true
@@ -223,7 +227,7 @@
         stateOk = allStatesChecked || !item.locationNotes || item.locationNotes.trim() === ''
       }
       
-      return typeOk && periodOk && stateOk
+      return typeOk && periodOk && stateOk && queryOk
     })
     
     // Reset to first page when filters/sort change unless explicitly preserved
@@ -238,6 +242,7 @@
     var pills = document.querySelectorAll('.pills .pill')
     pills.forEach(function(pill) {
       pill.classList.remove('pill--active')
+      pill.setAttribute('aria-pressed', 'false')
     })
     
     // Add active class to current sort pill
@@ -252,6 +257,7 @@
     var activeIndex = sortMap[currentSort]
     if (pills[activeIndex]) {
       pills[activeIndex].classList.add('pill--active')
+      pills[activeIndex].setAttribute('aria-pressed', 'true')
     }
   }
 
@@ -270,7 +276,6 @@
     }
     
     totalPages = Math.ceil(totalItems / itemsPerPage)
-    console.log('Updating pagination:', { totalItems, totalPages, currentPage, itemsPerPage })
     
     // Clear existing pagination
     paginationContainer.innerHTML = ''
@@ -294,10 +299,8 @@
     }
     prevButton.addEventListener('click', function(e) {
       e.preventDefault()
-      console.log('Previous button clicked, currentPage:', currentPage)
       if (currentPage > 1) {
         currentPage--
-        console.log('Going to page:', currentPage)
         applyFilters({ preservePage: true })
       }
     })
@@ -338,9 +341,7 @@
       pageButton.addEventListener('click', function(pageNum) {
         return function(e) {
           e.preventDefault()
-          console.log('Page button clicked, page:', pageNum, 'currentPage:', currentPage)
           currentPage = pageNum
-          console.log('Going to page:', currentPage)
           applyFilters({ preservePage: true })
         }
       }(i))
@@ -361,9 +362,7 @@
       lastPage.textContent = totalPages.toString()
       lastPage.addEventListener('click', function(e) {
         e.preventDefault()
-        console.log('Last page button clicked, page:', totalPages)
         currentPage = totalPages
-        console.log('Going to page:', currentPage)
         applyFilters({ preservePage: true })
       })
       paginationContainer.appendChild(lastPage)
@@ -380,10 +379,8 @@
     }
     nextButton.addEventListener('click', function(e) {
       e.preventDefault()
-      console.log('Next button clicked, currentPage:', currentPage, 'totalPages:', totalPages)
       if (currentPage < totalPages) {
         currentPage++
-        console.log('Going to page:', currentPage)
         applyFilters({ preservePage: true })
       }
     })
@@ -398,12 +395,45 @@
     
     // Hook up sort pill buttons
     var sortButtons = document.querySelectorAll('.pills .pill')
+    var pillsContainer = document.querySelector('.pills')
+    if (pillsContainer) {
+      // Provide grouping semantics for assistive technologies
+      pillsContainer.setAttribute('role', 'group')
+      pillsContainer.setAttribute('aria-label', pillsContainer.getAttribute('aria-label') || 'Sort')
+    }
     sortButtons.forEach(function(button, index) {
       button.addEventListener('click', function() {
         var sortTypes = ['new', 'date-asc', 'date-desc', 'title-asc', 'title-desc']
         setSort(sortTypes[index])
       })
     })
+
+    // Hook up search input and button
+    var searchInput = document.querySelector('.searchbar__input')
+    var searchButton = document.querySelector('.searchbar .btn')
+
+    function triggerSearch(preservePage){
+      currentQuery = (searchInput && searchInput.value) ? searchInput.value : ''
+      applyFilters({ preservePage: !!preservePage })
+    }
+
+    if (searchInput){
+      // Live filter as user types
+      searchInput.addEventListener('input', function(){ triggerSearch(false) })
+      // Enter key triggers search
+      searchInput.addEventListener('keydown', function(e){
+        if (e.key === 'Enter'){
+          e.preventDefault()
+          triggerSearch(false)
+        }
+      })
+    }
+    if (searchButton){
+      searchButton.addEventListener('click', function(e){
+        e.preventDefault()
+        triggerSearch(false)
+      })
+    }
   }
 
   fetch(apiBase()).then(function(r){ return r.json() }).then(function(list){
@@ -412,8 +442,6 @@
     updateSortPills() // Set initial sort pill state
     applyFilters({ preservePage: false })
   }).catch(function(err){
-    container.innerHTML = '<div class="card__desc">Failed to load: ' + err + '</div>'
+    container.innerHTML = '<div class="notice notice--error">Failed to load arts. Please retry later.</div>'
   })
 })()
-
-

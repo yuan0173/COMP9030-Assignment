@@ -8,6 +8,32 @@
   var form = document.getElementById('submissionForm')
   if (!form) return
 
+  // Populate type/period selects from admin-configured taxonomies when available
+  ;(function initTaxonomies(){
+    try{
+      if (!window.AdminData) return
+      var types = AdminData.get(AdminData.KEYS.types) || []
+      var periods = AdminData.get(AdminData.KEYS.periods) || []
+      var typeSel = document.getElementById('artType')
+      var periodSel = document.getElementById('artPeriod')
+      function fillSelect(sel, items){
+        if (!sel || !Array.isArray(items) || items.length === 0) return
+        var current = sel.value
+        sel.innerHTML = ''
+        items.forEach(function(name){
+          var opt = document.createElement('option')
+          opt.value = name
+          opt.textContent = name
+          sel.appendChild(opt)
+        })
+        // Try to preserve current value if present
+        if (current && items.indexOf(current) !== -1) sel.value = current
+      }
+      fillSelect(typeSel, types)
+      fillSelect(periodSel, periods)
+    }catch(_){ }
+  })()
+
   var mapEl = document.getElementById('submissionMap')
   var latEl = document.getElementById('lat')
   var lngEl = document.getElementById('lng')
@@ -70,16 +96,12 @@
           locationNotesInput.style.borderColor = ''
           locationNotesInput.placeholder = 'Notes (optional)'
           
-          console.log('Geocoding response:', data)
           
           if (data && data.length > 0) {
             // Handle both 'lat'/'lng' and 'lat'/'lon' field names
             var lat = parseFloat(data[0].lat)
             var lng = parseFloat(data[0].lng || data[0].lon) // Try 'lng' first, then 'lon'
             
-            console.log('Parsed coordinates:', { lat: lat, lng: lng })
-            console.log('Raw data[0]:', data[0])
-            console.log('Available fields:', Object.keys(data[0]))
             
             // Validate coordinates
             if (isNaN(lat) || isNaN(lng)) {
@@ -235,5 +257,3 @@
     })
   })
 })();
-
-

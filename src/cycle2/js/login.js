@@ -26,8 +26,6 @@
     // Load users from storage
     try{ 
       var registeredUsers = window.UserStorage ? window.UserStorage.getUsers() : [];
-      console.log('[login] Loaded admin users:', adminUsers.length);
-      console.log('[login] Loaded registered users:', registeredUsers.length);
     }catch(_){ }
 
     function validateEmail(val){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) }
@@ -116,5 +114,4 @@
     })
   })
 })()
-
 

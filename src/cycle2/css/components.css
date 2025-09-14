@@ -35,3 +35,34 @@
 .pagination .page:hover:not(:disabled){background:#f3f4f6;border-color:#d1d5db}
 .pagination .page--active{background:#111;color:#fff;border-color:#111}
 .pagination .page:disabled{opacity:0.5;cursor:not-allowed;background:#f9fafb}
+
+/* pills (sorting chips) */
+.pills{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:.4rem .75rem;border:1px solid var(--border);border-radius:999px;background:#fff;color:#111;cursor:pointer;transition:all .2s ease;font-size:14px;font-weight:500}
+.pill:hover{background:#f3f4f6;border-color:#d1d5db}
+.pill--active{background:#111;color:#fff;border-color:#111}
+.pill:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* toolbar and spacing utils extracted from inline styles */
+.listings-toolbar{display:flex;gap:16px;flex-wrap:wrap}
+.searchbar{flex:1;min-width:260px}
+.page-section{margin-top:var(--space-6)} /* 24px */
+.mt-4{margin-top:var(--space-4)} /* 16px */
+
+/* simple slider for detail gallery */
+.slider{position:relative;height:100%;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#f3f4f6}
+.slider__track{display:flex;height:100%;width:100%;transition:transform .35s ease}
+.slider__slide{min-width:100%;height:100%;display:grid;place-items:center;background:#e5e7eb}
+.slider__slide img{width:100%;height:100%;object-fit:cover}
+.slider__nav{position:absolute;inset:0;display:flex;justify-content:space-between;align-items:center;pointer-events:none}
+.slider__btn{pointer-events:auto;border:none;background:rgba(0,0,0,.45);color:#fff;border-radius:999px;width:36px;height:36px;display:grid;place-items:center;cursor:pointer}
+.slider__btn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.slider__dots{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);display:flex;gap:6px;background:rgba(255,255,255,.7);padding:4px 8px;border-radius:999px}
+.slider__dot{width:8px;height:8px;border-radius:999px;background:#9ca3af;border:0;cursor:pointer}
+.slider__dot[aria-current="true"]{background:#111}
+
+/* notices: empty/error states */
+.notice{border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:#fff}
+.notice--empty{color:#6b7280;background:#fafafa}
+.notice--error{color:#991b1b;background:#fee2e2;border-color:#fecaca}
+.map-notice{position:absolute;top:8px;left:8px;z-index:1000;max-width:280px}

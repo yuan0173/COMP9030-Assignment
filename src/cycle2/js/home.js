@@ -31,21 +31,71 @@
     fetch(apiBase()).then(function(r){ return r.json() }).then(function(list){
       var markers = []
       if (Array.isArray(list)) {
+        // Helper: resolve display level from item fields
+        function resolveDisplayLevel(it){
+          var dl = (it && typeof it.display_level === 'string') ? it.display_level.toLowerCase() : ''
+          if (dl === 'exact' || dl === 'locality' || dl === 'region' || dl === 'hidden') return dl
+          var sensitive = !!(it && it.sensitive)
+          var priv = !!(it && it.privateLand)
+          if (sensitive && priv) return 'hidden'
+          if (sensitive) return 'locality'
+          if (priv) return 'region'
+          return 'exact'
+        }
+
+        // Helper: round coordinate to one decimal (~10km) for region display
+        function approx(n){ return Math.round(n * 10) / 10 }
+
         list.forEach(function(item){
           var lat = item && item.lat
           var lng = item && item.lng
-          if (isFiniteNumber(lat) && isFiniteNumber(lng)) {
-            var marker = L.marker([lat, lng]).addTo(map)
-            var title = item.title || 'Untitled'
-            var addr = item.locationNotes || ''
-            var link = './ArtDetail.html?id=' + encodeURIComponent(item.id)
-            var popupHtml = '<div style="min-width:200px">'
+          var hasCoords = isFiniteNumber(lat) && isFiniteNumber(lng)
+          var level = resolveDisplayLevel(item)
+          var title = item.title || 'Untitled'
+          var addr = item.locationNotes || ''
+          var link = './ArtDetail.html?id=' + encodeURIComponent(item.id)
+
+          // Skip when hidden, or no coordinates provided
+          if (!hasCoords && (level === 'exact' || level === 'locality' || level === 'region')) return
+          if (level === 'hidden') return
+
+          if (level === 'exact') {
+            var m1 = L.marker([lat, lng]).addTo(map)
+            var html1 = '<div style="min-width:200px">'
               + '<div style="font-weight:600; margin-bottom:4px">' + title + '</div>'
               + (addr ? '<div style="color:#666; margin-bottom:6px">' + addr + '</div>' : '')
               + '<a href="' + link + '" style="color:#0b5cff">View details</a>'
               + '</div>'
-            marker.bindPopup(popupHtml)
-            markers.push(marker)
+            m1.bindPopup(html1)
+            markers.push(m1)
+            return
+          }
+
+          if (level === 'locality') {
+            // Draw a circle (e.g., 1000m radius) to indicate approximate area
+            var c = L.circle([lat, lng], { radius: 1000, color: '#2a5b9d', fillColor: '#2a5b9d', fillOpacity: 0.15 }).addTo(map)
+            c.bindPopup('<div style="min-width:200px">'
+              + '<div style="font-weight:600; margin-bottom:4px">' + title + '</div>'
+              + '<div style="color:#666; margin-bottom:6px">Approximate area (location intentionally obfuscated)</div>'
+              + '<a href="' + link + '" style="color:#0b5cff">View details</a>'
+              + '</div>')
+            markers.push(c)
+            return
+          }
+
+          if (level === 'region') {
+            // Place a marker at an approximated coordinate (rounded to 1 decimal)
+            var latA = approx(lat)
+            var lngA = approx(lng)
+            var m2 = L.marker([latA, lngA]).addTo(map)
+            var html2 = '<div style="min-width:200px">'
+              + '<div style="font-weight:600; margin-bottom:4px">' + title + '</div>'
+              + '<div style="color:#666; margin-bottom:6px">Approximate location (region-level)</div>'
+              + '<a href="' + link + '" style="color:#0b5cff">View details</a>'
+              + '</div>'
+            m2.bindPopup(html2)
+            markers.push(m2)
+            return
           }
         })
       }
@@ -57,6 +107,15 @@
       }
     }).catch(function(err){
       if (window.console && console.error) console.error('Failed to load arts for map:', err)
+      try{
+        var mapEl = document.getElementById('map')
+        if (mapEl){
+          var n = document.createElement('div')
+          n.className = 'map-notice notice notice--error'
+          n.textContent = 'Failed to load map data. Please try again later.'
+          mapEl.appendChild(n)
+        }
+      }catch(_){ }
     })
   })()
 
@@ -68,11 +127,10 @@
       pinMarker.on('dragend', function(){
         var coords = pinMarker.getLatLng()
         pinMarker.bindPopup('Lat, Lng: ' + formatLatLng(coords)).openPopup()
-        if (window.console && console.log) console.log('Selected coordinates:', coords)
       })
     }
     pinMarker.bindPopup('Lat, Lng: ' + formatLatLng(e.latlng)).openPopup()
-    if (window.console && console.log) console.log('Selected coordinates:', e.latlng)
+    
   })
 })();
 
@@ -131,5 +189,3 @@
     container.innerHTML = '<div class="card__desc">Failed to load: ' + err + '</div>'
   })
 })();
-
-
