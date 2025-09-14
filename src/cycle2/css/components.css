@@ -1,9 +1,18 @@
 /* Used for buttons/cards/forms/badges/pop-ups, etc. */
 
 /* hero */
-.hero{padding:72px 0;background:#f3f4f6;text-align:center}
-.hero__title{font-size:48px;line-height:1.1;margin:0 0 8px}
-.hero__subtitle{color:var(--muted);font-size:20px;margin:0}
+.hero{
+  padding:72px 0;
+  background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.3)),
+              url('../imgs/Hero.jpg') center/cover no-repeat;
+  text-align:center;
+  color:white;
+  min-height:400px;
+  display:flex;
+  align-items:center;
+}
+.hero__title{font-size:48px;line-height:1.1;margin:0 0 8px;color:white;text-shadow:2px 2px 4px rgba(0,0,0,0.7)}
+.hero__subtitle{color:rgba(255,255,255,0.9);font-size:20px;margin:0;text-shadow:1px 1px 2px rgba(0,0,0,0.7)}
 
 /* cards */
 .cards{display:grid;gap:20px}
