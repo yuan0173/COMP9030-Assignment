@@ -5,8 +5,8 @@
   if (!window.L) return
 
   var map = L.map('map', {
-    center: [51.505, -0.09],
-    zoom: 13
+    center: [-25.2744, 133.7751],
+    zoom: 5
   })
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -22,30 +22,165 @@
   // Expose map so other modules (if needed) can access it
   window.HomeMap = map
 
-  // Load all arts and display their addresses on the map
+  // Load all arts from localStorage and display their addresses on the map
   ;(function(){
-    function apiBase(){ return '../../api/art.php' }
-
     function isFiniteNumber(n){ return typeof n === 'number' && isFinite(n) }
 
-    fetch(apiBase()).then(function(r){ return r.json() }).then(function(list){
+    function loadFromStorage(){
+      try {
+        var allData = localStorage.getItem('iaa_arts_v1')
+        var list = allData ? JSON.parse(allData) : []
+        
+        // Initialize with mock data if localStorage is empty
+        if (list.length === 0) {
+          initializeMockData()
+          allData = localStorage.getItem('iaa_arts_v1')
+          list = allData ? JSON.parse(allData) : []
+        }
+        
+        return list
+      } catch(err) {
+        return []
+      }
+    }
+
+    function initializeMockData() {
+      var mockArts = [
+        {
+          id: 'mock-1',
+          title: 'Ancient Cave Paintings',
+          description: 'Traditional indigenous cave art discovered in South Australia',
+          type: 'Cave Art',
+          period: 'Ancient',
+          condition: 'Good',
+          image: '../test.jpg',
+          locationNotes: 'Flinders Ranges, South Australia',
+          lat: -31.2,
+          lng: 138.6,
+          sensitive: true,
+          privateLand: false,
+          creditKnownArtist: false,
+          createdAt: '2024-01-15T10:00:00Z',
+          submittedBy: 'admin@iaa.gov.au',
+          status: 'approved'
+        },
+        {
+          id: 'mock-2', 
+          title: 'Contemporary Mural',
+          description: 'Modern indigenous street art in urban Melbourne',
+          type: 'Mural',
+          period: 'Contemporary',
+          condition: 'Excellent',
+          image: '../test.jpg',
+          locationNotes: 'Melbourne CBD, Victoria',
+          lat: -37.8136,
+          lng: 144.9631,
+          sensitive: false,
+          privateLand: false,
+          creditKnownArtist: true,
+          createdAt: '2024-02-20T14:30:00Z',
+          submittedBy: 'admin@iaa.gov.au',
+          status: 'approved'
+        }
+      ]
+      
+      localStorage.setItem('iaa_arts_v1', JSON.stringify(mockArts))
+    }
+
+    var list = loadFromStorage()
+    console.log('Loaded arts data for map:', list)
+    try {
       var markers = []
       if (Array.isArray(list)) {
+        // Helper: resolve display level from item fields
+        function resolveDisplayLevel(it){
+          var dl = (it && typeof it.display_level === 'string') ? it.display_level.toLowerCase() : ''
+          if (dl === 'exact' || dl === 'locality' || dl === 'region' || dl === 'hidden') return dl
+          var sensitive = !!(it && it.sensitive)
+          var priv = !!(it && it.privateLand)
+          if (sensitive && priv) return 'hidden'
+          if (sensitive) return 'locality'
+          if (priv) return 'region'
+          return 'exact'
+        }
+
+        // Helper: round coordinate to one decimal (~10km) for region display
+        function approx(n){ return Math.round(n * 10) / 10 }
+
         list.forEach(function(item){
           var lat = item && item.lat
           var lng = item && item.lng
-          if (isFiniteNumber(lat) && isFiniteNumber(lng)) {
-            var marker = L.marker([lat, lng]).addTo(map)
-            var title = item.title || 'Untitled'
-            var addr = item.locationNotes || ''
-            var link = './ArtDetail.html?id=' + encodeURIComponent(item.id)
-            var popupHtml = '<div style="min-width:200px">'
+          
+          // Convert string coordinates to numbers
+          if (typeof lat === 'string') lat = parseFloat(lat)
+          if (typeof lng === 'string') lng = parseFloat(lng)
+          
+          var hasCoords = isFiniteNumber(lat) && isFiniteNumber(lng)
+          var level = resolveDisplayLevel(item)
+          var title = item.title || 'Untitled'
+          var addr = item.locationNotes || ''
+          var link = './ArtDetail.html?id=' + encodeURIComponent(item.id)
+
+          console.log('Processing item:', {
+            title: title,
+            lat: lat,
+            lng: lng, 
+            hasCoords: hasCoords,
+            level: level,
+            sensitive: item.sensitive,
+            privateLand: item.privateLand
+          })
+
+          // Skip when no coordinates provided or when hidden
+          if (!hasCoords) {
+            console.log('Skipping item (no coordinates):', title)
+            return
+          }
+          if (level === 'hidden') {
+            console.log('Skipping item (hidden level):', title)
+            return
+          }
+
+          if (level === 'exact') {
+            console.log('Adding exact marker for:', title)
+            var m1 = L.marker([lat, lng]).addTo(map)
+            var html1 = '<div style="min-width:200px">'
               + '<div style="font-weight:600; margin-bottom:4px">' + title + '</div>'
               + (addr ? '<div style="color:#666; margin-bottom:6px">' + addr + '</div>' : '')
               + '<a href="' + link + '" style="color:#0b5cff">View details</a>'
               + '</div>'
-            marker.bindPopup(popupHtml)
-            markers.push(marker)
+            m1.bindPopup(html1)
+            markers.push(m1)
+            return
+          }
+
+          if (level === 'locality') {
+            console.log('Adding locality circle for:', title)
+            // Draw a circle (e.g., 1000m radius) to indicate approximate area
+            var c = L.circle([lat, lng], { radius: 1000, color: '#2a5b9d', fillColor: '#2a5b9d', fillOpacity: 0.15 }).addTo(map)
+            c.bindPopup('<div style="min-width:200px">'
+              + '<div style="font-weight:600; margin-bottom:4px">' + title + '</div>'
+              + '<div style="color:#666; margin-bottom:6px">Approximate area (location intentionally obfuscated)</div>'
+              + '<a href="' + link + '" style="color:#0b5cff">View details</a>'
+              + '</div>')
+            markers.push(c)
+            return
+          }
+
+          if (level === 'region') {
+            console.log('Adding region marker for:', title)
+            // Place a marker at an approximated coordinate (rounded to 1 decimal)
+            var latA = approx(lat)
+            var lngA = approx(lng)
+            var m2 = L.marker([latA, lngA]).addTo(map)
+            var html2 = '<div style="min-width:200px">'
+              + '<div style="font-weight:600; margin-bottom:4px">' + title + '</div>'
+              + '<div style="color:#666; margin-bottom:6px">Approximate location (region-level)</div>'
+              + '<a href="' + link + '" style="color:#0b5cff">View details</a>'
+              + '</div>'
+            m2.bindPopup(html2)
+            markers.push(m2)
+            return
           }
         })
       }
@@ -55,9 +190,18 @@
         var group = L.featureGroup(markers)
         map.fitBounds(group.getBounds().pad(0.2))
       }
-    }).catch(function(err){
+    } catch(err) {
       if (window.console && console.error) console.error('Failed to load arts for map:', err)
-    })
+      try{
+        var mapEl = document.getElementById('map')
+        if (mapEl){
+          var n = document.createElement('div')
+          n.className = 'map-notice notice notice--error'
+          n.textContent = 'Failed to load map data. Please try again later.'
+          mapEl.appendChild(n)
+        }
+      }catch(_){ }
+    }
   })()
 
   map.on('click', function (e) {
@@ -68,11 +212,10 @@
       pinMarker.on('dragend', function(){
         var coords = pinMarker.getLatLng()
         pinMarker.bindPopup('Lat, Lng: ' + formatLatLng(coords)).openPopup()
-        if (window.console && console.log) console.log('Selected coordinates:', coords)
       })
     }
     pinMarker.bindPopup('Lat, Lng: ' + formatLatLng(e.latlng)).openPopup()
-    if (window.console && console.log) console.log('Selected coordinates:', e.latlng)
+    
   })
 })();
 
@@ -81,7 +224,66 @@
   var container = document.getElementById('featuredArtsContainer')
   if (!container) return
 
-  function apiBase(){ return '../../api/art.php' }
+  function loadArtsFromStorage(){
+    try {
+      var allData = localStorage.getItem('iaa_arts_v1')
+      var list = allData ? JSON.parse(allData) : []
+      
+      // Initialize with mock data if localStorage is empty
+      if (list.length === 0) {
+        initializeMockData()
+        allData = localStorage.getItem('iaa_arts_v1')
+        list = allData ? JSON.parse(allData) : []
+      }
+      
+      return list
+    } catch(err) {
+      return []
+    }
+  }
+
+  function initializeMockData() {
+    var mockArts = [
+      {
+        id: 'mock-1',
+        title: 'Ancient Cave Paintings',
+        description: 'Traditional indigenous cave art discovered in South Australia',
+        type: 'Cave Art',
+        period: 'Ancient',
+        condition: 'Good',
+        image: '../test.jpg',
+        locationNotes: 'Flinders Ranges, South Australia',
+        lat: -31.2,
+        lng: 138.6,
+        sensitive: true,
+        privateLand: false,
+        creditKnownArtist: false,
+        createdAt: '2024-01-15T10:00:00Z',
+        submittedBy: 'admin@iaa.gov.au',
+        status: 'approved'
+      },
+      {
+        id: 'mock-2', 
+        title: 'Contemporary Mural',
+        description: 'Modern indigenous street art in urban Melbourne',
+        type: 'Mural',
+        period: 'Contemporary',
+        condition: 'Excellent',
+        image: '../test.jpg',
+        locationNotes: 'Melbourne CBD, Victoria',
+        lat: -37.8136,
+        lng: 144.9631,
+        sensitive: false,
+        privateLand: false,
+        creditKnownArtist: true,
+        createdAt: '2024-02-20T14:30:00Z',
+        submittedBy: 'admin@iaa.gov.au',
+        status: 'approved'
+      }
+    ]
+    
+    localStorage.setItem('iaa_arts_v1', JSON.stringify(mockArts))
+  }
 
   function createCard(item){
     var a = document.createElement('a')
@@ -119,17 +321,20 @@
       container.appendChild(empty)
       return
     }
-    // Show only the first 3 arts as featured
-    var featuredArts = list.slice(0, 3)
+    // Show recently added arts as featured (C1 design requirement)
+    var sortedByDate = list.slice().sort(function(a, b) {
+      var dateA = new Date(a.createdAt || 0)
+      var dateB = new Date(b.createdAt || 0)
+      return dateB - dateA // Newest first
+    })
+    var featuredArts = sortedByDate.slice(0, 3)
     featuredArts.forEach(function(item){ container.appendChild(createCard(item)) })
   }
 
-  fetch(apiBase()).then(function(r){ return r.json() }).then(function(list){
-    var artsList = Array.isArray(list) ? list : []
+  try {
+    var artsList = loadArtsFromStorage()
     render(artsList)
-  }).catch(function(err){
+  } catch(err) {
     container.innerHTML = '<div class="card__desc">Failed to load: ' + err + '</div>'
-  })
+  }
 })();
-
-

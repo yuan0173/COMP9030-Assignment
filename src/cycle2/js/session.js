@@ -99,7 +99,6 @@
     restoreSession: function() {
       if (this.isLoggedIn()) {
         var user = this.getCurrentUser();
-        console.log('Session restored for user:', user);
         return user;
       }
       return null;

@@ -6,10 +6,10 @@
 
   function setOutline(el, on){ if (el) el.style.outline = on ? '2px solid #ef4444' : '' }
 
-  // Static admin users (registered users are stored separately)
-  var adminUsers = [
+  // Static demo users for testing (registered users are stored separately)
+  var demoUsers = [
     { role: 'admin', email: 'admin@gmail.com', password: 'admin' },
-    { role: 'visitor', email: 'visitor@gmail.com', password: 'visitor' },
+    { role: 'public', email: 'public@gmail.com', password: 'public' },
     { role: 'artist', email: 'artist@gmail.com', password: 'artist' },
   ]
 
@@ -18,16 +18,14 @@
     if (!form) return
 
     var modeInputs = form.querySelectorAll('input[name="loginMode"][type="radio"]')
-    var emailInput = form.querySelector('input[type="email"]')
-    var passwordInput = form.querySelector('input[type="password"]')
+    var emailInput = form.querySelector('input[type="email"]') || document.getElementById('loginEmail')
+    var passwordInput = form.querySelector('input[type="password"]') || document.getElementById('loginPassword')
     var errorMessage = document.getElementById('errorMessage')
     var errorText = document.getElementById('errorText')
 
     // Load users from storage
     try{ 
       var registeredUsers = window.UserStorage ? window.UserStorage.getUsers() : [];
-      console.log('[login] Loaded admin users:', adminUsers.length);
-      console.log('[login] Loaded registered users:', registeredUsers.length);
     }catch(_){ }
 
     function validateEmail(val){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) }
@@ -57,6 +55,14 @@
       }
     }
 
+    function fillCredentialsForMode(mode) {
+      var user = demoUsers.find(function(u) { return u.role === mode })
+      if (user && emailInput && passwordInput) {
+        emailInput.value = user.email
+        passwordInput.value = user.password
+      }
+    }
+
     form.addEventListener('submit', function(e){
       e.preventDefault()
       clearOutlines()
@@ -77,12 +83,12 @@
         return
       }
 
-      // First check admin users
-      var match = adminUsers.find(function(u){
+      // First check demo users
+      var match = demoUsers.find(function(u){
         return u.role === mode && String(u.email || '').trim().toLowerCase() === email.toLowerCase() && String(u.password || '').trim() === password
       })
       
-      // If not found in admin users, check registered users
+      // If not found in demo users, check registered users
       if (!match && window.UserStorage) {
         var registeredUser = window.UserStorage.findUser(email, password);
         if (registeredUser) {
@@ -112,9 +118,17 @@
       passwordInput.addEventListener('input', hideError)
     }
     modeInputs.forEach(function(input) {
-      input.addEventListener('change', hideError)
+      input.addEventListener('change', function() {
+        hideError()
+        fillCredentialsForMode(input.value)
+      })
     })
+
+    // Fill credentials for initially selected mode
+    var initialMode = currentMode()
+    if (initialMode) {
+      fillCredentialsForMode(initialMode)
+    }
   })
 })()
-
 

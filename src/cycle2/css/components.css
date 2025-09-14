@@ -9,7 +9,20 @@
 .cards{display:grid;gap:20px}
 @media (min-width:768px){.cards{grid-template-columns:repeat(2,1fr)}}
 @media (min-width:1024px){.cards{grid-template-columns:repeat(3,1fr)}}
-.card__img{aspect-ratio:4/3;background:#e5e7eb}
+.card__img{
+  aspect-ratio:4/3;
+  background:#e5e7eb;
+  border-radius:8px;
+  overflow:hidden;
+  position:relative;
+}
+.card__img img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  display:block;
+}
 .card__body{padding:12px 14px}
 .card__title{margin:0 0 4px;font-weight:600}
 .card__desc{margin:0;color:#6b7280;font-weight:600}
@@ -22,10 +35,65 @@
 .input:focus{border-color:#111}
 .form__actions{display:flex;gap:12px;justify-content:center}
 
+/* role selection styles */
+.role-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.role-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.role-option:hover {
+  border-color: var(--primary);
+  background-color: var(--bg-secondary);
+}
+
+.role-option input[type="radio"] {
+  margin: 2px 0 0 0;
+  cursor: pointer;
+}
+
+.role-option input[type="radio"]:checked + .role-info {
+  color: var(--primary);
+}
+
+.role-option:has(input[type="radio"]:checked) {
+  border-color: var(--primary);
+  background-color: rgba(99, 102, 241, 0.05);
+}
+
+.role-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.role-title {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.role-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
 /* detail layout */
 .detail{display:grid;gap:24px}
 @media (min-width:1024px){.detail{grid-template-columns:1.5fr 1fr}}
-.gallery{border:1px solid var(--border);border-radius:12px;background:#f3f4f6;aspect-ratio:16/9}
+.gallery{border:1px solid var(--border);border-radius:12px;background:#f3f4f6}
 .map-box{border:1px solid var(--border);border-radius:12px;background:#e5e7eb;aspect-ratio:16/9}
 .quote{border:1px solid var(--border);border-radius:12px;padding:16px}
 
@@ -36,9 +104,35 @@
 .pagination .page--active{background:#111;color:#fff;border-color:#111}
 .pagination .page:disabled{opacity:0.5;cursor:not-allowed;background:#f9fafb}
 
-/* # START COMMENT BLOCK #
-ChatGPT (OpenAI, 2025)
-Line number in AI-Acknowledgement.md: 8-11
-Interpretation: ChatGPT helped me generate the initial structure, such as grid, spacing, and reusable class names.  
-I then customized colors, fonts, and responsiveness to match Cycle 1’s style.
-# END COMMENT BLOCK # */
+/* pills (sorting chips) */
+.pills{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:.4rem .75rem;border:1px solid var(--border);border-radius:999px;background:#fff;color:#111;cursor:pointer;transition:all .2s ease;font-size:14px;font-weight:500}
+.pill:hover{background:#f3f4f6;border-color:#d1d5db}
+.pill--active{background:#111;color:#fff;border-color:#111}
+.pill:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* toolbar and spacing utils extracted from inline styles */
+.listings-toolbar{display:flex;gap:16px;flex-wrap:wrap}
+.searchbar{flex:1;min-width:260px;position:relative;display:flex;align-items:center}
+.searchbar__input{padding-right:45px !important}
+.searchbar .btn{position:absolute;right:8px;background:none;border:none;padding:8px;cursor:pointer;font-size:16px;z-index:1}
+.page-section{margin-top:var(--space-6)} /* 24px */
+.mt-4{margin-top:var(--space-4)} /* 16px */
+
+/* simple slider for detail gallery */
+.slider{position:relative;height:100%;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#f3f4f6}
+.slider__track{display:flex;height:100%;width:100%;transition:transform .35s ease}
+.slider__slide{min-width:100%;height:100%;display:grid;place-items:center;background:#e5e7eb}
+.slider__slide img{width:100%;height:100%;object-fit:cover}
+.slider__nav{position:absolute;inset:0;display:flex;justify-content:space-between;align-items:center;pointer-events:none}
+.slider__btn{pointer-events:auto;border:none;background:rgba(0,0,0,.45);color:#fff;border-radius:999px;width:36px;height:36px;display:grid;place-items:center;cursor:pointer}
+.slider__btn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.slider__dots{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);display:flex;gap:6px;background:rgba(255,255,255,.7);padding:4px 8px;border-radius:999px}
+.slider__dot{width:8px;height:8px;border-radius:999px;background:#9ca3af;border:0;cursor:pointer}
+.slider__dot[aria-current="true"]{background:#111}
+
+/* notices: empty/error states */
+.notice{border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:#fff}
+.notice--empty{color:#6b7280;background:#fafafa}
+.notice--error{color:#991b1b;background:#fee2e2;border-color:#fecaca}
+.map-notice{position:absolute;top:8px;left:8px;z-index:1000;max-width:280px}

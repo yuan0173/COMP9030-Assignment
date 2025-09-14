@@ -17,9 +17,12 @@ a{color:#111;text-decoration:none}
 a:hover{text-decoration:underline}
 :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 
-/* # START COMMENT BLOCK #
-ChatGPT (OpenAI, 2025)
-Line number in AI-Acknowledgement.md: 8-11
-Interpretation: ChatGPT helped me generate the initial structure, such as grid, spacing, and reusable class names.  
-I then customized colors, fonts, and responsiveness to match Cycle 1’s style.
-# END COMMENT BLOCK # */
+/* Utility: hide visually, keep accessible to screen readers */
+.visually-hidden{
+  position:absolute !important;
+  width:1px; height:1px;
+  padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0,0,0,0);
+  white-space:nowrap; border:0;
+  clip-path: inset(50%);
+}
