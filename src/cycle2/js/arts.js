@@ -12,7 +12,7 @@
     imgWrap.className = 'card__img'
     var img = document.createElement('img')
     img.src = item.image || '../test.jpg'
-    img.alt = 'art'
+    img.alt = (item.title || 'Artwork')
     imgWrap.appendChild(img)
 
     var body = document.createElement('div')
@@ -36,9 +36,16 @@
   var currentPage = 1
   var itemsPerPage = 6
   var totalPages = 1
+  var currentQuery = '' // Search query (case-insensitive)
   
-  // Function to extract state from locationNotes
-  function extractState(locationNotes) {
+  // Function to extract state from coordinates or locationNotes
+  function extractState(locationNotes, lat, lng) {
+    // First try to determine state from coordinates if available
+    if (typeof lat === 'number' && typeof lng === 'number') {
+      return getStateFromCoordinates(lat, lng)
+    }
+    
+    // Fallback to text-based extraction if no coordinates
     if (!locationNotes || locationNotes.trim() === '') return null
     
     var location = locationNotes.toLowerCase()
@@ -84,6 +91,40 @@
     }
     
     return null // No state found
+  }
+  
+  // Function to determine Australian state from coordinates
+  function getStateFromCoordinates(lat, lng) {
+    // Approximate state boundaries for Australian states/territories
+    
+    // Western Australia
+    if (lng < 129) return 'wa'
+    
+    // Northern Territory
+    if (lng >= 129 && lng <= 138 && lat >= -26) return 'nt'
+    
+    // South Australia
+    if (lng >= 129 && lng <= 141 && lat >= -38 && lat < -26) return 'sa'
+    
+    // Queensland
+    if (lng >= 138 && lat >= -29) return 'qld'
+    
+    // New South Wales & ACT
+    if (lng >= 141 && lng <= 154 && lat >= -37 && lat < -29) {
+      // ACT is roughly around Canberra (-35.3, 149.1)
+      if (lat >= -35.9 && lat <= -35.1 && lng >= 148.8 && lng <= 149.4) {
+        return 'act'
+      }
+      return 'nsw'
+    }
+    
+    // Victoria
+    if (lng >= 141 && lng <= 150 && lat >= -39 && lat < -34) return 'vic'
+    
+    // Tasmania
+    if (lat < -39) return 'tas'
+    
+    return null // Unable to determine state
   }
   
   function readFilters(){
@@ -176,8 +217,8 @@
     container.innerHTML = ''
     if (!Array.isArray(list) || list.length === 0) {
       var empty = document.createElement('div')
-      empty.className = 'card__desc'
-      empty.textContent = 'No arts yet. Be the first to submit!'
+      empty.className = 'notice notice--empty'
+      empty.textContent = 'No arts found. Try different filters or keywords.'
       container.appendChild(empty)
       updatePagination(0)
       return
@@ -203,27 +244,39 @@
   function applyFilters(options){
     options = options || {}
     var f = readFilters()
+    var q = (currentQuery || '').trim().toLowerCase()
     var filtered = cache.filter(function(item){
       var t = (item.type || '').toLowerCase()
       var p = (item.period || '').toLowerCase()
-      var state = extractState(item.locationNotes)
+      
+      // Convert coordinates to numbers if they are strings
+      var lat = item.lat
+      var lng = item.lng
+      if (typeof lat === 'string') lat = parseFloat(lat)
+      if (typeof lng === 'string') lng = parseFloat(lng)
+      
+      var state = extractState(item.locationNotes, lat, lng)
+      var haystack = ((item.title || '') + ' ' + (item.description || '') + ' ' + (item.locationNotes || '')).toLowerCase()
+      
+      console.log('Item:', item.title, 'Coords:', {lat: lat, lng: lng}, 'State:', state)
+      
       
       var typeOk = (t === 'cave art' && f.type.cave) || (t === 'mural' && f.type.mural) || (!t)
       var periodOk = (p === 'ancient' && f.period.ancient) || (p === 'contemporary' && f.period.contemporary) || (!p)
+      var queryOk = !q || haystack.indexOf(q) !== -1
       
-      // State filtering logic
+      // State filtering logic - Simple and clear
       var stateOk = true
+      
       if (state) {
-        // If we can identify a state, check if it's enabled
+        // If we can identify a state, only show if that state is selected
         stateOk = f.state[state] === true
       } else {
-        // If no state can be identified, include it only if all state filters are checked
-        // or if it's an empty locationNotes (show items without location info)
-        var allStatesChecked = f.state.nsw && f.state.vic && f.state.sa && f.state.qld && f.state.wa && f.state.tas && f.state.nt && f.state.act
-        stateOk = allStatesChecked || !item.locationNotes || item.locationNotes.trim() === ''
+        // If no state can be identified, always show (don't filter by state)
+        stateOk = true
       }
       
-      return typeOk && periodOk && stateOk
+      return typeOk && periodOk && stateOk && queryOk
     })
     
     // Reset to first page when filters/sort change unless explicitly preserved
@@ -238,6 +291,7 @@
     var pills = document.querySelectorAll('.pills .pill')
     pills.forEach(function(pill) {
       pill.classList.remove('pill--active')
+      pill.setAttribute('aria-pressed', 'false')
     })
     
     // Add active class to current sort pill
@@ -252,6 +306,7 @@
     var activeIndex = sortMap[currentSort]
     if (pills[activeIndex]) {
       pills[activeIndex].classList.add('pill--active')
+      pills[activeIndex].setAttribute('aria-pressed', 'true')
     }
   }
 
@@ -270,7 +325,6 @@
     }
     
     totalPages = Math.ceil(totalItems / itemsPerPage)
-    console.log('Updating pagination:', { totalItems, totalPages, currentPage, itemsPerPage })
     
     // Clear existing pagination
     paginationContainer.innerHTML = ''
@@ -294,10 +348,8 @@
     }
     prevButton.addEventListener('click', function(e) {
       e.preventDefault()
-      console.log('Previous button clicked, currentPage:', currentPage)
       if (currentPage > 1) {
         currentPage--
-        console.log('Going to page:', currentPage)
         applyFilters({ preservePage: true })
       }
     })
@@ -338,9 +390,7 @@
       pageButton.addEventListener('click', function(pageNum) {
         return function(e) {
           e.preventDefault()
-          console.log('Page button clicked, page:', pageNum, 'currentPage:', currentPage)
           currentPage = pageNum
-          console.log('Going to page:', currentPage)
           applyFilters({ preservePage: true })
         }
       }(i))
@@ -361,9 +411,7 @@
       lastPage.textContent = totalPages.toString()
       lastPage.addEventListener('click', function(e) {
         e.preventDefault()
-        console.log('Last page button clicked, page:', totalPages)
         currentPage = totalPages
-        console.log('Going to page:', currentPage)
         applyFilters({ preservePage: true })
       })
       paginationContainer.appendChild(lastPage)
@@ -380,10 +428,8 @@
     }
     nextButton.addEventListener('click', function(e) {
       e.preventDefault()
-      console.log('Next button clicked, currentPage:', currentPage, 'totalPages:', totalPages)
       if (currentPage < totalPages) {
         currentPage++
-        console.log('Going to page:', currentPage)
         applyFilters({ preservePage: true })
       }
     })
@@ -398,22 +444,111 @@
     
     // Hook up sort pill buttons
     var sortButtons = document.querySelectorAll('.pills .pill')
+    var pillsContainer = document.querySelector('.pills')
+    if (pillsContainer) {
+      // Provide grouping semantics for assistive technologies
+      pillsContainer.setAttribute('role', 'group')
+      pillsContainer.setAttribute('aria-label', pillsContainer.getAttribute('aria-label') || 'Sort')
+    }
     sortButtons.forEach(function(button, index) {
       button.addEventListener('click', function() {
         var sortTypes = ['new', 'date-asc', 'date-desc', 'title-asc', 'title-desc']
         setSort(sortTypes[index])
       })
     })
+
+    // Hook up search input and button
+    var searchInput = document.querySelector('.searchbar__input')
+    var searchButton = document.querySelector('.searchbar .btn')
+
+    function triggerSearch(preservePage){
+      currentQuery = (searchInput && searchInput.value) ? searchInput.value : ''
+      applyFilters({ preservePage: !!preservePage })
+    }
+
+    if (searchInput){
+      // Live filter as user types
+      searchInput.addEventListener('input', function(){ triggerSearch(false) })
+      // Enter key triggers search
+      searchInput.addEventListener('keydown', function(e){
+        if (e.key === 'Enter'){
+          e.preventDefault()
+          triggerSearch(false)
+        }
+      })
+    }
+    if (searchButton){
+      searchButton.addEventListener('click', function(e){
+        e.preventDefault()
+        triggerSearch(false)
+      })
+    }
   }
 
-  fetch(apiBase()).then(function(r){ return r.json() }).then(function(list){
-    cache = Array.isArray(list) ? list : []
-    hookInputs()
-    updateSortPills() // Set initial sort pill state
-    applyFilters({ preservePage: false })
-  }).catch(function(err){
-    container.innerHTML = '<div class="card__desc">Failed to load: ' + err + '</div>'
-  })
+  // Load all data from localStorage only (C2 frontend-only approach)
+  function loadAllArts() {
+    try {
+      var allData = localStorage.getItem('iaa_arts_v1')
+      cache = allData ? JSON.parse(allData) : []
+      
+      // Initialize with some mock data if localStorage is empty
+      if (cache.length === 0) {
+        initializeMockData()
+        // Reload after initialization
+        allData = localStorage.getItem('iaa_arts_v1')
+        cache = allData ? JSON.parse(allData) : []
+      }
+      
+      hookInputs()
+      updateSortPills()
+      applyFilters({ preservePage: false })
+    } catch(err) {
+      container.innerHTML = '<div class="notice notice--error">Failed to load arts data.</div>'
+    }
+  }
+
+  function initializeMockData() {
+    var mockArts = [
+      {
+        id: 'mock-1',
+        title: 'Ancient Cave Paintings',
+        description: 'Traditional indigenous cave art discovered in South Australia',
+        type: 'Cave Art',
+        period: 'Ancient',
+        condition: 'Good',
+        image: '../test.jpg',
+        locationNotes: 'Flinders Ranges, South Australia',
+        lat: -31.2,
+        lng: 138.6,
+        sensitive: true,
+        privateLand: false,
+        creditKnownArtist: false,
+        createdAt: '2024-01-15T10:00:00Z',
+        submittedBy: 'admin@iaa.gov.au',
+        status: 'approved'
+      },
+      {
+        id: 'mock-2', 
+        title: 'Contemporary Mural',
+        description: 'Modern indigenous street art in urban Melbourne',
+        type: 'Mural',
+        period: 'Contemporary',
+        condition: 'Excellent',
+        image: '../test.jpg',
+        locationNotes: 'Melbourne CBD, Victoria',
+        lat: -37.8136,
+        lng: 144.9631,
+        sensitive: false,
+        privateLand: false,
+        creditKnownArtist: true,
+        createdAt: '2024-02-20T14:30:00Z',
+        submittedBy: 'admin@iaa.gov.au',
+        status: 'approved'
+      }
+    ]
+    
+    localStorage.setItem('iaa_arts_v1', JSON.stringify(mockArts))
+  }
+
+  loadAllArts()
 })()
-
-

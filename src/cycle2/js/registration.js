@@ -49,9 +49,9 @@
         return { success: false, message: 'User with this email already exists.' };
       }
       
-      // Add new user with default role as 'visitor'
+      // Add new user with selected role (default to 'public')
       var newUser = {
-        role: 'visitor',
+        role: userData.role || 'public',
         email: userData.email.toLowerCase(),
         password: userData.password,
         registeredAt: Date.now()
@@ -197,10 +197,15 @@
         return;
       }
 
+      // Get selected role from form
+      var roleInput = form.querySelector('input[name="userRole"]:checked');
+      var selectedRole = roleInput ? roleInput.value : 'public';
+
       // Attempt to register user
       var result = UserStorage.addUser({
         email: email,
-        password: password
+        password: password,
+        role: selectedRole
       });
 
       if (result.success) {
