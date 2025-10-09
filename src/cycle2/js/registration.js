@@ -149,7 +149,7 @@
     }
 
     // Form submission handler
-    form.addEventListener('submit', function(e){
+    form.addEventListener('submit', async function(e){
       e.preventDefault();
       clearOutlines();
       hideError();
@@ -201,25 +201,32 @@
       var roleInput = form.querySelector('input[name="userRole"]:checked');
       var selectedRole = roleInput ? roleInput.value : 'public';
 
-      // Attempt to register user
-      var result = UserStorage.addUser({
-        email: email,
-        password: password,
-        role: selectedRole
-      });
-
-      if (result.success) {
-        showSuccess('Registration successful! Redirecting to login...');
-        
-        // Clear form
-        form.reset();
-        
-        // Redirect to login page after a short delay
-        setTimeout(function() {
-          window.location.href = './UserLogIn.html';
-        }, 2000);
-      } else {
-        showError(result.message);
+      // Try backend register first
+      try {
+        var resp = await fetch('../api/auth.php?action=register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ email: email, password: password, role: selectedRole })
+        })
+        var data = await resp.json()
+        if (!resp.ok || (data && data.error)) {
+          throw new Error((data && data.error) || ('HTTP ' + resp.status))
+        }
+        showSuccess('Registration successful! Redirecting to login...')
+        form.reset()
+        setTimeout(function(){ window.location.href = './UserLogIn.html' }, 1500)
+        return
+      } catch(err) {
+        // Fallback to local storage demo if backend not available
+        var result = UserStorage.addUser({ email: email, password: password, role: selectedRole })
+        if (result.success) {
+          showSuccess('Registration successful! Redirecting to login...')
+          form.reset()
+          setTimeout(function(){ window.location.href = './UserLogIn.html' }, 1500)
+        } else {
+          showError(result.message || 'Registration failed. Please try again.')
+        }
       }
     });
 
