@@ -1,4 +1,6 @@
 ;(function(){
+  'use strict'
+
   // Check if user is logged in
   if (!SessionManager.isLoggedIn()) {
     window.location.href = './UserLogIn.html';
@@ -7,6 +9,20 @@
 
   var form = document.getElementById('submissionForm')
   if (!form) return
+
+  /**
+   * Helper function to clear all existing field errors on the form.
+   * This ensures we start the validation process clean.
+   */
+  function clearAllFieldErrors(form){
+    // Get all elements that might have an error box associated with them
+    var fields = form.querySelectorAll('#artTitle, #artType, #artPeriod, #artCondition, #artDescription, #lat, #lng, #locationNotes')
+    if (window.Validate && Validate.clearFieldErrors) {
+      fields.forEach(function(el){
+        Validate.clearFieldErrors(el)
+      })
+    }
+  }
 
   // Populate type/period selects from admin-configured taxonomies when available
   ;(function initTaxonomies(){
@@ -229,7 +245,13 @@
 
   form.addEventListener('submit', async function(e){
     e.preventDefault()
-    if (window.Validate) Validate.clearError(form)
+    
+    // Clear any previous global form errors and field-level errors
+    if (window.Validate) {
+      Validate.clearError(form)
+      clearAllFieldErrors(form) 
+    }
+    
     var btn = document.getElementById('submitBtn')
     var currentUser = SessionManager.getCurrentUser()
     if (!currentUser) {
@@ -249,25 +271,94 @@
       sensitive: getBool('sensitive'),
       privateLand: getBool('privateLand'),
       creditKnownArtist: getBool('creditKnownArtist'),
+      // Note: Image validation (e.g., size check) should ideally happen here too, 
+      // but is omitted for simplicity based on original code structure.
       image: imagePreview && imagePreview.src ? imagePreview.src : ''
     }
 
     // Frontend validation (friendly, human-readable)
     try{
-      if (window.Validate){
-        if (!Validate.isRequired(payload.title)) return Validate.showError(form, 'Please enter a title.')
-        if (!Validate.maxLen(payload.title, 255)) return Validate.showError(form, 'Title must be 255 characters or less.')
-        if (!Validate.isRequired(payload.type)) return Validate.showError(form, 'Please select a type.')
-        if (!Validate.maxLen(payload.type, 100)) return Validate.showError(form, 'Type is too long.')
-        if (!Validate.isRequired(payload.period)) return Validate.showError(form, 'Please select a period.')
-        if (!Validate.maxLen(payload.period, 100)) return Validate.showError(form, 'Period is too long.')
-        if (!Validate.isRequired(payload.condition)) return Validate.showError(form, 'Please enter a condition/quality.')
-        if (!Validate.maxLen(payload.condition, 100)) return Validate.showError(form, 'Condition is too long.')
-        if (!Validate.isRequired(payload.description)) return Validate.showError(form, 'Please enter a description.')
-        if (!Validate.inRange(payload.lat, -90, 90)) return Validate.showError(form, 'Latitude must be between -90 and 90.')
-        if (!Validate.inRange(payload.lng, -180, 180)) return Validate.showError(form, 'Longitude must be between -180 and 180.')
+      if (window.Validate && Validate.showFieldError){
+        
+        var artTitleEl = document.getElementById('artTitle')
+        if (!Validate.isRequired(payload.title)) {
+          Validate.showFieldError(artTitleEl, 'Please enter a title.')
+          artTitleEl.focus() // Focus on the error field
+          return 
+        }
+        if (!Validate.maxLen(payload.title, 255)) {
+          Validate.showFieldError(artTitleEl, 'Title must be 255 characters or less.')
+          artTitleEl.focus() // Focus on the error field
+          return
+        }
+
+        var artTypeEl = document.getElementById('artType')
+        if (!Validate.isRequired(payload.type)) {
+          Validate.showFieldError(artTypeEl, 'Please select a type.')
+          artTypeEl.focus() // Focus on the error field
+          return
+        }
+        if (!Validate.maxLen(payload.type, 100)) {
+          Validate.showFieldError(artTypeEl, 'Type is too long.')
+          artTypeEl.focus() // Focus on the error field
+          return
+        }
+
+        var artPeriodEl = document.getElementById('artPeriod')
+        if (!Validate.isRequired(payload.period)) {
+          Validate.showFieldError(artPeriodEl, 'Please select a period.')
+          artPeriodEl.focus() // Focus on the error field
+          return
+        }
+        if (!Validate.maxLen(payload.period, 100)) {
+          Validate.showFieldError(artPeriodEl, 'Period is too long.')
+          artPeriodEl.focus() // Focus on the error field
+          return
+        }
+
+        var artConditionEl = document.getElementById('artCondition')
+        if (!Validate.isRequired(payload.condition)) {
+          Validate.showFieldError(artConditionEl, 'Please enter a condition/quality.')
+          artConditionEl.focus() // Focus on the error field
+          return
+        }
+        if (!Validate.maxLen(payload.condition, 100)) {
+          Validate.showFieldError(artConditionEl, 'Condition is too long.')
+          artConditionEl.focus() // Focus on the error field
+          return
+        }
+
+        var artDescriptionEl = document.getElementById('artDescription')
+        if (!Validate.isRequired(payload.description)) {
+          Validate.showFieldError(artDescriptionEl, 'Please enter a description.')
+          artDescriptionEl.focus() // Focus on the error field
+          return
+        }
+
+        // Latitude validation
+        var latEl = document.getElementById('lat')
+        if (payload.lat !== null && payload.lat !== '') {
+          if (!Validate.inRange(payload.lat, -90, 90)) {
+            Validate.showFieldError(locationNotesInput, 'Latitude must be between -90 and 90.')
+            locationNotesInput.focus() // Focus on related field
+            return
+          }
+        }
+        
+        // Longitude validation
+        var lngEl = document.getElementById('lng')
+        if (payload.lng !== null && payload.lng !== '') {
+          if (!Validate.inRange(payload.lng, -180, 180)) {
+            Validate.showFieldError(locationNotesInput, 'Longitude must be between -180 and 180.')
+            locationNotesInput.focus() // Focus on related field
+            return
+          }
+        }
       }
-    }catch(_){ }
+    }catch(err){ 
+      if (window.Validate){ Validate.showError(form, 'Validation failed internally: ' + err.message) }
+      return
+    }
 
     // Submit to backend API (preferred)
     try{
