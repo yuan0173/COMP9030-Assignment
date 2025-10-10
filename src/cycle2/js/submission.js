@@ -82,7 +82,8 @@
       locationNotesInput.placeholder = 'Searching for location...'
       
       // Use a simple approach with a working CORS proxy
-      var url = 'https://corsproxy.io/?' + encodeURIComponent(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1&addressdetails=1`)
+      // Use backend proxy to OpenStreetMap Nominatim
+      var url = `/api/geo.php?action=search&q=${encodeURIComponent(address)}&limit=1`
       
       fetch(url)
         .then(response => {
@@ -143,10 +144,10 @@
 
     // Function to reverse geocode coordinates to address
     function reverseGeocode(lat, lng) {
-      var proxyUrl = 'https://api.allorigins.win/raw?url='
-      var nominatimUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`
+      // Reverse geocoding via backend proxy
+      var reverseUrl = `/api/geo.php?action=reverse&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lng)}`
       
-      fetch(proxyUrl + encodeURIComponent(nominatimUrl))
+      fetch(reverseUrl)
         .then(response => {
           if (!response.ok) {
             throw new Error('Network response was not ok')
@@ -226,7 +227,10 @@
   function getBool(id){ return !!document.getElementById(id).checked }
   function getVal(id){ return document.getElementById(id).value.trim() }
 
-  form.addEventListener('submit', function(){
+  form.addEventListener('submit', async function(e){
+    e.preventDefault()
+    if (window.Validate) Validate.clearError(form)
+    var btn = document.getElementById('submitBtn')
     var currentUser = SessionManager.getCurrentUser()
     if (!currentUser) {
       alert('Please log in to submit artwork')
@@ -248,35 +252,47 @@
       image: imagePreview && imagePreview.src ? imagePreview.src : ''
     }
 
-    // Store in localStorage for C2 frontend-only prototype
-    var newSubmission = {
-      id: Date.now().toString(),
-      submittedBy: currentUser.email,
-      title: payload.title,
-      type: payload.type,
-      period: payload.period,
-      condition: payload.condition,
-      description: payload.description,
-      locationNotes: payload.locationNotes,
-      lat: payload.lat,
-      lng: payload.lng,
-      sensitive: payload.sensitive,
-      privateLand: payload.privateLand,
-      creditKnownArtist: payload.creditKnownArtist,
-      image: payload.image,
-      createdAt: new Date().toISOString(),
-      status: 'pending'
-    }
+    // Frontend validation (friendly, human-readable)
+    try{
+      if (window.Validate){
+        if (!Validate.isRequired(payload.title)) return Validate.showError(form, 'Please enter a title.')
+        if (!Validate.maxLen(payload.title, 255)) return Validate.showError(form, 'Title must be 255 characters or less.')
+        if (!Validate.isRequired(payload.type)) return Validate.showError(form, 'Please select a type.')
+        if (!Validate.maxLen(payload.type, 100)) return Validate.showError(form, 'Type is too long.')
+        if (!Validate.isRequired(payload.period)) return Validate.showError(form, 'Please select a period.')
+        if (!Validate.maxLen(payload.period, 100)) return Validate.showError(form, 'Period is too long.')
+        if (!Validate.isRequired(payload.condition)) return Validate.showError(form, 'Please enter a condition/quality.')
+        if (!Validate.maxLen(payload.condition, 100)) return Validate.showError(form, 'Condition is too long.')
+        if (!Validate.isRequired(payload.description)) return Validate.showError(form, 'Please enter a description.')
+        if (!Validate.inRange(payload.lat, -90, 90)) return Validate.showError(form, 'Latitude must be between -90 and 90.')
+        if (!Validate.inRange(payload.lng, -180, 180)) return Validate.showError(form, 'Longitude must be between -180 and 180.')
+      }
+    }catch(_){ }
 
-    try {
-      var existing = JSON.parse(localStorage.getItem('iaa_arts_v1') || '[]')
-      existing.push(newSubmission)
-      localStorage.setItem('iaa_arts_v1', JSON.stringify(existing))
-      
-      alert('Artwork submitted successfully!')
-      window.location.href = './UserProfile.html'
-    } catch(err) {
-      alert('Failed to submit artwork: ' + err.message)
+    // Submit to backend API (preferred)
+    try{
+      if (btn){ btn.disabled = true; btn.textContent = 'Submitting…' }
+      var headers = { 'Content-Type': 'application/json' }
+      if (window.CSRF_TOKEN){ headers['X-CSRF-Token'] = window.CSRF_TOKEN }
+      var resp = await fetch('../../api/arts.php', {
+        method: 'POST',
+        headers: headers,
+        credentials: 'include',
+        body: JSON.stringify(payload)
+      })
+      var data = await resp.json()
+      if (!resp.ok || (data && data.error)){
+        throw new Error((data && data.error) || ('HTTP ' + resp.status))
+      }
+      // Success: go to SSR detail if possible, otherwise profile
+      var newId = (data && data.id) ? data.id : null
+      if (newId){ window.location.href = '/cycle3/art_detail.php?id=' + encodeURIComponent(newId) }
+      else { window.location.href = './UserProfile.html' }
+    }catch(err){
+      if (window.Validate){ Validate.showError(form, 'Submit failed: ' + err.message) }
+      else { alert('Submit failed: ' + err.message) }
+    } finally {
+      if (btn){ btn.disabled = false; btn.textContent = 'Submit Your Art' }
     }
   })
 })();

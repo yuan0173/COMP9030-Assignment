@@ -63,7 +63,7 @@
       }
     }
 
-    form.addEventListener('submit', function(e){
+    form.addEventListener('submit', async function(e){
       e.preventDefault()
       clearOutlines()
       hideError()
@@ -82,32 +82,47 @@
         showError('Please enter your password.')
         return
       }
-
-      // First check demo users
-      var match = demoUsers.find(function(u){
-        return u.role === mode && String(u.email || '').trim().toLowerCase() === email.toLowerCase() && String(u.password || '').trim() === password
-      })
-      
-      // If not found in demo users, check registered users
-      if (!match && window.UserStorage) {
-        var registeredUser = window.UserStorage.findUser(email, password);
-        if (registeredUser) {
-          match = registeredUser;
+      // Try backend login first
+      try {
+        var resp = await fetch('../../api/auth.php?action=login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ email: email, password: password })
+        })
+        var data = await resp.json()
+        if (!resp.ok || (data && data.error)) {
+          throw new Error((data && data.error) || ('HTTP ' + resp.status))
         }
-      }
-      
-      if (match){
-        // Use SessionManager to handle login
-        if (SessionManager.login({ role: match.role, email: match.email })) {
+        // Success: store CSRF token and mark session
+        if (data && data.csrf_token) { window.CSRF_TOKEN = data.csrf_token }
+        var user = (data && data.user) ? data.user : { email: email, role: mode }
+        if (SessionManager.login({ role: user.role || mode, email: user.email || email })) {
           SessionManager.redirectAfterLogin();
+          return
         } else {
           showError('Login failed. Please try again.')
+          return
         }
-        return
+      } catch(err) {
+        // Fallback to demo/local users for offline demo
+        var match = demoUsers.find(function(u){
+          return u.role === mode && String(u.email || '').trim().toLowerCase() === email.toLowerCase() && String(u.password || '').trim() === password
+        })
+        if (!match && window.UserStorage) {
+          var registeredUser = window.UserStorage.findUser(email, password);
+          if (registeredUser) match = registeredUser;
+        }
+        if (match){
+          if (SessionManager.login({ role: match.role, email: match.email })) {
+            SessionManager.redirectAfterLogin();
+            return
+          }
+        }
+        setOutline(emailInput, true)
+        setOutline(passwordInput, true)
+        showError('Invalid credentials. Please check your email and password.')
       }
-      setOutline(emailInput, true)
-      setOutline(passwordInput, true)
-      showError('Invalid credentials for selected role.')
     })
 
     // Clear error when user starts typing or changes mode
@@ -131,4 +146,3 @@
     }
   })
 })()
-

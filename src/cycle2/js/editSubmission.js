@@ -123,7 +123,8 @@
       locationNotesInput.style.borderColor = '#ffa500'
       locationNotesInput.placeholder = 'Searching for location...'
       
-      var url = 'https://corsproxy.io/?' + encodeURIComponent('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(address) + '&limit=1&addressdetails=1')
+    // Use backend proxy to OpenStreetMap Nominatim
+    var url = '/api/geo.php?action=search&q=' + encodeURIComponent(address) + '&limit=1'
       
       fetch(url)
         .then(function(response) {
@@ -172,10 +173,10 @@
     }
 
     function reverseGeocode(lat, lng) {
-      var proxyUrl = 'https://api.allorigins.win/raw?url='
-      var nominatimUrl = 'https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lng + '&addressdetails=1'
-      
-      fetch(proxyUrl + encodeURIComponent(nominatimUrl))
+    // Reverse geocoding via backend proxy
+    var reverseUrl = '/api/geo.php?action=reverse&lat=' + encodeURIComponent(lat) + '&lon=' + encodeURIComponent(lng)
+    
+    fetch(reverseUrl)
         .then(function(response) {
           if (!response.ok) {
             throw new Error('Network response was not ok')
