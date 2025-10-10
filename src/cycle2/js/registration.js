@@ -80,9 +80,11 @@
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 
+  // MODIFIED: require letters and numbers, length 6-16
   function validatePassword(password) {
-    // At least 6 characters
-    return password && password.length >= 6;
+    // At least 6 characters (original comment preserved)
+    // MODIFIED: now require at least one letter and one digit, and maximum length 16
+    return /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,16}$/.test(password);
   }
 
   function validatePasswordMatch(password, confirmPassword) {
@@ -117,25 +119,60 @@
       errorMessage.appendChild(errorText);
     }
 
+    // NEW: Add small red error placeholders under each input
+    function createFieldError(el) {
+      var span = document.createElement('div');
+      span.className = 'field-error';
+      span.style.color = '#ef4444';
+      span.style.fontSize = '0.85em';
+      span.style.marginTop = '4px';
+      span.style.display = 'none';
+      el.parentNode.appendChild(span);
+      return span;
+    }
+
+    var emailFieldError = createFieldError(emailInput);
+    var passwordFieldError = createFieldError(passwordInput);
+    var confirmFieldError = createFieldError(confirmPasswordInput);
+
     function clearOutlines(){
       setOutline(emailInput, false);
       setOutline(passwordInput, false);
       setOutline(confirmPasswordInput, false);
     }
 
-    function showError(message) {
+    function showError(message, input) {
       if (errorText) {
         errorText.textContent = message;
       }
       if (errorMessage) {
         errorMessage.style.display = 'block';
       }
+
+      // NEW: show error under specific field
+      if (input === emailInput) {
+        emailFieldError.textContent = message;
+        emailFieldError.style.display = 'block';
+      } else if (input === passwordInput) {
+        passwordFieldError.textContent = message;
+        passwordFieldError.style.display = 'block';
+      } else if (input === confirmPasswordInput) {
+        confirmFieldError.textContent = message;
+        confirmFieldError.style.display = 'block';
+      }
+    }
+
+    function hideAllFieldErrors() {
+      emailFieldError.style.display = 'none';
+      passwordFieldError.style.display = 'none';
+      confirmFieldError.style.display = 'none';
     }
 
     function hideError() {
       if (errorMessage) {
         errorMessage.style.display = 'none';
       }
+      hideAllFieldErrors();
     }
 
     function showSuccess(message) {
@@ -146,6 +183,7 @@
       if (errorMessage) {
         errorMessage.style.display = 'block';
       }
+      hideAllFieldErrors(); // NEW: remove field-level red errors when success
     }
 
     // Form submission handler
@@ -161,39 +199,40 @@
       // Validate email
       if (!email) {
         setOutline(emailInput, true);
-        showError('Please enter your email address.');
+        showError('Please enter your email address.', emailInput);
         return;
       }
       
       if (!validateEmail(email)) {
         setOutline(emailInput, true);
-        showError('Please enter a valid email address.');
+        showError('Please enter a valid email address.', emailInput);
         return;
       }
 
       // Validate password
       if (!password) {
         setOutline(passwordInput, true);
-        showError('Please enter a password.');
+        showError('Please enter a password.', passwordInput);
         return;
       }
 
+      // MODIFIED: show message matching the new rule
       if (!validatePassword(password)) {
         setOutline(passwordInput, true);
-        showError('Password must be at least 6 characters long.');
+        showError('Password must be 6-16 characters and include both letters and numbers.', passwordInput);
         return;
       }
 
       // Validate password confirmation
       if (!confirmPassword) {
         setOutline(confirmPasswordInput, true);
-        showError('Please confirm your password.');
+        showError('Please confirm your password.', confirmPasswordInput);
         return;
       }
 
       if (!validatePasswordMatch(password, confirmPassword)) {
         setOutline(confirmPasswordInput, true);
-        showError('Passwords do not match.');
+        showError('Passwords do not match.', confirmPasswordInput);
         return;
       }
 
@@ -225,7 +264,7 @@
           form.reset()
           setTimeout(function(){ window.location.href = './UserLogIn.html' }, 1500)
         } else {
-          showError(result.message || 'Registration failed. Please try again.')
+          showError(result.message || 'Registration failed. Please try again.', emailInput)
         }
       }
     });
