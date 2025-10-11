@@ -16,7 +16,7 @@
    */
   function clearAllFieldErrors(form){
     // Get all elements that might have an error box associated with them
-    var fields = form.querySelectorAll('#artTitle, #artType, #artPeriod, #artCondition, #artDescription, #lat, #lng, #locationNotes')
+    var fields = form.querySelectorAll('#artTitle, #artType, #artPeriod, #artCondition, #artDescription, #lat, #lng, #locationNotes, #imageInput')
     if (window.Validate && Validate.clearFieldErrors) {
       fields.forEach(function(el){
         Validate.clearFieldErrors(el)
@@ -223,6 +223,11 @@
 
   if (imageInput && imagePreview) {
     imageInput.addEventListener('change', function(){
+      // [New] Clear previous file error message if a file is selected (using validate.js)
+      if (window.Validate && Validate.clearFieldErrors) {
+        Validate.clearFieldErrors(imageInput)
+      }
+
       var file = imageInput.files && imageInput.files[0]
       if (!file) { imagePreview.style.display = 'none'; imagePreview.src = ''; return }
       var reader = new FileReader()
@@ -258,6 +263,28 @@
       alert('Please log in to submit artwork')
       return
     }
+
+    // ==============================================
+    // [New] File Upload Validation: Check if a file was selected
+    // ==============================================
+    var imageInputEl = document.getElementById('imageInput')
+
+    if (imageInputEl && imageInputEl.files.length === 0) {
+      if (window.Validate && Validate.showFieldError) {
+        // Show red error text below the input using Validate.js
+        Validate.showFieldError(imageInputEl, 'Please select a file.')
+      } else {
+        // Fallback alert
+        if (window.Validate) {
+          Validate.showError(form, 'Please select a file.')
+        } else {
+          alert('Please select a file.')
+        }
+      }
+      imageInputEl.focus()
+      return // Stop submission and validation of other fields
+    }
+    // ==============================================
 
     var payload = {
       title: getVal('artTitle'),
@@ -386,4 +413,4 @@
       if (btn){ btn.disabled = false; btn.textContent = 'Submit Your Art' }
     }
   })
-})();
+})()
