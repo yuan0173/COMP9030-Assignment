@@ -25,6 +25,9 @@
       var subject = subjectInput ? subjectInput.value.trim() : ''
       var message = messageInput ? messageInput.value.trim() : ''
 
+      // --- New: clear existing inline error messages before re-validating ---
+      form.querySelectorAll('.error-text').forEach(function(el){ el.remove() })
+
       var missing = []
       if (!name) missing.push(nameInput)
       if (!email) missing.push(emailInput)
@@ -34,9 +37,33 @@
       // Basic email pattern check
       var emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
+      // --- New: show inline red error messages for required fields ---
+      missing.forEach(function(el){
+        if (el) {
+          el.style.outline = '2px solid #ef4444'
+          var error = document.createElement('div')
+          error.className = 'error-text'
+          error.style.color = '#ef4444'
+          error.style.fontSize = '0.875rem'
+          error.style.marginTop = '4px'
+          error.textContent = 'This field is required.'
+          el.insertAdjacentElement('afterend', error)
+        }
+      })
+
+      // --- New: show specific message if email format is invalid ---
+      if (email && !emailValid && emailInput) {
+        emailInput.style.outline = '2px solid #ef4444'
+        var error = document.createElement('div')
+        error.className = 'error-text'
+        error.style.color = '#ef4444'
+        error.style.fontSize = '0.875rem'
+        error.style.marginTop = '4px'
+        error.textContent = 'Please enter a valid email address.'
+        emailInput.insertAdjacentElement('afterend', error)
+      }
+
       if (missing.length > 0 || (email && !emailValid)) {
-        missing.forEach(function(el){ if (el) el.style.outline = '2px solid #ef4444' })
-        if (email && !emailValid && emailInput) emailInput.style.outline = '2px solid #ef4444'
         alert('Please complete all fields with a valid email address.')
         return
       }
@@ -46,5 +73,3 @@
     })
   })
 })()
-
-
