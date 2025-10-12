@@ -91,7 +91,12 @@ function validate_art_payload(array $data, bool $creating = true): array {
             if ($k === 'period' && strlen($v) > 100) respond(400, ['error' => 'Period too long']);
             if ($k === 'condition' && strlen($v) > 100) respond(400, ['error' => 'Condition too long']);
             if ($k === 'locationNotes' && strlen($v) > 500) respond(400, ['error' => 'Location notes too long']);
-            if ($k === 'image' && strlen($v) > 500) respond(400, ['error' => 'Image path too long']);
+            if ($k === 'image') {
+                // Allow base64 data URIs, otherwise enforce short path/URL (<=500 chars)
+                if (!is_base64_image($v) && strlen($v) > 500) {
+                    respond(400, ['error' => 'Image path too long']);
+                }
+            }
             $out[$k] = $v;
         }
     }
@@ -111,6 +116,49 @@ function validate_art_payload(array $data, bool $creating = true): array {
         }
     }
     return $out;
+}
+
+function is_base64_image(string $val): bool {
+    // data:[<mediatype>][;base64],<data>
+    if (stripos($val, 'data:image/') !== 0) return false;
+    $comma = strpos($val, ',');
+    if ($comma === false) return false;
+    $meta = substr($val, 5, $comma - 5); // skip 'data:'
+    return (stripos($meta, ';base64') !== false);
+}
+
+function save_base64_image(int $artId, string $val): string {
+    // Enforce allowed types and size <= 2MB
+    $comma = strpos($val, ',');
+    if ($comma === false) {
+        respond(400, ['error' => 'Invalid image']);
+    }
+    $header = substr($val, 5, $comma - 5); // between 'data:' and ','
+    $dataB64 = substr($val, $comma + 1);
+    $mime = strtolower(trim(explode(';', $header)[0] ?? ''));
+    $ext = null;
+    if ($mime === 'image/png') $ext = 'png';
+    elseif ($mime === 'image/jpeg' || $mime === 'image/jpg') $ext = 'jpg';
+    elseif ($mime === 'image/webp') $ext = 'webp';
+    else respond(400, ['error' => 'Unsupported image type']);
+
+    $bin = base64_decode($dataB64, true);
+    if ($bin === false) respond(400, ['error' => 'Invalid image data']);
+    if (strlen($bin) > 2 * 1024 * 1024) respond(400, ['error' => 'Image too large']);
+
+    $baseDir = dirname(__DIR__) . '/uploads/arts/' . $artId;
+    if (!is_dir($baseDir)) {
+        if (!mkdir($baseDir, 0775, true) && !is_dir($baseDir)) {
+            respond(500, ['error' => 'Failed to prepare upload directory']);
+        }
+    }
+    $name = 'img_' . gmdate('Ymd_His') . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
+    $path = $baseDir . '/' . $name;
+    if (file_put_contents($path, $bin) === false) {
+        respond(500, ['error' => 'Failed to save image']);
+    }
+    // Return web path
+    return '/uploads/arts/' . $artId . '/' . $name;
 }
 
 function get_current_version_row(PDO $pdo, int $artId): ?array {
@@ -138,6 +186,10 @@ function create_art_and_version(PDO $pdo, array $payload, ?int $userId): array {
 
         // 2) Create the first version (v1)
         $vnum = 1;
+        // Process image if it's base64
+        if (isset($payload['image']) && is_string($payload['image']) && is_base64_image($payload['image'])) {
+            $payload['image'] = save_base64_image($artId, $payload['image']);
+        }
         $st = $pdo->prepare('INSERT INTO `art_versions` (
             `art_id`, `version_number`, `operation_type`, `content_source_version_id`,
             `title`, `description`, `type`, `period`, `condition`, `locationNotes`, `lat`, `lng`,
@@ -208,7 +260,12 @@ function create_new_version_from_current(PDO $pdo, int $artId, array $newFields,
     ];
     foreach ($newFields as $k => $v) {
         if (array_key_exists($k, $snapshot)) {
-            $snapshot[$k] = $v;
+            // Process base64 image to file before overlay
+            if ($k === 'image' && is_string($v) && is_base64_image($v)) {
+                $snapshot[$k] = save_base64_image($artId, $v);
+            } else {
+                $snapshot[$k] = $v;
+            }
         }
     }
 
