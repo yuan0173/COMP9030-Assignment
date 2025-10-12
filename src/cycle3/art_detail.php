@@ -68,10 +68,21 @@ if (!$id) {
     .kv dt { color: #666; }
     .kv dd { margin: 0; }
     img.art { max-width: 100%; height: auto; border-radius: 8px; border: 1px solid #eee; }
+    .card { border: 1px solid #eee; border-radius: 8px; padding: 12px; background: #fff; margin-top: 16px; }
+    .versions { display: grid; gap: 10px; }
+    .version-item { border:1px solid #eee; border-radius:8px; padding:10px; }
+    .version-head { display:flex; justify-content:space-between; gap:8px; align-items:center; }
+    .muted { color:#666; font-size:.9rem; }
+    .actions-row { display:flex; gap:8px; }
+    .preview { margin-top:8px; background:#fafafa; border:1px dashed #ddd; padding:8px; border-radius:6px; }
+    .kv-mini { display:grid; grid-template-columns:140px 1fr; gap:6px 12px; }
   </style>
   <script>
     // Expose CSRF token for potential client-side requests
-    window.CSRF_TOKEN = document.currentScript.previousElementSibling.content;
+    (function(){
+      var metas = document.getElementsByName('csrf-token');
+      if (metas && metas[0]) { window.CSRF_TOKEN = metas[0].content; }
+    })();
   </script>
   <script>
     // Simple helper for navigation
@@ -129,6 +140,117 @@ if (!$id) {
           <a class="btn btn--ghost" href="/api/art_versions.php?art_id=<?php echo (int)$art['art_id']; ?>" target="_blank">View version JSON</a>
         </div>
       </article>
+
+      <section class="card" id="versionCard" data-art-id="<?php echo (int)$art['art_id']; ?>" data-current-version-id="<?php echo (int)$art['id']; ?>">
+        <div class="version-head">
+          <h3 style="margin:0;">Version History</h3>
+          <div class="actions-row">
+            <button class="btn btn--ghost" id="loadVersionsBtn" type="button">Load History</button>
+          </div>
+        </div>
+        <div class="muted" style="margin-top:4px;">View version list, preview snapshots, and rollback to a previous version.</div>
+        <div id="versionsContainer" class="versions" style="margin-top:10px;"></div>
+      </section>
+
+      <script>
+        (function(){
+          var card = document.getElementById('versionCard');
+          if (!card) return;
+          var artId = parseInt(card.getAttribute('data-art-id'), 10);
+          var currentVid = parseInt(card.getAttribute('data-current-version-id'), 10);
+          var listEl = document.getElementById('versionsContainer');
+          var btn = document.getElementById('loadVersionsBtn');
+
+          function el(tag, attrs, children){
+            var x = document.createElement(tag);
+            if (attrs){ Object.keys(attrs).forEach(function(k){ if(k==='class') x.className=attrs[k]; else x.setAttribute(k, attrs[k]); }); }
+            (children||[]).forEach(function(c){ x.appendChild(typeof c==='string'? document.createTextNode(c): c); });
+            return x;
+          }
+
+          function renderItem(v){
+            var head = el('div', { class:'version-head' }, [
+              el('div', null, [
+                el('div', null, ['v', String(v.version_number), (v.id===currentVid?' (current)':'')].join('')),
+                el('div', { class:'muted' }, [ (v.operation_type||'').toUpperCase(), ' • ', v.created_at || '' ])
+              ]),
+              (function(){
+                var row = el('div', { class:'actions-row' }, []);
+                var previewBtn = el('button', { class:'btn btn--ghost', type:'button' }, ['Preview']);
+                previewBtn.addEventListener('click', function(){ previewVersion(v.version_number, item) });
+                row.appendChild(previewBtn);
+                if (v.id !== currentVid){
+                  var rbBtn = el('button', { class:'btn', type:'button' }, ['Rollback']);
+                  rbBtn.addEventListener('click', function(){ rollbackTo(v.version_number) });
+                  row.appendChild(rbBtn);
+                }
+                return row;
+              })()
+            ]);
+            var changed = Array.isArray(v.changed_fields)? v.changed_fields.join(', '): (v.changed_fields || '');
+            var meta = el('div', { class:'muted' }, [ changed ? ('Changed: ' + changed) : 'Initial snapshot' ]);
+            var item = el('div', { class:'version-item' }, [ head, meta ]);
+            return item;
+          }
+
+          function loadVersions(){
+            btn.disabled = true; btn.textContent = 'Loading...';
+            fetch('/api/art_versions.php?art_id=' + encodeURIComponent(artId))
+              .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+              .then(function(arr){
+                listEl.innerHTML='';
+                if (!Array.isArray(arr) || arr.length===0){ listEl.textContent='No versions yet.'; return; }
+                arr.forEach(function(v){ listEl.appendChild(renderItem(v)); });
+              })
+              .catch(function(){ listEl.textContent='Failed to load versions.'; })
+              .finally(function(){ btn.disabled=false; btn.textContent='Load History'; });
+          }
+
+          function previewVersion(verNo, anchorEl){
+            fetch('/api/art_versions.php?art_id=' + encodeURIComponent(artId) + '&version=' + encodeURIComponent(verNo))
+              .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+              .then(function(snap){
+                var box = el('div', { class:'preview' }, []);
+                var kv = el('div', { class:'kv-mini' }, [
+                  el('div', null, ['Title']), el('div', null, [String(snap.title||'')]),
+                  el('div', null, ['Type']), el('div', null, [String(snap.type||'')]),
+                  el('div', null, ['Period']), el('div', null, [String(snap.period||'')]),
+                  el('div', null, ['Condition']), el('div', null, [String(snap.condition||'')]),
+                  el('div', null, ['Description']), el('div', null, [String(snap.description||'')])
+                ]);
+                box.appendChild(kv);
+                // Replace existing preview under the clicked item
+                var container = anchorEl || listEl;
+                var old = container.querySelector('.preview'); if (old) old.remove();
+                container.appendChild(box);
+              })
+              .catch(function(){ alert('Failed to load version preview'); });
+          }
+
+          function rollbackTo(verNo){
+            if (!confirm('Rollback to version v' + verNo + '? This will create a new version.')) return;
+            var headers = { 'Content-Type':'application/json' };
+            if (window.CSRF_TOKEN) headers['X-CSRF-Token'] = window.CSRF_TOKEN;
+            var body = {
+              art_id: artId,
+              target_version: verNo,
+              rollback_type: 'full',
+              expected_current_version_id: currentVid
+            };
+            fetch('/api/art_versions.php?action=rollback', {
+              method:'POST', headers: headers, credentials:'include', body: JSON.stringify(body)
+            })
+              .then(function(r){ return r.json().then(function(d){ return { ok:r.ok, data:d }; }); })
+              .then(function(res){
+                if (!res.ok || (res.data && res.data.error)) throw new Error((res.data&&res.data.error)||'Rollback failed');
+                location.reload();
+              })
+              .catch(function(err){ alert(err.message || 'Rollback failed'); });
+          }
+
+          btn.addEventListener('click', loadVersions);
+        })();
+      </script>
     <?php endif; ?>
   </main>
 </body>
