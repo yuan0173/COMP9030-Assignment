@@ -1,4 +1,8 @@
 ;(function(){
+  // START COMMENT BLOCK
+  // AI tool: GEMINI
+  // line 314 in AI-Acknowledgement.md file
+  // personal interpretation: The code below helps to remove the text boxes that might have incorrect input
   'use strict'
 
   // Check if user is logged in
@@ -23,7 +27,12 @@
       })
     }
   }
+  // END COMMENT BLOCK
 
+  // START COMMENT BLOCK
+  // AI tool: GEMINI
+  // line 314 in AI-Acknowledgement.md file
+  // personal interpretation: The code below helps to judge that if the title, description, file selection parts are input correctly, for example, when users click the submit button without selecting a file, it will be detected and related warnings will be shown on the screen to warn the user.
   // Populate type/period selects from admin-configured taxonomies when available
   ;(function initTaxonomies(){
     try{
@@ -263,7 +272,12 @@
       alert('Please log in to submit artwork')
       return
     }
+    // END COMMENT BLOCK
 
+    // START COMMENT BLOCK
+    // AI tool: GEMINI
+    // line 314 in AI-Acknowledgement.md file
+    // personal interpretation: The code below helps to check if a file is uploaded, when no file is detected, shows the corresponding error messege to warn the user.
     // ==============================================
     // [New] File Upload Validation: Check if a file was selected
     // ==============================================
@@ -413,4 +427,5 @@
       if (btn){ btn.disabled = false; btn.textContent = 'Submit Your Art' }
     }
   })
+  // END COMMENT BLOCK
 })()
