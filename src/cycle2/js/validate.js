@@ -1,4 +1,8 @@
 ;(function(){
+  // START COMMENT BLOCK
+  // AI tool: GEMINI
+  // line 314 in AI-Acknowledgement.md file
+  // personal interpretation: The code below helps to check the validity of the input such as email input is requred by isEmail function, and the function isRequired is used to validate if the length is > 0.  The inRange function helps to find out the input which is empty string, null. The show field error is used to show errors and all the functions in validate.js are exported so that they can be used in submission.js.
   'use strict'
 
   // --- Core Validation Functions ---
@@ -136,4 +140,5 @@
     showFieldError,
     clearFieldErrors 
   }
+  // END COMMENT BLOCK
 })()

@@ -1,4 +1,8 @@
 ;(function(){
+  // START COMMENT BLOCK
+  // AI tool: CHAT GPT
+  // line 9 in AI-Acknowledgement.md file
+  // personal interpretation: The code below helps to restrict the users' input's length to be between 6 and 16. And the input should contain at least 1 letter and 1 number. This is achieved by the built in test function.
   'use strict';
 
   function ready(fn){
@@ -79,14 +83,19 @@
   function validateEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
-
+  
   // MODIFIED: require letters and numbers, length 6-16
   function validatePassword(password) {
     // At least 6 characters (original comment preserved)
     // MODIFIED: now require at least one letter and one digit, and maximum length 16
     return /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,16}$/.test(password);
   }
+  // END COMMENT BLOCK
 
+  // START COMMENT BLOCK
+  // AI tool: CHAT GPT
+  // line 9 in AI-Acknowledgement.md file
+  // personal interpretation: The code below helps to show warning prompts when an error is detected, this is achieved by adding a new element div.
   function validatePasswordMatch(password, confirmPassword) {
     return password === confirmPassword;
   }
@@ -118,7 +127,7 @@
       errorText.id = 'errorText';
       errorMessage.appendChild(errorText);
     }
-
+    
     // NEW: Add small red error placeholders under each input
     function createFieldError(el) {
       var span = document.createElement('div');
@@ -130,7 +139,12 @@
       el.parentNode.appendChild(span);
       return span;
     }
+    // END COMMENT BLOCK
 
+    // START COMMENT BLOCK
+    // AI tool: CHAT GPT
+    // line 9 in AI-Acknowledgement.md file
+    // personal interpretation: The code below helps to show the specific error reasons to the users, this is achieved by using several if-else sentences blocks to identify which error it is.
     var emailFieldError = createFieldError(emailInput);
     var passwordFieldError = createFieldError(passwordInput);
     var confirmFieldError = createFieldError(confirmPasswordInput);
@@ -140,7 +154,7 @@
       setOutline(passwordInput, false);
       setOutline(confirmPasswordInput, false);
     }
-
+    
     function showError(message, input) {
       if (errorText) {
         errorText.textContent = message;
@@ -161,7 +175,12 @@
         confirmFieldError.style.display = 'block';
       }
     }
+    // END COMMENT BLOCK
 
+    // START COMMENT BLOCK
+    // AI tool: CHAT GPT
+    // line 9 in AI-Acknowledgement.md file
+    // personal interpretation: The code below helps to show error by calling the show error functions and passing the specific error reason to the function as a parameter. The error will then be shown on the screen under the corresponding text box.
     function hideAllFieldErrors() {
       emailFieldError.style.display = 'none';
       passwordFieldError.style.display = 'none';
@@ -174,7 +193,7 @@
       }
       hideAllFieldErrors();
     }
-
+    
     function showSuccess(message) {
       if (errorText) {
         errorText.textContent = message;
@@ -195,7 +214,7 @@
       var email = (emailInput && emailInput.value || '').trim();
       var password = (passwordInput && passwordInput.value || '').trim();
       var confirmPassword = (confirmPasswordInput && confirmPasswordInput.value || '').trim();
-
+       
       // Validate email
       if (!email) {
         setOutline(emailInput, true);
@@ -280,7 +299,7 @@
       confirmPasswordInput.addEventListener('input', hideError);
     }
   });
-
+  // END COMMENT BLOCK
   // Make UserStorage available globally for other scripts
   window.UserStorage = UserStorage;
 

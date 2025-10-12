@@ -1,5 +1,9 @@
 // Simple contact form handler: show success on submit
 ;(function(){
+  // START COMMENT BLOCK
+  // AI tool: CHAT GPT
+  // line 982 in AI-Acknowledgement.md file
+  // personal interpretation: The code below helps to collect the error input into a list, then use the "foreach" function to loop the list and then use insertAdjacentElement function to insert the element into the specific target element's somewhere position. This whole process completes the task to show error warnings when incorrect or missing input is received.
   function ready(fn){
     if (document.readyState !== 'loading') fn()
     else document.addEventListener('DOMContentLoaded', fn)
@@ -62,14 +66,16 @@
         error.textContent = 'Please enter a valid email address.'
         emailInput.insertAdjacentElement('afterend', error)
       }
-
+      
       if (missing.length > 0 || (email && !emailValid)) {
         alert('Please complete all fields with a valid email address.')
         return
       }
+      
 
       // Success feedback; can be replaced with real submission later
       alert('Message sent successfully!')
     })
   })
+  // END COMMENT BLOCK
 })()
