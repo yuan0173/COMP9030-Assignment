@@ -3,7 +3,7 @@
   var id = params.get('id')
   if (!id) return
 
-  function apiBase(){ return '../../api/art.php?id=' + encodeURIComponent(id) }
+  function apiUrl(){ return '../../api/arts.php?id=' + encodeURIComponent(id) }
 
   var titleEl = document.getElementById('artTitle')
   var descEl = document.getElementById('artDescription')
@@ -14,6 +14,8 @@
   var notesEl = document.getElementById('detailNotes')
   var flagsEl = document.getElementById('detailFlags')
   var breadcrumb = document.getElementById('breadcrumbTitle')
+  var artistNameEl = document.getElementById('artistName')
+  var submissionInfoEl = document.getElementById('submissionInfo')
   var editToggle = document.getElementById('editToggle')
   var deleteBtn = document.getElementById('deleteBtn')
   var editForm = document.getElementById('editForm')
@@ -29,22 +31,34 @@
   var eSensitive = document.getElementById('editSensitive')
   var ePrivate = document.getElementById('editPrivate')
 
-  // Load from localStorage instead of API (C2 frontend-only approach)
+  // Fetch artwork from backend API (Cycle 3)
   function loadArtworkData() {
-    try {
-      var allData = localStorage.getItem('iaa_arts_v1')
-      var allArts = allData ? JSON.parse(allData) : []
-      var item = allArts.find(function(art){ return art.id === id })
-      
-      if (!item) {
-        document.body.innerHTML = '<main class="container page-section"><div class="notice notice--error">Artwork not found or unavailable.</div></main>'
-        return
-      }
-      
-      displayArtwork(item)
-    } catch(err) {
-      document.body.innerHTML = '<main class="container page-section"><div class="notice notice--error">Failed to load artwork data.</div></main>'
-    }
+    fetch(apiUrl())
+      .then(function(r){
+        if (!r.ok) throw new Error('HTTP ' + r.status)
+        return r.json()
+      })
+      .then(function(item){
+        if (!item || !item.id){
+          renderError('Artwork not found or unavailable.')
+          return
+        }
+        displayArtwork(item)
+      })
+      .catch(function(){
+        renderError('Failed to load artwork data.')
+      })
+  }
+
+  function renderError(message){
+    document.body.innerHTML = '' +
+      '<main class="container page-section">' +
+      '  <div class="notice notice--error" role="alert" style="margin-bottom:12px;">' + (message || 'Error') + '</div>' +
+      '  <div style="display:flex; gap:8px;">' +
+      '    <a class="btn" href="/cycle3/arts_list.php">Back to list</a>' +
+      '    <button class="btn btn--ghost" onclick="location.reload()">Reload</button>' +
+      '  </div>' +
+      '</main>'
   }
 
   function displayArtwork(item) {
@@ -54,14 +68,43 @@
     typeEl.textContent = item.type || ''
     periodEl.textContent = item.period || ''
     condEl.textContent = item.condition || ''
-    // Legacy single-image fill (will be replaced by slider below)
-    if (imgEl) { imgEl.src = item.image || '../test.jpg' }
+    // Use backend-provided image path. Hide image if not present.
+    if (imgEl) {
+      if (item.image) { imgEl.src = item.image }
+      else { imgEl.style.display = 'none' }
+    }
     notesEl.textContent = item.locationNotes || ''
     var flags = []
     if (item.creditKnownArtist) flags.push('Credited artist')
     if (item.sensitive) flags.push('Culturally sensitive')
     if (item.privateLand) flags.push('Private land')
     flagsEl.textContent = flags.join(' • ')
+
+    // Display artist information
+    if (artistNameEl) {
+      if (item.creditKnownArtist) {
+        artistNameEl.textContent = 'Known Artist'
+      } else {
+        artistNameEl.textContent = 'Unknown Artist'
+      }
+    }
+
+    // Display submission information
+    if (submissionInfoEl) {
+      var submissionDate = ''
+      var submitter = item.submittedBy || 'Unknown'
+
+      if (item.createdAt) {
+        var date = new Date(item.createdAt)
+        submissionDate = date.toLocaleDateString('en-AU', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        })
+      }
+
+      submissionInfoEl.textContent = submissionDate + (submissionDate ? ' • ' : '') + submitter
+    }
 
     if (window.L) {
       var mapEl = document.getElementById('detailMap')
@@ -147,7 +190,7 @@
     buildGallery(item)
   }
 
-  // Load artwork data
+  // Load artwork data from backend
   loadArtworkData()
 
   if (editToggle && editForm) {

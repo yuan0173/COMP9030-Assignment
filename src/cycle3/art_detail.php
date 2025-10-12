@@ -125,7 +125,7 @@ if (!$id) {
         </section>
 
         <div class="actions">
-          <a class="btn" href="/cycle2/Pages/ArtDetail.html?id=<?php echo (int)$art['art_id']; ?>">Open SPA view</a>
+          <a class="btn" href="/cycle2/Pages/ArtDetail.html?id=<?php echo (int)$art['art_id']; ?>">Open Detailed Page</a>
           <a class="btn btn--ghost" href="/api/art_versions.php?art_id=<?php echo (int)$art['art_id']; ?>" target="_blank">View version JSON</a>
         </div>
       </article>
@@ -133,4 +133,3 @@ if (!$id) {
   </main>
 </body>
 </html>
-
