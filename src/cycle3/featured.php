@@ -75,8 +75,7 @@ try {
             <p class="meta">Type: <?php echo e((string)$r['type']); ?> · Period: <?php echo e((string)$r['period']); ?> · v<?php echo (int)$r['version_number']; ?></p>
             <p class="desc"><?php echo e(mb_strimwidth((string)$r['description'], 0, 180, '…', 'UTF-8')); ?></p>
             <div class="actions">
-              <a class="btn" href="/cycle3/art_detail.php?id=<?php echo (int)$r['art_id']; ?>">Open detail (SSR)</a>
-              <a class="btn btn--ghost" href="/cycle2/Pages/ArtDetail.html?id=<?php echo (int)$r['art_id']; ?>">Open SPA</a>
+              <a class="btn" href="/cycle3/art_detail.php?id=<?php echo (int)$r['art_id']; ?>">Open detail</a>
             </div>
           </article>
         <?php endforeach; ?>
@@ -85,4 +84,3 @@ try {
   </main>
 </body>
 </html>
-

@@ -229,7 +229,7 @@
       if (!confirm('Delete this art?')) return
       fetch('../../api/art.php?id=' + encodeURIComponent(id), { method: 'DELETE' })
         .then(function(r){ return r.json() })
-        .then(function(){ window.location.href = './ArtsResult.html' })
+        .then(function(){ window.location.href = '/cycle3/arts_list.php' })
         .catch(function(err){ alert('Failed to delete: ' + err) })
     })
   }
