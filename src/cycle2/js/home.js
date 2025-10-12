@@ -227,7 +227,7 @@
           var level = resolveDisplayLevel(item)
           var title = item.title || 'Untitled'
           var addr = item.locationNotes || ''
-          var link = './ArtDetail.html?id=' + encodeURIComponent(item.id)
+          var link = '/cycle3/art_detail.php?id=' + encodeURIComponent(item.id)
 
           console.log('Processing item:', {
             title: title,
@@ -504,7 +504,7 @@
   function createCard(item){
     var a = document.createElement('a')
     a.className = 'card'
-    a.href = './ArtDetail.html?id=' + encodeURIComponent(item.id)
+    a.href = '/cycle3/art_detail.php?id=' + encodeURIComponent(item.id)
     var imgWrap = document.createElement('div')
     imgWrap.className = 'card__img'
     var img = document.createElement('img')

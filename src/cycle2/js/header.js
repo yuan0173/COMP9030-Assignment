@@ -12,7 +12,7 @@
           { href: './Home.html', text: 'Home', current: true },
           { href: './About.html', text: 'About' },
           { href: './Guideline.html', text: 'Guidelines' },
-          { href: './ArtsResult.html', text: 'Arts' },
+      { href: '/cycle3/arts_list.php', text: 'Arts' },
           { href: './Contact.html', text: 'Contact' }
         ]
       },
@@ -22,7 +22,7 @@
           { href: './Home.html', text: 'Home' },
           { href: './About.html', text: 'About' },
           { href: './Guideline.html', text: 'Guidelines' },
-          { href: './ArtsResult.html', text: 'Arts' },
+      { href: '/cycle3/arts_list.php', text: 'Arts' },
           { href: './Contact.html', text: 'Contact' }
         ]
       },
@@ -32,7 +32,7 @@
           { href: './Home.html', text: 'Home' },
           { href: './About.html', text: 'About' },
           { href: './Guideline.html', text: 'Guidelines' },
-          { href: './ArtsResult.html', text: 'Arts' },
+      { href: '/cycle3/arts_list.php', text: 'Arts' },
           { href: './Contact.html', text: 'Contact' }
         ]
       },
@@ -73,7 +73,7 @@
         'Home.html': 'Home',
         'About.html': 'About',
         'Guideline.html': 'Guidelines',
-        'ArtsResult.html': 'Arts',
+    '/cycle3/arts_list.php': 'Arts',
         'Map.html': 'Map',
         'Contact.html': 'Contact',
         'AdminDashboard.html': 'Dashboard',
