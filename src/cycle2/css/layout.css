@@ -14,3 +14,23 @@
 .btn{display:inline-block;padding:.625rem 1rem;border-radius:var(--radius);background:#111;color:#fff;border:1px solid transparent;box-shadow:var(--shadow)}
 .card{background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
 .footer{border-top:1px solid var(--border);padding:var(--space-8) 0}
+
+.page-section{   
+  padding-block: var(--space-8);
+}
+
+.header, .footer{
+  background:#fff;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.footer nav a{ margin-right: var(--space-4); }
+
+.flex{ display:flex; }
+.flex-between{ display:flex; justify-content:space-between; align-items:center; }
+.gap-3{ gap: var(--space-3); }
+.gap-4{ gap: var(--space-4); }
+
+@media (min-width: var(--sm)){ .grid.cols-2-sm{ grid-template-columns: 1fr 1fr; } }
+@media (min-width: var(--md)){ .grid.cols-3-md{ grid-template-columns: 1fr 1fr 1fr; } }
+@media (min-width: var(--lg)){ .grid.cols-4-lg{ grid-template-columns: repeat(4,1fr); } }
