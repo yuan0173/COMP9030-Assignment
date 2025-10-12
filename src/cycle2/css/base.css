@@ -8,7 +8,17 @@
   --container:1200px;
   --space-4:16px; --space-6:24px; --space-8:32px;
   --md:768px; --lg:1024px;
+
+  --danger:#ef4444;     
+  --success:#16a34a;    
+  --link:#1d4ed8;      
+  --sm:480px;
+  --xl:1280px;
+  --space-3:12px;
 }
+a{ color: var(--link); }
+a:hover{ color:#2563eb; }
+
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;font-family:var(--font-sans);color:var(--text);background:var(--bg);line-height:1.6}

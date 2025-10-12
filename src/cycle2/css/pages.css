@@ -78,5 +78,8 @@
 /* Admin Submission Detail Page Layout */
 #adminSubmissionMap{ height:56vh; } 
 
+/* Home */
+.map-box{ height: 420px; border-radius: var(--radius); overflow:hidden; border:1px solid var(--border); }
+@media (min-width: var(--md)){ .map-box{ height: 520px; } }
 
 
