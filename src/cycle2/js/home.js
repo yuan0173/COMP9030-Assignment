@@ -26,7 +26,7 @@
   ;(function(){
     function isFiniteNumber(n){ return typeof n === 'number' && isFinite(n) }
     function loadFromApi(){
-      return fetch('/api/arts.php')
+    return fetch('/api/arts.php')
         .then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
         .then(function(list){ return Array.isArray(list) ? list : []; })
     }
