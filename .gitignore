@@ -2,3 +2,8 @@
 agent.md
 claude.md
 AGENTS.md
+# Ignore local agent reference docs in all directories
+**/agent.md
+**/AGENTS.md
+**/claude.md
+src/uploads/
