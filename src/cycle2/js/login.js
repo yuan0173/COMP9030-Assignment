@@ -84,7 +84,7 @@
       }
       // Try backend login first
       try {
-        var resp = await fetch('../../api/auth.php?action=login', {
+        var resp = await fetch('/api/auth.php?action=login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -105,14 +105,10 @@
           return
         }
       } catch(err) {
-        // Fallback to demo/local users for offline demo
+        // Fallback to built-in demo users only (avoid confusing local fake accounts)
         var match = demoUsers.find(function(u){
           return u.role === mode && String(u.email || '').trim().toLowerCase() === email.toLowerCase() && String(u.password || '').trim() === password
         })
-        if (!match && window.UserStorage) {
-          var registeredUser = window.UserStorage.findUser(email, password);
-          if (registeredUser) match = registeredUser;
-        }
         if (match){
           if (SessionManager.login({ role: match.role, email: match.email })) {
             SessionManager.redirectAfterLogin();

@@ -27,6 +27,21 @@
       })
     }
   }
+  
+  /**
+   * Read a File object as DataURL (base64) using FileReader.
+   * Returns a Promise that resolves with the DataURL string.
+   */
+  function readFileAsDataURL(file){
+    return new Promise(function(resolve, reject){
+      try{
+        var reader = new FileReader()
+        reader.onload = function(){ resolve(reader.result) }
+        reader.onerror = function(){ reject(new Error('Failed to read image')) }
+        reader.readAsDataURL(file)
+      }catch(err){ reject(err) }
+    })
+  }
   // END COMMENT BLOCK
 
   // START COMMENT BLOCK
@@ -68,6 +83,19 @@
   var marker = null
   var map = null
   var locationNotesInput = document.getElementById('locationNotes')
+  var creditKnownArtistEl = document.getElementById('creditKnownArtist')
+
+  // Hide/disable "Credit known artist" for non-artist roles
+  try{
+    var currentUserForRole = SessionManager.getCurrentUser && SessionManager.getCurrentUser()
+    var role = currentUserForRole && currentUserForRole.role
+    if (creditKnownArtistEl && role !== 'artist'){
+      // Ensure unchecked and hidden from UI for clarity
+      creditKnownArtistEl.checked = false
+      var label = creditKnownArtistEl.closest('label') || creditKnownArtistEl.parentNode
+      if (label && label.style) label.style.display = 'none'
+    }
+  }catch(_){ }
   
   if (window.L && mapEl) {
     map = L.map('submissionMap', {
@@ -300,6 +328,46 @@
     }
     // ==============================================
 
+    // Validate and load image data at submit time to avoid race condition
+    var imageData = ''
+    if (imageInputEl && imageInputEl.files && imageInputEl.files[0]) {
+      var file = imageInputEl.files[0]
+      var allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
+      if (allowedTypes.indexOf(file.type) === -1) {
+        if (window.Validate && Validate.showFieldError) {
+          Validate.showFieldError(imageInputEl, 'Only JPEG/PNG/WebP are allowed.')
+        } else if (window.Validate) {
+          Validate.showError(form, 'Only JPEG/PNG/WebP are allowed.')
+        } else {
+          alert('Only JPEG/PNG/WebP are allowed.')
+        }
+        imageInputEl.focus()
+        return
+      }
+      if (file.size > 2 * 1024 * 1024) {
+        if (window.Validate && Validate.showFieldError) {
+          Validate.showFieldError(imageInputEl, 'Image must be 2MB or smaller.')
+        } else if (window.Validate) {
+          Validate.showError(form, 'Image must be 2MB or smaller.')
+        } else {
+          alert('Image must be 2MB or smaller.')
+        }
+        imageInputEl.focus()
+        return
+      }
+      try{
+        imageData = await readFileAsDataURL(file)
+        if (imagePreview && (!imagePreview.src || imagePreview.style.display === 'none')){
+          imagePreview.src = imageData
+          imagePreview.style.display = 'block'
+        }
+      }catch(err){
+        if (window.Validate){ Validate.showError(form, 'Failed to read image. Please try again.') }
+        else { alert('Failed to read image. Please try again.') }
+        return
+      }
+    }
+
     var payload = {
       title: getVal('artTitle'),
       type: getVal('artType'),
@@ -311,10 +379,11 @@
       lng: getVal('lng') || null,
       sensitive: getBool('sensitive'),
       privateLand: getBool('privateLand'),
-      creditKnownArtist: getBool('creditKnownArtist'),
-      // Note: Image validation (e.g., size check) should ideally happen here too, 
+      // Only artists may set credited flag
+      creditKnownArtist: (currentUser && currentUser.role === 'artist') ? getBool('creditKnownArtist') : false,
+      // Note: Image validation (e.g., size check) should ideally happen here too,
       // but is omitted for simplicity based on original code structure.
-      image: imagePreview && imagePreview.src ? imagePreview.src : ''
+      image: imageData
     }
 
     // Frontend validation (friendly, human-readable)

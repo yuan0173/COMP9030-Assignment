@@ -76,7 +76,6 @@ try {
             <p class="desc"><?php echo e(mb_strimwidth((string)$r['description'], 0, 180, '…', 'UTF-8')); ?></p>
             <div class="actions">
               <a class="btn" href="/cycle3/art_detail.php?id=<?php echo (int)$r['art_id']; ?>">Open detail (SSR)</a>
-              <a class="btn btn--ghost" href="/cycle2/Pages/ArtDetail.html?id=<?php echo (int)$r['art_id']; ?>">Open SPA</a>
             </div>
           </article>
         <?php endforeach; ?>
@@ -85,4 +84,3 @@ try {
   </main>
 </body>
 </html>
-

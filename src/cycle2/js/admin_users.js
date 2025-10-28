@@ -1,7 +1,7 @@
 ;(function(){
   'use strict'
 
-  if (!window.AdminData) return
+  // Switch to server-backed list via /api/users.php
 
   var pageSize = 10
   var currentPage = 1
@@ -83,21 +83,27 @@
       c4.textContent = formatStatus(u.status)
       var c5 = document.createElement('div')
       c5.className = 'admin-actions'
-
+      // Actions: Change Role, Suspend/Activate, View Submissions
       var btnRole = document.createElement('button')
       btnRole.className = 'btn btn--ghost'
       btnRole.type = 'button'
-      btnRole.textContent = 'Edit Role'
-      btnRole.addEventListener('click', function(){ onEditRole(u) })
+      btnRole.textContent = 'Change Role'
+      btnRole.addEventListener('click', function(){ changeRole(u) })
 
-      var btnStatus = document.createElement('button')
-      btnStatus.className = 'btn btn--ghost'
-      btnStatus.type = 'button'
-      btnStatus.textContent = 'Edit Status'
-      btnStatus.addEventListener('click', function(){ onEditStatus(u) })
+      var btnToggle = document.createElement('button')
+      btnToggle.className = 'btn btn--ghost'
+      btnToggle.type = 'button'
+      btnToggle.textContent = (String(u.status||'active').toLowerCase() === 'suspended') ? 'Activate' : 'Suspend'
+      btnToggle.addEventListener('click', function(){ toggleStatus(u) })
+
+      var view = document.createElement('a')
+      view.className = 'btn'
+      view.href = '/cycle3/arts_list.php?submitter=' + encodeURIComponent(u.id)
+      view.textContent = 'View Submissions'
 
       c5.appendChild(btnRole)
-      c5.appendChild(btnStatus)
+      c5.appendChild(btnToggle)
+      c5.appendChild(view)
 
       row.appendChild(c1)
       row.appendChild(c2)
@@ -142,38 +148,47 @@
     box.appendChild(div)
   }
 
-  function saveUsers(list){ AdminData.set(AdminData.KEYS.users, list) }
+  function saveUsers(list){}
 
-  function onEditRole(u){
-    var current = String(u.role || '')
-    var input = prompt('Enter new role for ' + (u.username||'user') + ' (public/artist/admin):', current)
-    if (input == null) return
-    var v = String(input).trim().toLowerCase()
-    if (!v || ['public','artist','admin'].indexOf(v) === -1){ showNotice('error','Invalid role. Use: public, artist, admin.'); return }
-    u.role = v
-    var list = AdminData.get(AdminData.KEYS.users) || []
-    var idx = list.findIndex(function(x){ return String(x.id) === String(u.id) })
-    if (idx >= 0){ list[idx] = u; saveUsers(list); showNotice('ok','Role updated.'); apply(true) }
+  function apiUpdate(id, body){
+    return fetch('/api/users.php?id=' + encodeURIComponent(id), {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify(body)
+    }).then(function(r){ return r.json() }).then(function(res){ if (res && res.error){ throw new Error(res.error) } return res })
   }
 
-  function onEditStatus(u){
-    var current = String(u.status || '')
-    var input = prompt('Enter new status for ' + (u.username||'user') + ' (active/suspended):', current)
-    if (input == null) return
-    var v = String(input).trim().toLowerCase()
-    if (!v || ['active','suspended'].indexOf(v) === -1){ showNotice('error','Invalid status. Use: active or suspended.'); return }
-    u.status = v
-    var list = AdminData.get(AdminData.KEYS.users) || []
-    var idx = list.findIndex(function(x){ return String(x.id) === String(u.id) })
-    if (idx >= 0){ list[idx] = u; saveUsers(list); showNotice('ok','Status updated.'); apply(true) }
+  function changeRole(u){
+    var current = String(u.role || '')
+    var next = prompt('Set role for ' + (u.username||'user') + ' (public/artist/admin):', current)
+    if (next == null) return
+    next = String(next).trim().toLowerCase()
+    if (['public','artist','admin'].indexOf(next) === -1){ showNotice('error','Invalid role.'); return }
+    apiUpdate(u.id, { role: next }).then(function(){ apply(true) }).catch(function(err){ showNotice('error', err.message) })
+  }
+
+  function toggleStatus(u){
+    var cur = String(u.status || 'active').toLowerCase()
+    var next = (cur === 'suspended') ? 'active' : 'suspended'
+    apiUpdate(u.id, { status: next }).then(function(){ apply(true) }).catch(function(err){ showNotice('error', err.message) })
   }
 
   function apply(preservePage){
-    cache = AdminData.get(AdminData.KEYS.users) || []
-    var filtered = filterList(cache)
-    if (!preservePage) currentPage = 1
-    renderTable(filtered)
-    renderPagination(filtered.length)
+    // Load from API
+    var f = readFilters()
+    var params = new URLSearchParams()
+    if (f.keyword) params.set('q', f.keyword)
+    if (f.role && f.role !== 'all') params.set('role', f.role)
+    params.set('limit', String(pageSize))
+    params.set('offset', String((currentPage - 1) * pageSize))
+    fetch('/api/users.php?' + params.toString(), { credentials: 'include' })
+      .then(function(r){ return r.json() })
+      .then(function(data){
+        cache = (data && Array.isArray(data.users)) ? data.users : []
+        var list = filterList(cache) // apply client-side sort
+        if (!preservePage) currentPage = 1
+        renderTable(list)
+        renderPagination(data && typeof data.total==='number' ? data.total : list.length)
+      })
+      .catch(function(err){ showNotice('error','Failed to load users: ' + err.message) })
   }
 
   function hook(){
@@ -190,6 +205,5 @@
   }
 
   function ready(fn){ if (document.readyState !== 'loading') fn(); else document.addEventListener('DOMContentLoaded', fn) }
-  ready(function(){ if (AdminData.seedIfNeeded) AdminData.seedIfNeeded(); hook(); apply(false) })
+  ready(function(){ hook(); apply(false) })
 })()
-

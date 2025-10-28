@@ -22,181 +22,30 @@
   // Expose map so other modules (if needed) can access it
   window.HomeMap = map
 
-  // Load all arts from localStorage and display their addresses on the map
+  // Load all arts from database API and display their addresses on the map
   ;(function(){
     function isFiniteNumber(n){ return typeof n === 'number' && isFinite(n) }
 
-    function loadFromStorage(){
-      try {
-        var allData = localStorage.getItem('iaa_arts_v1')
-        var list = allData ? JSON.parse(allData) : []
-        
-        // Initialize with mock data if localStorage is empty
-        if (list.length === 0) {
-          initializeMockData()
-          allData = localStorage.getItem('iaa_arts_v1')
-          list = allData ? JSON.parse(allData) : []
-        }
-        
-        return list
-      } catch(err) {
-        return []
-      }
+    function loadFromAPI(){
+      return fetch('/api/arts.php')
+        .then(function(response) {
+          if (!response.ok) {
+            throw new Error('API request failed: ' + response.status)
+          }
+          return response.json()
+        })
+        .then(function(data) {
+          return Array.isArray(data) ? data : []
+        })
+        .catch(function(err) {
+          console.error('Failed to load arts from API for map:', err)
+          return []
+        })
     }
 
-    function initializeMockData() {
-      var mockArts = [
-        {
-          id: 'mock-1',
-          title: 'Blue Mountains Ancient Engravings',
-          description: 'Traditional Aboriginal rock engravings depicting hunting scenes and sacred symbols',
-          type: 'Cave Art',
-          period: 'Ancient',
-          condition: 'Good',
-          image: '../imgs/Featuredart1.jpg',
-          locationNotes: 'Blue Mountains National Park, New South Wales',
-          lat: -33.7152,
-          lng: 150.3107,
-          sensitive: false,
-          privateLand: false,
-          creditKnownArtist: false,
-          createdAt: '2024-01-15T10:00:00Z',
-          submittedBy: 'admin@iaa.gov.au',
-          status: 'approved'
-        },
-        {
-          id: 'mock-2',
-          title: 'Melbourne Urban Indigenous Mural',
-          description: 'Contemporary street art celebrating urban Aboriginal culture in Melbourne CBD',
-          type: 'Mural',
-          period: 'Contemporary',
-          condition: 'Excellent',
-          image: '../imgs/Featuredart2.jpg',
-          locationNotes: 'Melbourne CBD, Victoria',
-          lat: -37.8136,
-          lng: 144.9631,
-          sensitive: true,
-          privateLand: false,
-          creditKnownArtist: true,
-          createdAt: '2024-02-20T14:30:00Z',
-          submittedBy: 'admin@iaa.gov.au',
-          status: 'approved'
-        },
-        {
-          id: 'mock-3',
-          title: 'Carnarvon Gorge Rock Art',
-          description: 'Ancient Aboriginal cave paintings and hand stencils in Queensland highlands',
-          type: 'Cave Art',
-          period: 'Ancient',
-          condition: 'Fair',
-          image: '../imgs/Featuredart3.jpg',
-          locationNotes: 'Carnarvon Gorge, Queensland',
-          lat: -25.0,
-          lng: 148.0,
-          sensitive: false,
-          privateLand: true,
-          creditKnownArtist: false,
-          createdAt: '2024-03-10T09:15:00Z',
-          submittedBy: 'admin@iaa.gov.au',
-          status: 'approved'
-        },
-        {
-          id: 'mock-4',
-          title: 'Fremantle Cultural Center Mural',
-          description: 'Modern Aboriginal artwork celebrating Noongar heritage and connection to country',
-          type: 'Mural',
-          period: 'Contemporary',
-          condition: 'Excellent',
-          image: '../imgs/3f217877787f6e0fb348a6d997502516.avif',
-          locationNotes: 'Fremantle Cultural Centre, Western Australia',
-          lat: -32.0569,
-          lng: 115.7574,
-          sensitive: false,
-          privateLand: false,
-          creditKnownArtist: true,
-          createdAt: '2024-04-05T16:20:00Z',
-          submittedBy: 'admin@iaa.gov.au',
-          status: 'approved'
-        },
-        {
-          id: 'mock-5',
-          title: 'Flinders Ranges Sacred Site',
-          description: 'Sacred Aboriginal cave art with ceremonial significance in South Australian outback',
-          type: 'Cave Art',
-          period: 'Ancient',
-          condition: 'Good',
-          image: '../imgs/aih-artwork.jpg',
-          locationNotes: 'Flinders Ranges, South Australia',
-          lat: -31.2,
-          lng: 138.6,
-          sensitive: true,
-          privateLand: false,
-          creditKnownArtist: false,
-          createdAt: '2024-05-12T11:45:00Z',
-          submittedBy: 'admin@iaa.gov.au',
-          status: 'approved'
-        },
-        {
-          id: 'mock-6',
-          title: 'MONA Aboriginal Art Installation',
-          description: 'Contemporary indigenous art installation exploring themes of identity and place',
-          type: 'Mural',
-          period: 'Contemporary',
-          condition: 'Excellent',
-          image: '../imgs/ATSIintheclassroomfront_SRGB2000px.webp',
-          locationNotes: 'Museum of Old and New Art, Hobart, Tasmania',
-          lat: -42.8821,
-          lng: 147.3272,
-          sensitive: true,
-          privateLand: false,
-          creditKnownArtist: true,
-          createdAt: '2024-06-18T13:30:00Z',
-          submittedBy: 'admin@iaa.gov.au',
-          status: 'approved'
-        },
-        {
-          id: 'mock-7',
-          title: 'Kakadu Sacred Cave Paintings',
-          description: 'Highly sensitive Aboriginal cave art with restricted cultural access in Kakadu',
-          type: 'Cave Art',
-          period: 'Ancient',
-          condition: 'Fair',
-          image: '../imgs/b_7122.webp',
-          locationNotes: 'Kakadu National Park, Northern Territory',
-          lat: -12.6,
-          lng: 132.9,
-          sensitive: true,
-          privateLand: true,
-          creditKnownArtist: false,
-          createdAt: '2024-07-22T08:00:00Z',
-          submittedBy: 'admin@iaa.gov.au',
-          status: 'approved'
-        },
-        {
-          id: 'mock-8',
-          title: 'Parliament House Indigenous Art',
-          description: 'Contemporary Aboriginal artwork commissioned for national cultural significance',
-          type: 'Mural',
-          period: 'Contemporary',
-          condition: 'Excellent',
-          image: '../imgs/images.jpeg',
-          locationNotes: 'Parliament House, Canberra, ACT',
-          lat: -35.3081,
-          lng: 149.1245,
-          sensitive: false,
-          privateLand: true,
-          creditKnownArtist: true,
-          createdAt: '2024-08-30T15:10:00Z',
-          submittedBy: 'admin@iaa.gov.au',
-          status: 'approved'
-        }
-      ]
-
-      localStorage.setItem('iaa_arts_v1', JSON.stringify(mockArts))
-    }
-
-    var list = loadFromStorage()
-    console.log('Loaded arts data for map:', list)
+    // Load data from API and render map markers
+    loadFromAPI().then(function(list) {
+      console.log('Loaded arts data for map:', list)
     try {
       var markers = []
       if (Array.isArray(list)) {
@@ -227,7 +76,7 @@
           var level = resolveDisplayLevel(item)
           var title = item.title || 'Untitled'
           var addr = item.locationNotes || ''
-          var link = './ArtDetail.html?id=' + encodeURIComponent(item.id)
+          var link = '/cycle3/art_detail.php?id=' + encodeURIComponent(item.id)
 
           console.log('Processing item:', {
             title: title,
@@ -310,6 +159,9 @@
         }
       }catch(_){ }
     }
+    }).catch(function(err) {
+      console.error('Failed to load arts from API for map:', err)
+    })
   })()
 
   map.on('click', function (e) {
@@ -327,187 +179,38 @@
   })
 })();
 
-// Featured Arts functionality for Home page
+// Featured Arts functionality for Home page - Updated for Cycle 3 API integration
 ;(function(){
   var container = document.getElementById('featuredArtsContainer')
   if (!container) return
 
-  function loadArtsFromStorage(){
-    try {
-      var allData = localStorage.getItem('iaa_arts_v1')
-      var list = allData ? JSON.parse(allData) : []
-      
-      // Initialize with mock data if localStorage is empty
-      if (list.length === 0) {
-        initializeMockData()
-        allData = localStorage.getItem('iaa_arts_v1')
-        list = allData ? JSON.parse(allData) : []
-      }
-      
-      return list
-    } catch(err) {
-      return []
-    }
-  }
-
-  function initializeMockData() {
-    var mockArts = [
-      {
-        id: 'mock-1',
-        title: 'Blue Mountains Ancient Engravings',
-        description: 'Traditional Aboriginal rock engravings depicting hunting scenes and sacred symbols',
-        type: 'Cave Art',
-        period: 'Ancient',
-        condition: 'Good',
-        image: '../imgs/Featuredart1.jpg',
-        locationNotes: 'Blue Mountains National Park, New South Wales',
-        lat: -33.7152,
-        lng: 150.3107,
-        sensitive: false,
-        privateLand: false,
-        creditKnownArtist: false,
-        createdAt: '2024-01-15T10:00:00Z',
-        submittedBy: 'admin@iaa.gov.au',
-        status: 'approved'
-      },
-      {
-        id: 'mock-2',
-        title: 'Melbourne Urban Indigenous Mural',
-        description: 'Contemporary street art celebrating urban Aboriginal culture in Melbourne CBD',
-        type: 'Mural',
-        period: 'Contemporary',
-        condition: 'Excellent',
-        image: '../imgs/Featuredart2.jpg',
-        locationNotes: 'Melbourne CBD, Victoria',
-        lat: -37.8136,
-        lng: 144.9631,
-        sensitive: true,
-        privateLand: false,
-        creditKnownArtist: true,
-        createdAt: '2024-02-20T14:30:00Z',
-        submittedBy: 'admin@iaa.gov.au',
-        status: 'approved'
-      },
-      {
-        id: 'mock-3',
-        title: 'Carnarvon Gorge Rock Art',
-        description: 'Ancient Aboriginal cave paintings and hand stencils in Queensland highlands',
-        type: 'Cave Art',
-        period: 'Ancient',
-        condition: 'Fair',
-        image: '../imgs/Featuredart3.jpg',
-        locationNotes: 'Carnarvon Gorge, Queensland',
-        lat: -25.0,
-        lng: 148.0,
-        sensitive: false,
-        privateLand: true,
-        creditKnownArtist: false,
-        createdAt: '2024-03-10T09:15:00Z',
-        submittedBy: 'admin@iaa.gov.au',
-        status: 'approved'
-      },
-      {
-        id: 'mock-4',
-        title: 'Fremantle Cultural Center Mural',
-        description: 'Modern Aboriginal artwork celebrating Noongar heritage and connection to country',
-        type: 'Mural',
-        period: 'Contemporary',
-        condition: 'Excellent',
-        image: '../imgs/3f217877787f6e0fb348a6d997502516.avif',
-        locationNotes: 'Fremantle Cultural Centre, Western Australia',
-        lat: -32.0569,
-        lng: 115.7574,
-        sensitive: false,
-        privateLand: false,
-        creditKnownArtist: true,
-        createdAt: '2024-04-05T16:20:00Z',
-        submittedBy: 'admin@iaa.gov.au',
-        status: 'approved'
-      },
-      {
-        id: 'mock-5',
-        title: 'Flinders Ranges Sacred Site',
-        description: 'Sacred Aboriginal cave art with ceremonial significance in South Australian outback',
-        type: 'Cave Art',
-        period: 'Ancient',
-        condition: 'Good',
-        image: '../imgs/aih-artwork.jpg',
-        locationNotes: 'Flinders Ranges, South Australia',
-        lat: -31.2,
-        lng: 138.6,
-        sensitive: true,
-        privateLand: false,
-        creditKnownArtist: false,
-        createdAt: '2024-05-12T11:45:00Z',
-        submittedBy: 'admin@iaa.gov.au',
-        status: 'approved'
-      },
-      {
-        id: 'mock-6',
-        title: 'MONA Aboriginal Art Installation',
-        description: 'Contemporary indigenous art installation exploring themes of identity and place',
-        type: 'Mural',
-        period: 'Contemporary',
-        condition: 'Excellent',
-        image: '../imgs/ATSIintheclassroomfront_SRGB2000px.webp',
-        locationNotes: 'Museum of Old and New Art, Hobart, Tasmania',
-        lat: -42.8821,
-        lng: 147.3272,
-        sensitive: true,
-        privateLand: false,
-        creditKnownArtist: true,
-        createdAt: '2024-06-18T13:30:00Z',
-        submittedBy: 'admin@iaa.gov.au',
-        status: 'approved'
-      },
-      {
-        id: 'mock-7',
-        title: 'Kakadu Sacred Cave Paintings',
-        description: 'Highly sensitive Aboriginal cave art with restricted cultural access in Kakadu',
-        type: 'Cave Art',
-        period: 'Ancient',
-        condition: 'Fair',
-        image: '../imgs/b_7122.webp',
-        locationNotes: 'Kakadu National Park, Northern Territory',
-        lat: -12.6,
-        lng: 132.9,
-        sensitive: true,
-        privateLand: true,
-        creditKnownArtist: false,
-        createdAt: '2024-07-22T08:00:00Z',
-        submittedBy: 'admin@iaa.gov.au',
-        status: 'approved'
-      },
-      {
-        id: 'mock-8',
-        title: 'Parliament House Indigenous Art',
-        description: 'Contemporary Aboriginal artwork commissioned for national cultural significance',
-        type: 'Mural',
-        period: 'Contemporary',
-        condition: 'Excellent',
-        image: '../imgs/images.jpeg',
-        locationNotes: 'Parliament House, Canberra, ACT',
-        lat: -35.3081,
-        lng: 149.1245,
-        sensitive: false,
-        privateLand: true,
-        creditKnownArtist: true,
-        createdAt: '2024-08-30T15:10:00Z',
-        submittedBy: 'admin@iaa.gov.au',
-        status: 'approved'
-      }
-    ]
-
-    localStorage.setItem('iaa_arts_v1', JSON.stringify(mockArts))
+  // Load arts from database API instead of localStorage
+  function loadArtsFromAPI(){
+    return fetch('/api/arts.php')
+      .then(function(response) {
+        if (!response.ok) {
+          throw new Error('API request failed: ' + response.status)
+        }
+        return response.json()
+      })
+      .then(function(data) {
+        return Array.isArray(data) ? data : []
+      })
+      .catch(function(err) {
+        console.error('Failed to load arts from API:', err)
+        return []
+      })
   }
 
   function createCard(item){
     var a = document.createElement('a')
     a.className = 'card'
-    a.href = './ArtDetail.html?id=' + encodeURIComponent(item.id)
+    // Update link to point to Cycle 3 art detail page with database ID (absolute path to avoid base href issues)
+    a.href = '/cycle3/art_detail.php?id=' + encodeURIComponent(item.id)
     var imgWrap = document.createElement('div')
     imgWrap.className = 'card__img'
     var img = document.createElement('img')
+    // Use image from database, fallback to placeholder
     img.src = item.image || '../test.jpg'
     img.alt = 'art'
     imgWrap.appendChild(img)
@@ -539,18 +242,20 @@
     }
     // Show recently added arts as featured (C1 design requirement)
     var sortedByDate = list.slice().sort(function(a, b) {
-      var dateA = new Date(a.createdAt || 0)
-      var dateB = new Date(b.createdAt || 0)
+      var dateA = new Date(a.created_at || 0)
+      var dateB = new Date(b.created_at || 0)
       return dateB - dateA // Newest first
     })
     var featuredArts = sortedByDate.slice(0, 3)
     featuredArts.forEach(function(item){ container.appendChild(createCard(item)) })
   }
 
-  try {
-    var artsList = loadArtsFromStorage()
-    render(artsList)
-  } catch(err) {
-    container.innerHTML = '<div class="card__desc">Failed to load: ' + err + '</div>'
-  }
+  // Load and display featured arts from database
+  loadArtsFromAPI()
+    .then(function(artsList) {
+      render(artsList)
+    })
+    .catch(function(err) {
+      container.innerHTML = '<div class="card__desc">Failed to load featured arts: ' + err.message + '</div>'
+    })
 })();

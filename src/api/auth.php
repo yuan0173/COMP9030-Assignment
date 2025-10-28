@@ -74,6 +74,10 @@ function sanitize_email(string $email): string {
 function register(PDO $pdo, array $input): void {
     $email = isset($input['email']) ? sanitize_email((string)$input['email']) : '';
     $password = isset($input['password']) ? (string)$input['password'] : '';
+    // Role: only allow 'public' or 'artist'; default to 'public'
+    $role = isset($input['role']) ? strtolower(trim((string)$input['role'])) : 'public';
+    if (!in_array($role, ['public','artist'], true)) { $role = 'public'; }
+
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         respond_auth(400, ['error' => 'Invalid email']);
     }
@@ -89,18 +93,20 @@ function register(PDO $pdo, array $input): void {
     }
 
     $hash = password_hash($password, PASSWORD_DEFAULT);
-    $st = $pdo->prepare('INSERT INTO users (email, password_hash, role) VALUES (:e, :h, "user")');
-    $st->execute([':e' => $email, ':h' => $hash]);
+    // Extract username from email (part before @)
+    $username = explode('@', $email)[0];
+    $st = $pdo->prepare('INSERT INTO users (username, email, password_hash, role) VALUES (:u, :e, :h, :r)');
+    $st->execute([':u' => $username, ':e' => $email, ':h' => $hash, ':r' => $role]);
     $uid = (int)$pdo->lastInsertId();
 
     // Auto-login on register
     $_SESSION['user_id'] = $uid;
     $_SESSION['email'] = $email;
-    $_SESSION['role'] = 'user';
+    $_SESSION['role'] = $role;
     $csrf = ensure_csrf_token();
 
     respond_auth(201, [
-        'user' => ['id' => $uid, 'email' => $email, 'role' => 'user'],
+        'user' => ['id' => $uid, 'email' => $email, 'role' => $role],
         'csrf_token' => $csrf,
     ]);
 }
@@ -121,8 +127,11 @@ function login(PDO $pdo, array $input): void {
     $_SESSION['email'] = (string)$row['email'];
     $_SESSION['role'] = (string)$row['role'];
     $csrf = ensure_csrf_token();
+    // Backward compatibility: map legacy 'user' role to 'public'
+    $roleOut = (string)$row['role'];
+    if ($roleOut === 'user') { $roleOut = 'public'; }
     respond_auth(200, [
-        'user' => ['id' => (int)$row['id'], 'email' => (string)$row['email'], 'role' => (string)$row['role']],
+        'user' => ['id' => (int)$row['id'], 'email' => (string)$row['email'], 'role' => $roleOut],
         'csrf_token' => $csrf,
     ]);
 }
@@ -174,4 +183,3 @@ try {
 }
 
 ?>
-

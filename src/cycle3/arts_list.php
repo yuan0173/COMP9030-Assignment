@@ -21,21 +21,31 @@ function e(string $s): string { return htmlspecialchars($s, ENT_QUOTES, 'UTF-8')
 $q = isset($_GET['q']) ? trim((string)$_GET['q']) : '';
 $type = isset($_GET['type']) ? trim((string)$_GET['type']) : '';
 $period = isset($_GET['period']) ? trim((string)$_GET['period']) : '';
+$states = isset($_GET['states']) ? $_GET['states'] : ['NSW','VIC','SA','QLD','WA','TAS','NT','ACT'];
+$sort = isset($_GET['sort']) ? trim((string)$_GET['sort']) : 'new';
 $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 $pageSize = isset($_GET['page_size']) ? (int)$_GET['page_size'] : 12;
 if ($pageSize <= 0) $pageSize = 12;
 if ($pageSize > 50) $pageSize = 50; // cap
 $offset = ($page - 1) * $pageSize;
 
+// Ensure states is array
+if (!is_array($states)) $states = ['NSW','VIC','SA','QLD','WA','TAS','NT','ACT'];
+
 $error = null;
 $rows = [];
 $total = 0;
+// Optional admin view for pending submissions: recent items by non-admins
+$adminView = isset($_GET['admin_view']) ? (string)$_GET['admin_view'] : '';
+// Optional submitter filter
+$submitter = isset($_GET['submitter']) ? (int)$_GET['submitter'] : 0;
 
 try {
     $pdo = get_pdo();
 
     // Build where
     $where = ' WHERE a.deleted_at IS NULL ';
+    $join = ' JOIN art_versions v ON a.current_version_id = v.id ';
     $params = [];
     if ($q !== '') {
         $where .= ' AND (v.title LIKE :q OR v.description LIKE :q)';
@@ -44,16 +54,25 @@ try {
     if ($type !== '') { $where .= ' AND v.type = :type'; $params[':type'] = $type; }
     if ($period !== '') { $where .= ' AND v.period = :period'; $params[':period'] = $period; }
 
+    if ($adminView === 'pending') {
+        // Filter: created in last 30 days by non-admin accounts
+        $join .= ' LEFT JOIN users u ON v.changed_by = u.id ';
+        $where .= ' AND a.created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND (u.role IS NULL OR u.role <> \"admin\") ';
+    }
+    if ($submitter > 0) {
+        $where .= ' AND v.changed_by = :submitter';
+        $params[':submitter'] = $submitter;
+    }
+
     // Count total
-    $countSql = 'SELECT COUNT(*) FROM arts a JOIN art_versions v ON a.current_version_id = v.id ' . $where;
+    $countSql = 'SELECT COUNT(*) FROM arts a ' . $join . $where;
     $st = $pdo->prepare($countSql);
     $st->execute($params);
     $total = (int)$st->fetchColumn();
 
     // Fetch page
-    $sql = 'SELECT a.id AS art_id, a.created_at, v.version_number, v.title, v.type, v.period, v.`condition`, v.description, v.image
-            FROM arts a JOIN art_versions v ON a.current_version_id = v.id '
-            . $where . ' ORDER BY a.created_at DESC LIMIT :lim OFFSET :off';
+    $sql = 'SELECT a.id AS art_id, a.created_at, v.version_number, v.title, v.type, v.period, v.`condition`, v.description, v.image'
+            . ' FROM arts a ' . $join . $where . ' ORDER BY a.created_at DESC LIMIT :lim OFFSET :off';
     $st = $pdo->prepare($sql);
     foreach ($params as $k => $v) { $st->bindValue($k, $v); }
     $st->bindValue(':lim', $pageSize, PDO::PARAM_INT);
@@ -153,8 +172,7 @@ function qs(array $overrides = []): string {
             <p class="meta">Type: <?php echo e((string)$r['type']); ?> · Period: <?php echo e((string)$r['period']); ?> · v<?php echo (int)$r['version_number']; ?></p>
             <p class="desc"><?php echo e(mb_strimwidth((string)$r['description'], 0, 180, '…', 'UTF-8')); ?></p>
             <div class="actions">
-              <a class="btn" href="/cycle3/art_detail.php?id=<?php echo (int)$r['art_id']; ?>">Open detail (SSR)</a>
-              <a class="btn btn--ghost" href="/cycle2/Pages/ArtDetail.html?id=<?php echo (int)$r['art_id']; ?>">Open SPA</a>
+              <a class="btn" href="/cycle3/art_detail.php?id=<?php echo (int)$r['art_id']; ?>">View Details</a>
             </div>
           </article>
         <?php endforeach; ?>
@@ -176,4 +194,3 @@ function qs(array $overrides = []): string {
   </main>
 </body>
 </html>
-

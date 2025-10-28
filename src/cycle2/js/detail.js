@@ -3,7 +3,7 @@
   var id = params.get('id')
   if (!id) return
 
-  function apiBase(){ return '../../api/art.php?id=' + encodeURIComponent(id) }
+  function apiBase(){ return '/api/arts.php?id=' + encodeURIComponent(id) }
 
   var titleEl = document.getElementById('artTitle')
   var descEl = document.getElementById('artDescription')
@@ -16,6 +16,7 @@
   var breadcrumb = document.getElementById('breadcrumbTitle')
   var editToggle = document.getElementById('editToggle')
   var deleteBtn = document.getElementById('deleteBtn')
+  var viewHistoryBtn = document.getElementById('viewHistoryBtn')
   var editForm = document.getElementById('editForm')
   var eTitle = document.getElementById('editTitle')
   var eType = document.getElementById('editType')
@@ -29,22 +30,26 @@
   var eSensitive = document.getElementById('editSensitive')
   var ePrivate = document.getElementById('editPrivate')
 
-  // Load from localStorage instead of API (C2 frontend-only approach)
+  // Load from API (C3 backend-driven approach)
   function loadArtworkData() {
-    try {
-      var allData = localStorage.getItem('iaa_arts_v1')
-      var allArts = allData ? JSON.parse(allData) : []
-      var item = allArts.find(function(art){ return art.id === id })
-      
-      if (!item) {
-        document.body.innerHTML = '<main class="container page-section"><div class="notice notice--error">Artwork not found or unavailable.</div></main>'
-        return
-      }
-      
-      displayArtwork(item)
-    } catch(err) {
-      document.body.innerHTML = '<main class="container page-section"><div class="notice notice--error">Failed to load artwork data.</div></main>'
-    }
+    fetch('/api/arts.php?id=' + encodeURIComponent(id))
+      .then(function(response) {
+        if (!response.ok) {
+          throw new Error('API request failed: ' + response.status)
+        }
+        return response.json()
+      })
+      .then(function(data) {
+        if (!data || !data.id) {
+          document.body.innerHTML = '<main class="container page-section"><div class="notice notice--error">Artwork not found or unavailable.</div></main>'
+          return
+        }
+        displayArtwork(data)
+      })
+      .catch(function(err) {
+        console.error('Failed to load artwork from API:', err)
+        document.body.innerHTML = '<main class="container page-section"><div class="notice notice--error">Failed to load artwork data. Please try again later.</div></main>'
+      })
   }
 
   function displayArtwork(item) {
@@ -171,7 +176,7 @@
         sensitive: !!eSensitive.checked,
         privateLand: !!ePrivate.checked
       }
-      fetch('../../api/art.php?id=' + encodeURIComponent(id), {
+      fetch('/api/arts.php?id=' + encodeURIComponent(id), {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -184,10 +189,17 @@
   if (deleteBtn) {
     deleteBtn.addEventListener('click', function(){
       if (!confirm('Delete this art?')) return
-      fetch('../../api/art.php?id=' + encodeURIComponent(id), { method: 'DELETE' })
+      fetch('/api/arts.php?id=' + encodeURIComponent(id), { method: 'DELETE' })
         .then(function(r){ return r.json() })
         .then(function(){ window.location.href = './ArtsResult.html' })
         .catch(function(err){ alert('Failed to delete: ' + err) })
+    })
+  }
+
+  if (viewHistoryBtn) {
+    viewHistoryBtn.addEventListener('click', function(){
+      // Open edit history in new tab
+      window.open('/api/art_versions.php?art_id=' + encodeURIComponent(id), '_blank')
     })
   }
 })()

@@ -34,6 +34,13 @@ function get_user_id(): ?int {
     return isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : null;
 }
 
+function get_user_role(): string {
+    $r = isset($_SESSION['role']) ? (string)$_SESSION['role'] : '';
+    // Backward compatibility mapping
+    if ($r === 'user') $r = 'public';
+    return $r;
+}
+
 function csrf_enforced(): bool {
     // Enable by setting CSRF_ENFORCE=1 in the environment.
     return (getenv('CSRF_ENFORCE') === '1');
@@ -386,9 +393,31 @@ function list_arts(PDO $pdo): void {
     $q = isset($_GET['q']) ? trim((string)$_GET['q']) : '';
     $type = isset($_GET['type']) ? trim((string)$_GET['type']) : '';
     $period = isset($_GET['period']) ? trim((string)$_GET['period']) : '';
+    $user = isset($_GET['user']) ? trim((string)$_GET['user']) : '';
+    $submitter = isset($_GET['submitter']) ? (int)$_GET['submitter'] : 0;
 
-    $sql = "SELECT a.id, v.version_number, v.title, v.description, v.type, v.period, v.`condition`, v.locationNotes, v.lat, v.lng, v.image, a.created_at
-            FROM arts a JOIN art_versions v ON a.current_version_id = v.id
+    $sql = "SELECT 
+                a.id,
+                v.version_number,
+                v.title,
+                v.description,
+                v.type,
+                v.period,
+                v.`condition`,
+                v.locationNotes,
+                v.lat,
+                v.lng,
+                v.image,
+                v.sensitive,
+                v.privateLand,
+                v.creditKnownArtist,
+                a.created_at,
+                v.changed_by,
+                u.username AS author_username,
+                CASE WHEN u.role = 'user' THEN 'public' ELSE u.role END AS author_role
+            FROM arts a 
+            JOIN art_versions v ON a.current_version_id = v.id
+            LEFT JOIN users u ON v.changed_by = u.id
             WHERE a.deleted_at IS NULL";
     $params = [];
     if ($q !== '') {
@@ -397,6 +426,15 @@ function list_arts(PDO $pdo): void {
     }
     if ($type !== '') { $sql .= " AND v.type = :type"; $params[':type'] = $type; }
     if ($period !== '') { $sql .= " AND v.period = :period"; $params[':period'] = $period; }
+    if ($user !== '') {
+        // Filter by user ID - if user parameter is provided, get current user ID from session
+        $currentUserId = get_user_id();
+        if ($currentUserId) {
+            $sql .= " AND v.changed_by = :user_id";
+            $params[':user_id'] = $currentUserId;
+        }
+    }
+    if ($submitter > 0) { $sql .= " AND v.changed_by = :submitter"; $params[':submitter'] = $submitter; }
     $sql .= " ORDER BY a.created_at DESC";
 
     $st = $pdo->prepare($sql);
@@ -442,8 +480,19 @@ try {
             if (empty($json) && !empty($_POST)) {
                 $json = $_POST;
             }
+
+            // Debug logging
+            error_log("POST data: " . json_encode($json));
+
             $payload = validate_art_payload($json, true);
             $userId = get_user_id();
+            if (!$userId) { respond(401, ['error' => 'Login required']); }
+            // Enforce: only artist may set creditKnownArtist
+            if (get_user_role() !== 'artist') { $payload['creditKnownArtist'] = 0; }
+
+            // Debug logging
+            error_log("User ID from session: " . ($userId ?? 'null'));
+
             $res = create_art_and_version($pdo, $payload, $userId);
             respond(201, $res);
             break;
@@ -455,8 +504,18 @@ try {
             $json = read_json();
             if (empty($json) && !empty($_POST)) { $json = $_POST; }
             $payload = validate_art_payload($json, false);
+            // Enforce on update as well
+            if (get_user_role() !== 'artist') { $payload['creditKnownArtist'] = 0; }
             $expected = isset($json['expected_current_version_id']) ? (int)$json['expected_current_version_id'] : null;
             $userId = get_user_id();
+            // Ownership: allow only admin or last editor to update
+            if (get_user_role() !== 'admin') {
+                $currentRow = get_current_version_row($pdo, $id);
+                $lastEditor = isset($currentRow['changed_by']) ? (int)$currentRow['changed_by'] : 0;
+                if (!$userId || $lastEditor !== $userId) {
+                    respond(403, ['error' => 'Not allowed to edit this art']);
+                }
+            }
             $res = create_new_version_from_current($pdo, $id, $payload, $userId, $expected);
             respond(200, $res);
             break;

@@ -96,5 +96,21 @@
         "creditKnownArtist": true,
         "image": "",
         "createdAt": "2025-09-13T09:40:15+00:00"
+    },
+    {
+        "id": "art_6900990e3c20c1.46976276",
+        "title": "Demo",
+        "type": "Mural",
+        "period": "Contemporary",
+        "condition": "Good",
+        "description": "Sample",
+        "locationNotes": "",
+        "lat": null,
+        "lng": null,
+        "sensitive": false,
+        "privateLand": false,
+        "creditKnownArtist": false,
+        "image": "",
+        "createdAt": "2025-10-28T10:21:02+00:00"
     }
 ]
