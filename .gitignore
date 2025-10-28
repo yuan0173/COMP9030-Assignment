@@ -7,3 +7,5 @@ AGENTS.md
 **/AGENTS.md
 **/claude.md
 src/uploads/
+# Local environment files (do not commit)
+**/.env

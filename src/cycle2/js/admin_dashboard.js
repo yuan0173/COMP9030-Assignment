@@ -1,7 +1,7 @@
 ;(function(){
   'use strict'
 
-  // Render admin stats using AdminData (localStorage-backed mock data).
+  // Render admin stats using live database via /api/admin_stats.php
 
   function el(id){ return document.getElementById(id) }
 
@@ -10,58 +10,47 @@
   }
   function countUsers(users){ return (users || []).length }
 
-  function templateCard(title, value, hint){
-    return (
-      '<article class="card admin-card" aria-live="polite" style="padding:16px">' +
-        '<div style="display:flex;justify-content:space-between;align-items:center">' +
-          '<div>' +
-            '<div class="card__title" style="margin:0">' + title + '</div>' +
-            (hint ? '<div class="card__desc">' + hint + '</div>' : '') +
-          '</div>' +
-          '<div style="font-size:28px;font-weight:700">' + value + '</div>' +
-        '</div>' +
-      '</article>'
-    )
+  function templateCardLink(title, value, hint, href){
+    var a = document.createElement('a')
+    a.className = 'card admin-card'
+    a.style.padding = '16px'
+    a.href = href
+    a.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center">'
+      + '<div>'
+      +   '<div class="card__title" style="margin:0">' + title + '</div>'
+      +   (hint ? '<div class="card__desc">' + hint + '</div>' : '')
+      + '</div>'
+      + '<div style="font-size:28px;font-weight:700">' + value + '</div>'
+      + '</div>'
+    return a
   }
 
-  function render(){
-    // Ensure data is seeded
-    if (window.AdminData && AdminData.seedIfNeeded) AdminData.seedIfNeeded()
-    var subs = (window.AdminData && AdminData.get(AdminData.KEYS.submissions)) || []
-    var users = (window.AdminData && AdminData.get(AdminData.KEYS.users)) || []
+  async function fetchStats(){
+    var res = await fetch('/api/admin_stats.php', { credentials: 'include' })
+    if (!res.ok) throw new Error('Failed to load admin stats: ' + res.status)
+    return res.json()
+  }
 
-    var pending = countPending(subs)
-    var totalUsers = countUsers(users)
-    // Demo value for open reports (no dataset yet): simple function of pending
-    var openReports = Math.max(2, Math.min(9, Math.round(pending/2)))
-
+  async function render(){
     var stats = el('adminStats')
     if (!stats) return
+    stats.innerHTML = '<article class="card admin-card" style="padding:16px"><div class="card__desc">Loading stats…</div></article>'
+
+    var data
+    try{
+      data = await fetchStats()
+    }catch(err){
+      stats.innerHTML = '<article class="card admin-card" style="padding:16px"><div class="card__desc">Failed to load stats.</div></article>'
+      return
+    }
+
     stats.innerHTML = ''
+    var links = (data && data.links) || {}
+    stats.appendChild(templateCardLink('Pending Submissions', String(data.pending_submissions || 0), 'Created in last 30 days', links.pending_submissions || '/cycle3/arts_list.php'))
+    stats.appendChild(templateCardLink('Total Users', String(data.total_users || 0), 'All registered users', links.total_users || '/cycle2/Pages/AdminUserManagement.html'))
+    stats.appendChild(templateCardLink('Open Reports', String(data.open_reports || 0), 'Awaiting moderation', links.open_reports || '/cycle2/Pages/AdminReportList.html'))
 
-    // Cards
-    stats.innerHTML += templateCard('Pending Submissions', String(pending), 'Awaiting review')
-    stats.innerHTML += templateCard('Total Users', String(totalUsers), 'All registered users')
-    stats.innerHTML += templateCard('Open Reports (demo)', String(openReports), 'Moderation backlog')
-
-    // Add a small toolbar with a simulate button
-    var bar = document.createElement('div')
-    bar.className = 'flex-between'
-    bar.style.margin = '8px 0 4px'
-    var hint = document.createElement('div')
-    hint.className = 'card__desc'
-    hint.textContent = 'Counts are based on local mock data.'
-    var btn = document.createElement('button')
-    btn.className = 'btn btn--ghost'
-    btn.type = 'button'
-    btn.setAttribute('aria-label','Simulate a data change and refresh stats')
-    btn.textContent = 'Simulate Change'
-    btn.addEventListener('click', function(){ simulateChange(); render() })
-    bar.appendChild(hint)
-    bar.appendChild(btn)
-    stats.parentNode.insertBefore(bar, stats.nextSibling)
-
-    // Render taxonomies (types and periods)
+    // Render taxonomies (types and periods) – still client-side mock for now
     renderTaxonomies()
   }
 
@@ -146,21 +135,7 @@
     }
   }
 
-  function simulateChange(){
-    // Toggle one submission between Pending and Approved to demonstrate changing stats
-    var key = AdminData.KEYS.submissions
-    var subs = AdminData.get(key) || []
-    if (subs.length === 0) return
-
-    var pendingIdx = subs.findIndex(function(s){ return (s.status || '').toLowerCase() === 'pending' })
-    if (pendingIdx >= 0 && Math.random() < 0.5){
-      subs[pendingIdx].status = 'Approved'
-    } else {
-      var otherIdx = subs.findIndex(function(s){ return (s.status || '').toLowerCase() !== 'pending' })
-      if (otherIdx >= 0) subs[otherIdx].status = 'Pending'
-    }
-    AdminData.set(key, subs)
-  }
+  function simulateChange(){}
 
   function ready(fn){
     if (document.readyState !== 'loading') fn()

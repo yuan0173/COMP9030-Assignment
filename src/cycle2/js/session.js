@@ -36,6 +36,20 @@
     // Logout user and clear session
     logout: function() {
       try {
+        // Also tell backend to clear PHP session (best-effort)
+        try {
+          var headers = { 'Content-Type': 'application/json' }
+          if (typeof window !== 'undefined' && window.CSRF_TOKEN) {
+            headers['X-CSRF-Token'] = window.CSRF_TOKEN
+          }
+          fetch('/api/auth.php?action=logout', {
+            method: 'POST',
+            headers: headers,
+            credentials: 'include',
+            body: JSON.stringify({})
+          }).catch(function(){ /* ignore */ })
+        } catch (_e) {}
+
         localStorage.removeItem(this.AUTH_KEY);
         localStorage.removeItem(this.SESSION_KEY);
         this.updateNavigation();
@@ -124,7 +138,7 @@
         // User is not logged in
         authSection.innerHTML = `
           <a class="btn btn--ghost" href="./UserLogIn.html">Sign in</a>
-          <a class="btn" href="./UserRegistration.html">Register</a>
+          <a class="btn" href="./UserRegistration.html">Sign up</a>
         `;
       }
     },
@@ -135,7 +149,7 @@
       if (!user) return;
 
       if (user.role === 'admin') {
-        window.location.href = './AdminDashboard.html';
+        window.location.href = '/cycle2/Pages/AdminDashboard.html';
       } else {
         window.location.href = './UserProfile.html';
       }

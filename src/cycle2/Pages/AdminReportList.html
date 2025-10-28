@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Report List</title>
+    <title>Reports Management - Admin</title>
     <link rel="stylesheet" href="../css/base.css">
     <link rel="stylesheet" href="../css/layout.css">
     <link rel="stylesheet" href="../css/components.css">
@@ -12,8 +12,8 @@
     <div id="header-placeholder"></div>
 
     <main class="container page-section">
-      <h1 class="card__title" style="margin:0 0 12px">Moderation Queues</h1>
-      <p class="card__desc" style="margin:0 0 16px">Review community reports about potentially incorrect or sensitive entries.</p>
+      <h1 class="card__title" style="margin:0 0 12px">Reports Management</h1>
+      <p class="card__desc" style="margin:0 0 16px">Review and manage user reports about artworks and content issues.</p>
 
       <!-- jia: Top filter/search (placeholder, JS can take over later) -->
       <section class="card" style="padding:16px; margin-bottom:16px">
@@ -43,46 +43,17 @@
       <section class="card" style="padding:0">
         <!-- Head -->
         <div class="admin-table admin-table__header">
-          <div>Title</div>
+          <div>Artwork</div>
           <div>Reason</div>
-          <div>Link to Art</div>
-          <div class="hide-sm">Reported By</div>
+          <div>Status</div>
+          <div class="hide-sm">Reported</div>
           <div>Actions</div>
         </div>
 
-        <!-- Line A -->
-        <div class="admin-table admin-table__row">
-          <div class="admin-cell__title">report titleA</div>
-          <div>reasonA</div>
-          <div><a href="./AdminSubmissionDetail.html">View submission</a></div>
-          <div class="hide-sm">@alice</div>
-          <div class="admin-actions">
-            <button class="btn btn--ghost" type="button">Mark In Review</button>
-            <button class="btn" type="button">Resolve</button>
-          </div>
-        </div>
-
-        <!-- Line B -->
-        <div class="admin-table admin-table__row">
-          <div class="admin-cell__title">report titleB</div>
-          <div>reasonB</div>
-          <div><a href="./AdminSubmissionDetail.html">View submission</a></div>
-          <div class="hide-sm">@bob</div>
-          <div class="admin-actions">
-            <button class="btn btn--ghost" type="button">Mark In Review</button>
-            <button class="btn" type="button">Resolve</button>
-          </div>
-        </div>
-
-        <!-- Line C -->
-        <div class="admin-table admin-table__row">
-          <div class="admin-cell__title">report titleC</div>
-          <div>reasonC</div>
-          <div><a href="./AdminSubmissionDetail.html">View submission</a></div>
-          <div class="hide-sm">@carol</div>
-          <div class="admin-actions">
-            <button class="btn btn--ghost" type="button">Mark In Review</button>
-            <button class="btn" type="button">Resolve</button>
+        <!-- Dynamic content will be loaded here -->
+        <div id="reportsContainer">
+          <div class="admin-table admin-table__row" style="text-align: center; padding: 24px;">
+            Loading reports...
           </div>
         </div>
       </section>
@@ -117,8 +88,252 @@
       // Check if user is logged in and has admin role
       if (!SessionManager.requireRole('admin')) {
         // SessionManager.requireRole will handle redirect
-        return;
+        // Exit early if not authorized
       }
+
+      // Reports management functionality
+      class ReportsManager {
+        constructor() {
+          this.currentPage = 0;
+          this.pageSize = 10;
+          this.currentFilter = '';
+          this.init();
+        }
+
+        async init() {
+          await this.loadReports();
+          this.bindEvents();
+        }
+
+        bindEvents() {
+          // Filter form
+          const filterForm = document.querySelector('.form');
+          if (filterForm) {
+            filterForm.addEventListener('submit', (e) => {
+              e.preventDefault();
+              this.applyFilters();
+            });
+          }
+
+          // Status filter
+          const statusSelect = document.querySelector('select');
+          if (statusSelect) {
+            statusSelect.addEventListener('change', () => {
+              this.applyFilters();
+            });
+          }
+        }
+
+        async applyFilters() {
+          const statusSelect = document.querySelector('select');
+          this.currentFilter = statusSelect ? statusSelect.value : '';
+          this.currentPage = 0;
+          await this.loadReports();
+        }
+
+        async loadReports() {
+          try {
+            const container = document.getElementById('reportsContainer');
+            container.innerHTML = '<div class="admin-table admin-table__row" style="text-align: center; padding: 24px;">Loading reports...</div>';
+
+            let url = `/api/reports.php?limit=${this.pageSize}&offset=${this.currentPage * this.pageSize}`;
+            if (this.currentFilter && this.currentFilter !== 'All') {
+              const statusMap = {
+                'Open': 'new',
+                'In Review': 'reviewed',
+                'Resolved': 'resolved'
+              };
+              const status = statusMap[this.currentFilter] || this.currentFilter.toLowerCase();
+              url += `&status=${encodeURIComponent(status)}`;
+            }
+
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Failed to load reports');
+
+            const data = await response.json();
+            this.renderReports(data.reports);
+            this.updatePagination(data.total);
+
+          } catch (error) {
+            console.error('Error loading reports:', error);
+            document.getElementById('reportsContainer').innerHTML =
+              '<div class="admin-table admin-table__row" style="text-align: center; padding: 24px; color: #dc2626;">Error loading reports. Please try again.</div>';
+          }
+        }
+
+        renderReports(reports) {
+          const container = document.getElementById('reportsContainer');
+
+          if (!reports || reports.length === 0) {
+            container.innerHTML = '<div class="admin-table admin-table__row" style="text-align: center; padding: 24px;">No reports found.</div>';
+            return;
+          }
+
+          container.innerHTML = reports.map(report => this.renderReportRow(report)).join('');
+        }
+
+        renderReportRow(report) {
+          const statusBadge = this.getStatusBadge(report.status);
+          const reasonText = this.formatReason(report.reason);
+          const reportedDate = new Date(report.reported_at).toLocaleDateString();
+          const artworkLink = report.artwork_title ?
+            `<a href="../cycle3/art_detail.php?id=${report.art_id}" target="_blank">${this.escapeHtml(report.artwork_title)}</a>` :
+            `<span style="color: #666;">Artwork #${report.art_id}</span>`;
+
+          // Optional admin notes (show small muted text under reason)
+          const noteLine = report.admin_notes && report.admin_notes.trim() ?
+            `<div style="color:#6b7280;font-size:12px;margin-top:4px">Notes: ${this.escapeHtml(report.admin_notes).slice(0,140)}${report.admin_notes.length>140?'…':''}</div>`
+            : '';
+
+          return `
+            <div class="admin-table admin-table__row" data-report-id="${report.id}">
+              <div class="admin-cell__title">${artworkLink}</div>
+              <div>${reasonText}${noteLine}</div>
+              <div>${statusBadge}</div>
+              <div class="hide-sm">${reportedDate}</div>
+              <div class="admin-actions">
+                ${this.renderActionButtons(report)}
+              </div>
+            </div>
+          `;
+        }
+
+        renderActionButtons(report) {
+          let buttons = [];
+
+          if (report.status === 'new') {
+            buttons.push(`<button class="btn btn--ghost" onclick="reportsManager.updateStatus(${report.id}, 'reviewed')">Mark In Review</button>`);
+            buttons.push(`<button class="btn" onclick="reportsManager.updateStatus(${report.id}, 'resolved')">Resolve</button>`);
+            buttons.push(`<button class="btn" style="background:#fee2e2;color:#991b1b" onclick="reportsManager.updateStatus(${report.id}, 'dismissed')">Dismiss</button>`);
+          } else if (report.status === 'reviewed') {
+            buttons.push(`<button class="btn" onclick="reportsManager.updateStatus(${report.id}, 'resolved')">Resolve</button>`);
+            buttons.push(`<button class="btn" style="background:#fee2e2;color:#991b1b" onclick="reportsManager.updateStatus(${report.id}, 'dismissed')">Dismiss</button>`);
+          } else {
+            buttons.push(`<span style="color: #666; font-style: italic;">${report.status === 'resolved' ? 'Resolved' : 'Dismissed'}</span>`);
+          }
+
+          // Add edit notes action (independent of status)
+          buttons.push(`<button class="btn btn--ghost" onclick="reportsManager.editNotes(${report.id}, ${JSON.stringify(report.admin_notes || '').replace(/"/g,'&quot;')})">Edit Notes</button>`);
+
+          return buttons.join(' ');
+        }
+
+        async updateStatus(reportId, newStatus) {
+          try {
+            const adminNotes = prompt(`Add admin notes for this ${newStatus} action (optional):`);
+
+            const response = await fetch(`/api/reports.php?id=${reportId}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                status: newStatus,
+                admin_notes: adminNotes || ''
+              })
+            });
+
+            if (!response.ok) throw new Error('Failed to update report');
+
+            const result = await response.json();
+            console.log('Report updated:', result);
+
+            // Reload reports to reflect changes
+            await this.loadReports();
+
+          } catch (error) {
+            console.error('Error updating report:', error);
+            alert('Failed to update report. Please try again.');
+          }
+        }
+
+        async editNotes(reportId, currentNotes) {
+          try {
+            const next = prompt('Edit admin notes:', currentNotes || '');
+            if (next === null) return; // cancelled
+            const response = await fetch(`/api/reports.php?id=${reportId}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ admin_notes: next })
+            });
+            if (!response.ok) throw new Error('Failed to save notes');
+            await this.loadReports();
+          } catch (e) {
+            alert('Failed to update notes.');
+          }
+        }
+
+        getStatusBadge(status) {
+          const badges = {
+            'new': '<span style="background: #fee2e2; color: #991b1b; padding: 2px 8px; border-radius: 12px; font-size: 12px;">New</span>',
+            'reviewed': '<span style="background: #fef3c7; color: #92400e; padding: 2px 8px; border-radius: 12px; font-size: 12px;">In Review</span>',
+            'resolved': '<span style="background: #d1fae5; color: #065f46; padding: 2px 8px; border-radius: 12px; font-size: 12px;">Resolved</span>',
+            'dismissed': '<span style="background: #f3f4f6; color: #374151; padding: 2px 8px; border-radius: 12px; font-size: 12px;">Dismissed</span>'
+          };
+          return badges[status] || status;
+        }
+
+        formatReason(reason) {
+          const reasons = {
+            'inappropriate_content': 'Inappropriate Content',
+            'copyright_violation': 'Copyright Violation',
+            'cultural_sensitivity': 'Cultural Sensitivity',
+            'incorrect_information': 'Incorrect Information',
+            'spam_or_fake': 'Spam/Fake',
+            'privacy_violation': 'Privacy Violation',
+            'other': 'Other'
+          };
+          return reasons[reason] || reason;
+        }
+
+        escapeHtml(text) {
+          const div = document.createElement('div');
+          div.textContent = text;
+          return div.innerHTML;
+        }
+
+        updatePagination(total) {
+          const nav = document.querySelector('.pagination');
+          if (!nav) return;
+          const totalPages = Math.max(1, Math.ceil(total / this.pageSize));
+
+          if (totalPages <= 1) {
+            nav.style.display = 'none';
+            return;
+          }
+          nav.style.display = 'flex';
+          nav.innerHTML = '';
+
+          const addBtn = (label, disabled, onClick, active) => {
+            const b = document.createElement('button');
+            b.className = 'page';
+            if (active) b.classList.add('page--active');
+            b.textContent = label;
+            if (disabled) b.disabled = true;
+            b.addEventListener('click', function(e){ e.preventDefault(); onClick(); });
+            nav.appendChild(b);
+          };
+
+          // Prev
+          addBtn('← Previous', this.currentPage === 0, () => { this.currentPage = Math.max(0, this.currentPage - 1); this.loadReports(); }, false);
+
+          // Windowed page numbers around current
+          const start = Math.max(0, this.currentPage - 2);
+          const end = Math.min(totalPages - 1, this.currentPage + 2);
+          for (let i = start; i <= end; i++) {
+            ((p) => addBtn(String(p + 1), false, () => { this.currentPage = p; this.loadReports(); }, p === this.currentPage))(i);
+          }
+
+          // Next
+          addBtn('Next →', this.currentPage >= totalPages - 1, () => { this.currentPage = Math.min(totalPages - 1, this.currentPage + 1); this.loadReports(); }, false);
+        }
+      }
+
+      // Initialize reports manager
+      let reportsManager;
+      document.addEventListener('DOMContentLoaded', () => {
+        reportsManager = new ReportsManager();
+      });
     </script>
   </body>
 </html>

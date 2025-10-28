@@ -259,9 +259,9 @@
       var roleInput = form.querySelector('input[name="userRole"]:checked');
       var selectedRole = roleInput ? roleInput.value : 'public';
 
-      // Try backend register first
+      // Try backend register first (use absolute API path to avoid base issues)
       try {
-        var resp = await fetch('../api/auth.php?action=register', {
+        var resp = await fetch('/api/auth.php?action=register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -276,15 +276,7 @@
         setTimeout(function(){ window.location.href = './UserLogIn.html' }, 1500)
         return
       } catch(err) {
-        // Fallback to local storage demo if backend not available
-        var result = UserStorage.addUser({ email: email, password: password, role: selectedRole })
-        if (result.success) {
-          showSuccess('Registration successful! Redirecting to login...')
-          form.reset()
-          setTimeout(function(){ window.location.href = './UserLogIn.html' }, 1500)
-        } else {
-          showError(result.message || 'Registration failed. Please try again.', emailInput)
-        }
+        showError('Sign up failed: ' + (err && err.message || 'Server error'), emailInput)
       }
     });
 

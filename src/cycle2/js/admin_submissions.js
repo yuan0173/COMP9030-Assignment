@@ -1,7 +1,7 @@
 ;(function(){
   'use strict'
 
-  if (!window.AdminData){ return }
+  // Switch to server-backed submissions via /api/admin_submissions.php
 
   var pageSize = 10
   var currentPage = 1
@@ -19,11 +19,10 @@
   function filterList(list){
     var f = readFilters()
     return (list || []).filter(function(it){
-      var statusOk = f.status ? (String(it.status || '').toLowerCase() === f.status.toLowerCase()) : true
       var needle = f.keyword
       var hay = ((it.title || '') + ' ' + (it.submitter || '')).toLowerCase()
       var kwOk = !needle || hay.indexOf(needle) !== -1
-      return statusOk && kwOk
+      return kwOk
     })
   }
 
@@ -66,11 +65,28 @@
       c4.textContent = formatDate(it.createdAt)
       var c5 = document.createElement('div')
       c5.className = 'admin-actions'
+
+      // View button (link to SSR detail)
       var open = document.createElement('a')
       open.className = 'btn'
-      open.href = './AdminSubmissionDetail.html?id=' + encodeURIComponent(it.id)
+      open.href = '/cycle3/art_detail.php?id=' + encodeURIComponent(it.id)
       open.textContent = 'Open'
+
+      // Approve / Reject quick actions
+      var approve = document.createElement('button')
+      approve.className = 'btn btn--ghost'
+      approve.textContent = 'Approve'
+      approve.addEventListener('click', function(){ updateStatus(it.id, 'approved') })
+      var reject = document.createElement('button')
+      reject.className = 'btn btn--ghost'
+      reject.style.background = '#fee2e2'
+      reject.style.color = '#991b1b'
+      reject.textContent = 'Reject'
+      reject.addEventListener('click', function(){ updateStatus(it.id, 'rejected') })
+
       c5.appendChild(open)
+      c5.appendChild(approve)
+      c5.appendChild(reject)
 
       row.appendChild(c1)
       row.appendChild(c2)
@@ -115,11 +131,31 @@
   }
 
   function apply(preservePage){
-    cache = AdminData.get(AdminData.KEYS.submissions) || []
-    var filtered = filterList(cache)
-    if (!preservePage){ currentPage = 1 }
-    renderTable(filtered)
-    renderPagination(filtered.length)
+    var f = readFilters()
+    var params = new URLSearchParams()
+    if (f.keyword) params.set('q', f.keyword)
+    if (f.status) params.set('status', String(f.status).toLowerCase())
+    params.set('limit', String(pageSize))
+    params.set('offset', String((currentPage - 1) * pageSize))
+    fetch('/api/admin_submissions.php?' + params.toString(), { credentials: 'include' })
+      .then(function(r){ return r.json() })
+      .then(function(data){
+        cache = (data && Array.isArray(data.items)) ? data.items : []
+        var filtered = filterList(cache)
+        if (!preservePage){ currentPage = 1 }
+        renderTable(filtered)
+        renderPagination(data && typeof data.total==='number' ? data.total : filtered.length)
+      })
+      .catch(function(err){ console.error('Load error', err) })
+  }
+
+  function updateStatus(id, status){
+    fetch('/api/admin_submissions.php?id=' + encodeURIComponent(id), {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ status: status })
+    }).then(function(r){ return r.json() }).then(function(){ apply(true) }).catch(function(err){ alert('Failed to update: ' + err) })
   }
 
   function hook(){
@@ -133,10 +169,5 @@
 
   function ready(fn){ if (document.readyState !== 'loading') fn(); else document.addEventListener('DOMContentLoaded', fn) }
 
-  ready(function(){
-    if (window.AdminData && AdminData.seedIfNeeded) AdminData.seedIfNeeded()
-    hook()
-    apply(false)
-  })
+  ready(function(){ hook(); apply(false) })
 })()
-

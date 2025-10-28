@@ -21,8 +21,8 @@
           <div style="display:flex; gap:12px; align-items:center">
             <img src="../test.jpg" alt="avatar" style="width:64px;height:64px;border-radius:999px;object-fit:cover">
             <div>
-              <div style="font-weight:600">Hello! userName</div>
-              <div class="card__desc">@username · Member</div>
+              <div style="font-weight:600" id="userWelcome">Hello! userName</div>
+              <div class="card__desc" id="userInfo">@username · Member</div>
             </div>
           </div>
 
@@ -32,7 +32,7 @@
           <h3 style="margin:.25rem 0">Bio</h3>
           <p class="card__desc" id="bioText">This is the bio part</p>
           <div class="form" onsubmit="return false;">
-            <input class="input" id="bioInput" type="text" placeholder="Edit bio (conditionally render by JS)">
+            <textarea class="input" id="bioInput" rows="3" placeholder="Tell others about yourself..." readonly></textarea>
             <div class="form__actions">
               <button class="btn btn--ghost" id="bioEditBtn" type="button">Edit My Bio</button>
               <button class="btn" id="bioSaveBtn" type="button">Save</button>
@@ -45,16 +45,16 @@
           <h3 style="margin:.25rem 0">Contact</h3>
           <div class="grid" style="gap:8px">
             <div>
-              <div class="card__desc">This is the Email address other users can contact through</div>
-              <input class="input" id="contactEmailInput" type="text" placeholder="Edit email (conditionally by JS)">
+              <label class="card__desc">Email</label>
+              <input class="input" id="contactEmailInput" type="email" placeholder="your.email@example.com" readonly>
             </div>
             <div>
-              <div class="card__desc">This is your address of your office</div>
-              <input class="input" id="contactAddressInput" type="text" placeholder="Edit address (conditionally by JS)">
+              <label class="card__desc">Address</label>
+              <input class="input" id="contactAddressInput" type="text" placeholder="Your address" readonly>
             </div>
             <div>
-              <div class="card__desc">This is your phone number</div>
-              <input class="input" id="contactPhoneInput" type="text" placeholder="Edit phone (conditionally by JS)">
+              <label class="card__desc">Phone</label>
+              <input class="input" id="contactPhoneInput" type="tel" placeholder="Your phone number" readonly>
             </div>
           </div>
           <div class="form__actions" style="margin-top:8px">
@@ -77,34 +77,18 @@
             </div>
           </article>
 
-          <!-- TODO: Sign as me (rendered by JS conditions only when the user is an Artist) -->
+          <!-- My favorites -->
+          <article class="card" id="favoritesSection" style="padding:16px">
+            <h2 style="margin:.25rem 0">My Favorites</h2>
+            <div id="userFavorites" class="cards" style="margin-top:12px"></div>
+            <nav id="favoritesPagination" class="pagination" style="margin-top:12px" aria-label="Favorites pagination"></nav>
+          </article>
+
+          <!-- Artist-only section; visible when role is 'artist' -->
           <article id="artistSection" class="card" style="padding:16px; display:none">
-            <h2 style="margin:.25rem 0">Works Credited to You</h2>
-            <div class="cards" style="margin-top:12px">
-              <a class="card" href=".">
-                <div class="card__body">
-                  <h3 class="card__title">title1</h3>
-                  <p class="card__desc">pending</p>
-                </div>
-              </a>
-              <a class="card" href=".">
-                <div class="card__body">
-                  <h3 class="card__title">title1</h3>
-                  <p class="card__desc">approved</p>
-                </div>
-              </a>
-              <a class="card" href=".">
-                <div class="card__body">
-                  <h3 class="card__title">title1</h3>
-                  <p class="card__desc">rejected</p>
-                </div>
-              </a>
-              <a class="card" href=".">
-                <div class="card__body">
-                  <h3 class="card__title">title1</h3>
-                  <p class="card__desc">pending</p>
-                </div>
-              </a>
+            <h2 style="margin:.25rem 0">Your Credited Works</h2>
+            <div class="cards" style="margin-top:12px" id="artistWorks">
+              <div class="notice notice--empty">No credited works yet.</div>
             </div>
           </article>
         </section>

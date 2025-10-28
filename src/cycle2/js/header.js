@@ -9,40 +9,40 @@
       'home': {
         logo: 'IAA',
         navItems: [
-          { href: './Home.html', text: 'Home', current: true },
-          { href: './About.html', text: 'About' },
-          { href: './Guideline.html', text: 'Guidelines' },
-          { href: './ArtsResult.html', text: 'Arts' },
-          { href: './Contact.html', text: 'Contact' }
+          { href: '/cycle2/Pages/Home.html', text: 'Home', current: true },
+          { href: '/cycle2/Pages/About.html', text: 'About' },
+          { href: '/cycle2/Pages/Guideline.html', text: 'Guidelines' },
+          { href: '/cycle2/Pages/ArtsResult.html', text: 'Arts' },
+          { href: '/cycle2/Pages/Contact.html', text: 'Contact' }
         ]
       },
       'regular': {
         logo: 'IAA',
         navItems: [
-          { href: './Home.html', text: 'Home' },
-          { href: './About.html', text: 'About' },
-          { href: './Guideline.html', text: 'Guidelines' },
-          { href: './ArtsResult.html', text: 'Arts' },
-          { href: './Contact.html', text: 'Contact' }
+          { href: '/cycle2/Pages/Home.html', text: 'Home' },
+          { href: '/cycle2/Pages/About.html', text: 'About' },
+          { href: '/cycle2/Pages/Guideline.html', text: 'Guidelines' },
+          { href: '/cycle2/Pages/ArtsResult.html', text: 'Arts' },
+          { href: '/cycle2/Pages/Contact.html', text: 'Contact' }
         ]
       },
       'profile': {
         logo: 'IAA',
         navItems: [
-          { href: './Home.html', text: 'Home' },
-          { href: './About.html', text: 'About' },
-          { href: './Guideline.html', text: 'Guidelines' },
-          { href: './ArtsResult.html', text: 'Arts' },
-          { href: './Contact.html', text: 'Contact' }
+          { href: '/cycle2/Pages/Home.html', text: 'Home' },
+          { href: '/cycle2/Pages/About.html', text: 'About' },
+          { href: '/cycle2/Pages/Guideline.html', text: 'Guidelines' },
+          { href: '/cycle2/Pages/ArtsResult.html', text: 'Arts' },
+          { href: '/cycle2/Pages/Contact.html', text: 'Contact' }
         ]
       },
       'admin': {
         logo: 'IAA • Admin',
         navItems: [
-          { href: './AdminDashboard.html', text: 'Dashboard' },
-          { href: './AdminUserManagement.html', text: 'Users' },
-          { href: './AdminSubmissionList.html', text: 'Submissions' },
-          { href: './AdminReportList.html', text: 'Moderation' }
+          { href: '/cycle2/Pages/AdminDashboard.html', text: 'Dashboard' },
+          { href: '/cycle2/Pages/AdminUserManagement.html', text: 'Users' },
+          { href: '/cycle2/Pages/AdminSubmissionList.html', text: 'Submissions' },
+          { href: '/cycle2/Pages/AdminReportList.html', text: 'Reports' }
         ]
       }
     },
@@ -103,16 +103,17 @@
         
         // Add dashboard link based on user role
         if (user.role === 'admin') {
-          authHTML += '<a class="btn btn--ghost" href="./AdminDashboard.html">Dashboard</a>';
+          authHTML += '<a class="btn btn--ghost" href="/cycle2/Pages/AdminDashboard.html">Dashboard</a>';
         } else {
-          authHTML += '<a class="btn btn--ghost" href="./UserProfile.html">Dashboard</a>';
+          // Always route to Cycle 2 profile to keep submission flow consistent
+          authHTML += '<a class="btn btn--ghost" href="/cycle2/Pages/UserProfile.html">Dashboard</a>';
         }
         
         authHTML += '<a class="btn btn--ghost" href="#" onclick="SessionManager.logout()">Sign out</a>';
         
         return authHTML;
       } else {
-        return '<a class="btn btn--ghost" href="./UserLogIn.html">Sign in</a>\n          <a class="btn" href="./UserRegistration.html">Register</a>';
+        return '<a class="btn btn--ghost" href="./UserLogIn.html">Sign in</a>\n          <a class="btn" href="./UserRegistration.html">Sign up</a>';
       }
     },
 
