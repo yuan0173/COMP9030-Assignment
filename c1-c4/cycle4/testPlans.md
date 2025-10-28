@@ -102,8 +102,6 @@ strongly disagree 1  2  3  4  5  strongly agree
 
 2. Do you have any other comments on this task?
 
----
-
 
 # Scenario 5
 
