@@ -101,3 +101,122 @@ strongly disagree 1  2  3  4  5  strongly agree
 strongly disagree 1  2  3  4  5  strongly agree
 
 2. Do you have any other comments on this task?
+
+
+# Scenario 5
+
+Evaluate how easily users can navigate between main pages (Home, About, Guidelines, Arts, Contact) and find specific information.
+
+## Objectives
+
+Assess intuitiveness of the navigation bar.
+
+Evaluate information layout and content clarity on key pages.
+
+## Participants
+
+5 actual users from other groups
+
+## Tasks
+
+Evaluate how easily users can navigate between main pages (Home, About, Guidelines, Arts, Contact) and find specific information.
+
+## Metrics
+
+Task success rate to navigate pages.
+
+Average completion time (seconds)
+
+User satisfaction (1–5)
+
+## Procedures
+
+1. Visit "homepage" page.
+2. Visit "about" page.
+3. Visit "Guidelines" page.
+4. Visit "Arts" page.
+5. Visit "Contact" page.
+6. Return to "homepage"
+
+## Questionnaire
+
+How easy was it to find the information you wanted? (1–5)
+
+Were the page titles and navigation clear to you? (1–5)
+
+# Scenario 6
+
+## Objectives
+
+Test the functionality in homepage arts maps.
+
+## Participants
+
+5 actual users from other groups
+
+## Tasks
+
+Validate zoom in/out and panning feature.
+
+Check whether clicking map markers provides accurate responses.
+
+## Metrics
+
+Zoom success rate
+
+Click accuracy (correct marker interaction)
+
+Subjective ease of use (1–5 scale)
+
+## Procedures
+
+1. Zoom in to a specific region on the map (e.g., Adelaide city area).
+2. Pan the map to a different location (e.g., Melbourne).
+3. Click on one of the art item and view its details.
+
+## Questionnaire
+
+How smooth was the zoom and pan experience? (1–5)
+
+Were the clickable areas easy to identify? (1–5)
+
+# Scenario 7
+
+## Objectives
+
+Test the functionality in homepage featured arts item.
+
+## Participants
+
+5 actual users from other groups
+
+## Tasks
+
+Test how users explore the featured arts in homepage.
+
+Verify the link if it can redirect to art details page.
+
+Assess readability and layout of art detail information.
+
+## Metrics
+
+Task completion rate (%)
+
+Time to locate and open an art detail page (seconds)
+
+Number of navigation errors (e.g., wrong clicks)
+
+User satisfaction with layout (1–5 scale)
+
+## Procedures
+
+1. Navigate to the homepage.
+2. Browse through featured artworks and select one of interest.
+3. Click on the artwork to open its detail page.
+4. Review the detail content and return to the Arts list.
+
+## Questionnaire
+
+How easy was it to browse artworks? (1–5)
+
+Did the art detail page provide clear and engaging information? (1–5)
