@@ -73,3 +73,31 @@ strongly disagree 1  2  3  4  5  strongly agree
 strongly disagree 1  2  3  4  5  strongly agree
 
 2. Do you have any other comments on this task?
+
+# Scenario 4
+## Objectives
+  functionality
+
+## Participants
+  5 actual users from other groups
+
+## Tasks
+  Filter the arts with given filters and view the arts' details as an unlogged in user.
+
+## Metrics
+  task completion rate is beyond 90%.
+
+## Procedures
+1. Visit the home page.
+2. Go back to arts page by clicking "art" link at the top navigation.
+3. use filters to select arts.
+4. see if there is any changes on the results.
+5. Click any one of the arts to view its details.
+6. Check if the necessary details are listed.
+7. Go back to the last page and redo step 5 - 6. 
+
+## Questionnaire
+1. I found completing the tasks is easy.
+strongly disagree 1  2  3  4  5  strongly agree
+
+2. Do you have any other comments on this task?
