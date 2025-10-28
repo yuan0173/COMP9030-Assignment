@@ -104,7 +104,6 @@ strongly disagree 1  2  3  4  5  strongly agree
 
 
 # Scenario 5
-
 Evaluate how easily users can navigate between main pages (Home, About, Guidelines, Arts, Contact) and find specific information.
 
 ## Objectives
@@ -145,7 +144,6 @@ How easy was it to find the information you wanted? (1–5)
 Were the page titles and navigation clear to you? (1–5)
 
 # Scenario 6
-
 ## Objectives
 
 Test the functionality in homepage arts maps.
@@ -181,7 +179,6 @@ How smooth was the zoom and pan experience? (1–5)
 Were the clickable areas easy to identify? (1–5)
 
 # Scenario 7
-
 ## Objectives
 
 Test the functionality in homepage featured arts item.
@@ -220,3 +217,124 @@ User satisfaction with layout (1–5 scale)
 How easy was it to browse artworks? (1–5)
 
 Did the art detail page provide clear and engaging information? (1–5)
+
+# Scenario 8
+## Objectives
+
+Test the functionality of the Contact email sending feature.
+
+## Participants
+
+5 actual users from other groups
+
+## Tasks
+
+Verify whether users can successfully send a message through the contact form and receive confirmation feedback.
+
+## Metrics
+
+Email send success rate (%)
+User satisfaction (1–5 scale)
+
+## Procedures
+
+1. Go to the "Contact" page.
+2. Fill in all required fields.
+3. Click "Send" to submit the message, check if it is successful.
+4. Fill one fields.
+5. Click "Send" to submit the message, check if it isn't successful.
+
+## Questionnaire
+
+Was it easy to find and use the contact form? (1–5)
+Do you think the field is reasonable? (1–5)
+
+# Scenario 9
+## Objectives
+
+Test the functionality of user favorite (art collection) feature.
+
+## Participants
+
+5 actual users from other groups
+
+## Tasks
+
+Validate that users can add an artwork to favorites and later view their saved list.
+
+## Metrics
+
+Task success rate (%)
+User satisfaction (1–5 scale)
+
+## Procedures
+
+1. Log in to the website.
+2. Go to the "Arts" page.
+3. Select one artwork and click the “Favorite” or “Save” icon.
+4. Navigate to “My Favorites” section and verify the artwork appears.
+
+## Questionnaire
+
+Was it easy to add and find your favorite artworks? (1–5)
+Did the favorite list update correctly? (1–5)
+
+# Scenario 10
+## Objectives
+
+Test user account security and editing permissions.
+
+## Participants
+
+5 actual users from other groups
+
+## Tasks
+
+Ensure logged-in users can only edit their own information and artworks, not others’.
+
+## Metrics
+
+Access control accuracy (%)
+Error message clarity (1–5)
+
+## Procedures
+
+1. Log in as public user.
+2. Edit one arartworkt submitted by others. It should be unsuccessful.
+3. Attempt to edit other user's profile. It should be unsuccessful.
+4. Log out and confirm that editing is unavailable for unauthenticated users.
+5. Redo the same step by admin and artist.
+
+## Questionnaire
+
+Did the system prevent unauthorized editing effectively? (1–5)
+
+# Scenario 11
+## Objectives
+
+Test mobile and tablet compatibility of the website interface.
+
+## Participants
+
+5 actual users from other groups
+
+## Tasks
+
+Assess layout consistency, responsiveness, and ease of navigation on different devices.
+
+## Metrics
+
+Display compatibility success rate (%)
+Navigation smoothness (1–5)
+
+## Procedures
+
+1. Open the website on a mobile phone.
+2. Browse main pages (Home, Arts, Contact) and interact with the map.
+3. Repeat steps on a tablet.
+4. Compare layout, performance, and ease of use.
+
+## Questionnaire
+
+Was the website layout consistent and easy to read on mobile/tablet? (1–5)
+Did all interactive elements (map, buttons, menus) work properly? (1–5)
