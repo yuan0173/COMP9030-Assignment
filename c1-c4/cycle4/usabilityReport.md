@@ -1,6 +1,6 @@
 # Usability Evaluation Report
 ## Introduction
-This report reflects on the basic functionalities of the art atlas web application including art submission, art details viewing and so on. The report focuses on completing the basic tasks from the view of normal users and users' feelings and comments on the functionality designs of this application.
+This report reflects on the basic functionalities of the art atlas web application including art submission, art details viewing and so on. The report focuses on completing the basic tasks from the view of normal users and users' feelings and comments on the functionality designs of this application. Also, this includes the main causes of those issues and related recommendations. 
 
 ## Testing tasks
 1. Signing up for a new account and log in.
