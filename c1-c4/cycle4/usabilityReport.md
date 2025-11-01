@@ -135,6 +135,16 @@ Test mobile and tablet compatibility of the website interface.
 3. Repeat steps on a tablet.
 4. Compare layout, performance, and ease of use.
 
+## Test results
+### task completion data
+
+### errors
+
+### participants comments
+
+### questionnaire responses
+
+
 ## Findings 
 
 
@@ -143,6 +153,3 @@ Test mobile and tablet compatibility of the website interface.
 
 ## Recommendations
 
-
-## Appendices
-### Appendix 1: Questionnaire
