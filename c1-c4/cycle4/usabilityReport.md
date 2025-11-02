@@ -146,7 +146,8 @@ Test mobile and tablet compatibility of the website interface.
 
 
 ## Findings 
-
+The overall satisfaction of this application is 4.1/5.0, which is around 80%. In general, the problems are about the compatibility on mobile phones and accounts creating. Some users may not be able to create an account successfully. Also, when the application is run on the mobile phones, some of the elements may not look just like as what they are on the computers. In other words, the layout of the application may look strange when it comes to using this application with mobile phones.
+For other testings aspects, such as login, art submission, users find them easy and their task satisfaction rate are 4.8/5.0 (96%) and 4.6/5.0 (92%) respectively. In general, testers find that they can smoothly complete these scenarios. Some of the testers leave comments that as a new user, it is easy to learn how to use this application.
 
 ## Key issues and their causes
 
