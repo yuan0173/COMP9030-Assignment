@@ -17,67 +17,111 @@
   var form = document.getElementById('editForm')
   if (!form) return
 
-  // Load the submission data
-  function loadSubmission() {
-    try {
-      var submissions = localStorage.getItem('iaa_arts_v1')
-      if (!submissions) return null
-      var allArts = JSON.parse(submissions)
-      return allArts.find(function(art){ return art.id === submissionId })
-    } catch(_) {
-      return null
-    }
+  // Load the submission data from API
+  function loadSubmission(callback) {
+    fetch('/api/arts.php?id=' + submissionId)
+      .then(function(response) {
+        if (!response.ok) {
+          throw new Error('Failed to fetch submission')
+        }
+        return response.json()
+      })
+      .then(function(data) {
+        callback(data)
+      })
+      .catch(function(error) {
+        console.error('Error loading submission:', error)
+        callback(null)
+      })
+  }
+
+  // Get current user session from backend
+  function getCurrentUserFromBackend(callback) {
+    fetch('/api/auth.php?action=session', {
+      credentials: 'include'
+    })
+    .then(function(response) {
+      return response.json()
+    })
+    .then(function(data) {
+      callback(data.user)
+    })
+    .catch(function(error) {
+      console.error('Error getting session:', error)
+      callback(null)
+    })
   }
 
   // Verify user owns this submission
-  var currentUser = SessionManager.getCurrentUser()
-  var submission = loadSubmission()
-  if (!submission || !currentUser) {
-    alert('Submission not found')
-    window.location.href = './UserProfile.html'
-    return
-  }
+  getCurrentUserFromBackend(function(currentUser) {
+    if (!currentUser) {
+      alert('User not logged in')
+      window.location.href = './UserProfile.html'
+      return
+    }
 
-  if (submission.submittedBy !== currentUser.email) {
-    alert('You do not have permission to edit this submission')
-    window.location.href = './UserProfile.html'
-    return
-  }
+    loadSubmission(function(data) {
+      submission = data
+      if (!submission) {
+        alert('Submission not found')
+        window.location.href = './UserProfile.html'
+        return
+      }
+
+      // Check ownership - for API data, use changed_by field
+      var userRole = currentUser.role
+      var currentUserId = currentUser.id
+
+      // Allow admin to edit any submission, or user to edit their own submissions
+      if (userRole !== 'admin' && submission.changed_by !== currentUserId) {
+        alert('You do not have permission to edit this submission')
+        window.location.href = './UserProfile.html'
+        return
+      }
+
+      // Initialize form and map with loaded data
+      populateForm(data)
+      initializeMap()
+      initializeImageHandling()
+      setTimeout(function() { setExistingMarker(data) }, 100)
+    })
+  })
 
   // Populate form fields with existing data
-  function populateForm() {
-    document.getElementById('artTitle').value = submission.title || ''
-    document.getElementById('artType').value = submission.type || 'Cave Art'
-    document.getElementById('artPeriod').value = submission.period || 'Ancient'
-    document.getElementById('artCondition').value = submission.condition || ''
-    document.getElementById('artDescription').value = submission.description || ''
-    document.getElementById('locationNotes').value = submission.locationNotes || ''
-    document.getElementById('lat').value = submission.lat || ''
-    document.getElementById('lng').value = submission.lng || ''
-    document.getElementById('creditKnownArtist').checked = !!submission.creditKnownArtist
-    document.getElementById('sensitive').checked = !!submission.sensitive
-    document.getElementById('privateLand').checked = !!submission.privateLand
+  function populateForm(submissionData) {
+    document.getElementById('artTitle').value = submissionData.title || ''
+    document.getElementById('artType').value = submissionData.type || 'Cave Art'
+    document.getElementById('artPeriod').value = submissionData.period || 'Ancient'
+    document.getElementById('artCondition').value = submissionData.condition || ''
+    document.getElementById('artDescription').value = submissionData.description || ''
+    document.getElementById('locationNotes').value = submissionData.locationNotes || ''
+    document.getElementById('lat').value = submissionData.lat || ''
+    document.getElementById('lng').value = submissionData.lng || ''
+    document.getElementById('creditKnownArtist').checked = !!submissionData.creditKnownArtist
+    document.getElementById('sensitive').checked = !!submissionData.sensitive
+    document.getElementById('privateLand').checked = !!submissionData.privateLand
 
     // Show current image
     var currentImagePreview = document.getElementById('currentImagePreview')
-    if (currentImagePreview && submission.image) {
-      currentImagePreview.src = submission.image
+    if (currentImagePreview && submissionData.image) {
+      currentImagePreview.src = submissionData.image
       currentImagePreview.style.display = 'block'
     }
   }
 
-  // Initialize map (same logic as submission.js)
+  // Global variables for map and form elements
   var mapEl = document.getElementById('submissionMap')
   var latEl = document.getElementById('lat')
   var lngEl = document.getElementById('lng')
   var imageInput = document.getElementById('imageInput')
   var imagePreview = document.getElementById('imagePreview')
-
+  var locationNotesInput = document.getElementById('locationNotes')
   var marker = null
   var map = null
-  var locationNotesInput = document.getElementById('locationNotes')
-  
-  if (window.L && mapEl) {
+
+  // Initialize map
+  function initializeMap() {
+    if (!window.L || !mapEl) return
     map = L.map('submissionMap', {
       center: [ -33.8688, 151.2093 ],
       zoom: 11
@@ -106,9 +150,9 @@
     map.on('click', function(e){ setMarker(e.latlng) })
 
     // Set existing marker if coordinates exist
-    function setExistingMarker() {
-      var lat = parseFloat(submission.lat)
-      var lng = parseFloat(submission.lng)
+    function setExistingMarker(submissionData) {
+      var lat = parseFloat(submissionData.lat)
+      var lng = parseFloat(submissionData.lng)
       if (!isNaN(lat) && !isNaN(lng)) {
         var latlng = L.latLng(lat, lng)
         map.setView(latlng, 15)
@@ -233,51 +277,73 @@
     setTimeout(setExistingMarker, 100)
   }
 
-  // Image handling
-  if (imageInput && imagePreview) {
-    imageInput.addEventListener('change', function(){
-      var file = imageInput.files && imageInput.files[0]
-      if (!file) { imagePreview.style.display = 'none'; imagePreview.src = ''; return }
-      var reader = new FileReader()
-      reader.onload = function(){
-        imagePreview.src = reader.result
-        imagePreview.style.display = 'block'
-      }
-      reader.readAsDataURL(file)
-    })
+  // Initialize image handling
+  function initializeImageHandling() {
+    if (imageInput && imagePreview) {
+      imageInput.addEventListener('change', function(){
+        var file = imageInput.files && imageInput.files[0]
+        if (!file) { imagePreview.style.display = 'none'; imagePreview.src = ''; return }
+        var reader = new FileReader()
+        reader.onload = function(){
+          imagePreview.src = reader.result
+          imagePreview.style.display = 'block'
+        }
+        reader.readAsDataURL(file)
+      })
+    }
   }
 
   function getBool(id){ return !!document.getElementById(id).checked }
   function getVal(id){ return document.getElementById(id).value.trim() }
 
-  function updateSubmission(updatedData) {
-    try {
-      var submissions = localStorage.getItem('iaa_arts_v1')
-      if (!submissions) return false
-      var allArts = JSON.parse(submissions)
-      var index = allArts.findIndex(function(art){ return art.id === submissionId })
-      if (index === -1) return false
-      
-      // Update the submission
-      allArts[index] = Object.assign(allArts[index], updatedData)
-      localStorage.setItem('iaa_arts_v1', JSON.stringify(allArts))
-      return true
-    } catch(_) {
-      return false
-    }
+  function updateSubmission(updatedData, callback) {
+    fetch('/api/arts.php?id=' + submissionId, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include',
+      body: JSON.stringify(updatedData)
+    })
+    .then(function(response) {
+      return response.json()
+    })
+    .then(function(data) {
+      if (data.error) {
+        callback(false, data.error)
+      } else {
+        callback(true, null)
+      }
+    })
+    .catch(function(error) {
+      console.error('Update error:', error)
+      callback(false, 'Network error')
+    })
   }
 
-  function deleteSubmission() {
-    try {
-      var submissions = localStorage.getItem('iaa_arts_v1')
-      if (!submissions) return false
-      var allArts = JSON.parse(submissions)
-      var updatedArts = allArts.filter(function(art){ return art.id !== submissionId })
-      localStorage.setItem('iaa_arts_v1', JSON.stringify(updatedArts))
-      return true
-    } catch(_) {
-      return false
-    }
+  function deleteSubmission(callback) {
+    fetch('/api/arts.php?id=' + submissionId, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include',
+      body: JSON.stringify({})
+    })
+    .then(function(response) {
+      return response.json()
+    })
+    .then(function(data) {
+      if (data.error) {
+        callback(false, data.error)
+      } else {
+        callback(true, null)
+      }
+    })
+    .catch(function(error) {
+      console.error('Delete error:', error)
+      callback(false, 'Network error')
+    })
   }
 
   // Form submission handler
@@ -303,12 +369,14 @@
       updatedData.image = imagePreview.src
     }
 
-    if (updateSubmission(updatedData)) {
-      alert('Submission updated successfully!')
-      window.location.href = './UserProfile.html'
-    } else {
-      alert('Failed to update submission. Please try again.')
-    }
+    updateSubmission(updatedData, function(success, error) {
+      if (success) {
+        alert('Submission updated successfully!')
+        window.location.href = './UserProfile.html'
+      } else {
+        alert('Failed to update submission: ' + (error || 'Please try again.'))
+      }
+    })
   })
 
   // Cancel button handler
@@ -322,14 +390,14 @@
       return
     }
     
-    if (deleteSubmission()) {
-      alert('Submission deleted successfully.')
-      window.location.href = './UserProfile.html'
-    } else {
-      alert('Failed to delete submission. Please try again.')
-    }
+    deleteSubmission(function(success, error) {
+      if (success) {
+        alert('Submission deleted successfully.')
+        window.location.href = './UserProfile.html'
+      } else {
+        alert('Failed to delete submission: ' + (error || 'Please try again.'))
+      }
+    })
   })
 
-  // Initialize form with existing data
-  populateForm()
 })();

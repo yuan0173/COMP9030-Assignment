@@ -38,13 +38,24 @@
     var phoneInput = getEl('contactPhoneInput')
     var artistSection = getEl('artistSection')
 
-    if (bioText) bioText.textContent = data.bio || 'This is the bio part'
+    // Contact display elements
+    var emailDisplay = getEl('contactEmailDisplay')
+    var addressDisplay = getEl('contactAddressDisplay')
+    var phoneDisplay = getEl('contactPhoneDisplay')
+
+    if (bioText) bioText.textContent = data.bio || "I'm an art enthusiast"
     if (bioInput) bioInput.value = data.bio || ''
     if (emailInput) emailInput.value = data.email || ''
     if (addressInput) addressInput.value = data.address || ''
     if (phoneInput) phoneInput.value = data.phone || ''
+
+    // Update contact display
+    if (emailDisplay) emailDisplay.textContent = data.email || '-'
+    if (addressDisplay) addressDisplay.textContent = data.address || '-'
+    if (phoneDisplay) phoneDisplay.textContent = data.phone || '-'
+
     if (artistSection) artistSection.style.display = (auth && auth.role === 'artist') ? '' : 'none'
-    
+
     // Control UI elements based on user role
     updateUIBasedOnRole(auth)
   }
@@ -76,32 +87,35 @@
   }
 
   function toggleBioEdit(isEditing){
-    var bioInput = getEl('bioInput')
-    var bioSaveBtn = getEl('bioSaveBtn')
-    var bioEditBtn = getEl('bioEditBtn')
+    var bioForm = getEl('bioForm')
     var bioText = getEl('bioText')
+    var bioEditBtn = getEl('bioEditBtn')
 
-    if (bioInput) {
-      bioInput.readOnly = !isEditing
-      bioInput.style.display = isEditing ? 'block' : 'none'
+    if (bioForm) {
+      bioForm.style.display = isEditing ? 'block' : 'none'
     }
-    if (bioText) bioText.style.display = isEditing ? 'none' : ''
-    if (bioSaveBtn) bioSaveBtn.style.display = isEditing ? 'inline-block' : 'none'
-    if (bioEditBtn) bioEditBtn.style.display = isEditing ? 'none' : 'inline-block'
+    if (bioText) {
+      bioText.style.display = isEditing ? 'none' : 'block'
+    }
+    if (bioEditBtn) {
+      bioEditBtn.style.display = isEditing ? 'none' : 'inline-block'
+    }
   }
 
   function toggleContactEdit(isEditing){
-    var emailInput = getEl('contactEmailInput')
-    var addressInput = getEl('contactAddressInput')
-    var phoneInput = getEl('contactPhoneInput')
-    var contactSaveBtn = getEl('contactSaveBtn')
+    var contactForm = getEl('contactForm')
+    var contactDisplay = getEl('contactDisplay')
     var contactEditBtn = getEl('contactEditBtn')
 
-    if (emailInput) emailInput.readOnly = !isEditing
-    if (addressInput) addressInput.readOnly = !isEditing
-    if (phoneInput) phoneInput.readOnly = !isEditing
-    if (contactSaveBtn) contactSaveBtn.style.display = isEditing ? 'inline-block' : 'none'
-    if (contactEditBtn) contactEditBtn.style.display = isEditing ? 'none' : 'inline-block'
+    if (contactForm) {
+      contactForm.style.display = isEditing ? 'block' : 'none'
+    }
+    if (contactDisplay) {
+      contactDisplay.style.display = isEditing ? 'none' : 'block'
+    }
+    if (contactEditBtn) {
+      contactEditBtn.style.display = isEditing ? 'none' : 'inline-block'
+    }
   }
 
   function updateUserDisplay(){
@@ -463,8 +477,9 @@
 
         var input = document.createElement('input')
         input.className = 'input'
-        input.placeholder = 'Display name'
+        input.placeholder = 'Display name (max 50 characters)'
         input.style.display = 'none'
+        input.maxLength = 50
 
         var editBtn = document.createElement('button')
         editBtn.className = 'btn btn--ghost'
@@ -523,23 +538,52 @@
 
     var bioEditBtn = getEl('bioEditBtn')
     var bioSaveBtn = getEl('bioSaveBtn')
+    var bioCancelBtn = getEl('bioCancelBtn')
     var contactEditBtn = getEl('contactEditBtn')
     var contactSaveBtn = getEl('contactSaveBtn')
+    var contactCancelBtn = getEl('contactCancelBtn')
 
     if (bioEditBtn) bioEditBtn.addEventListener('click', function(){ toggleBioEdit(true) })
+    if (bioCancelBtn) bioCancelBtn.addEventListener('click', function(){ toggleBioEdit(false) })
     if (contactEditBtn) contactEditBtn.addEventListener('click', function(){ toggleContactEdit(true) })
+    if (contactCancelBtn) contactCancelBtn.addEventListener('click', function(){ toggleContactEdit(false) })
 
     function handleBioSave(){
       var bio = (getEl('bioInput') && getEl('bioInput').value || '').trim()
+
+      // Bio validation
+      if (bio.length > 500) {
+        alert('Bio must be 500 characters or less')
+        return
+      }
+
       var profile = loadProfile()
       profile.bio = bio
       saveProfile(profile)
 
       var bioText = getEl('bioText')
-      if (bioText) bioText.textContent = bio || 'Tell others about yourself...'
+      if (bioText) bioText.textContent = bio || "I'm an art enthusiast"
 
       toggleBioEdit(false)
       try{ alert('Bio saved successfully!') }catch(_){ }
+    }
+
+    function validateEmail(email) {
+      if (!email) return true // Allow empty email
+      var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      return emailRegex.test(email)
+    }
+
+    function validatePhone(phone) {
+      if (!phone) return true // Allow empty phone
+      // Allow various phone formats: +1234567890, (123) 456-7890, 123-456-7890, etc.
+      var phoneRegex = /^[\+]?[1-9][\d]{0,15}$|^[\+]?[(]?[\d\s\-\(\)]{7,20}$/
+      return phoneRegex.test(phone.replace(/[\s\-\(\)]/g, ''))
+    }
+
+    function validateAddress(address) {
+      if (!address) return true // Allow empty address
+      return address.length >= 5 && address.length <= 200
     }
 
     function handleContactSave(){
@@ -547,11 +591,36 @@
       var address = (getEl('contactAddressInput') && getEl('contactAddressInput').value || '').trim()
       var phone = (getEl('contactPhoneInput') && getEl('contactPhoneInput').value || '').trim()
 
+      // Validation
+      if (!validateEmail(email)) {
+        alert('Please enter a valid email address (e.g., user@example.com)')
+        return
+      }
+
+      if (!validatePhone(phone)) {
+        alert('Please enter a valid phone number')
+        return
+      }
+
+      if (!validateAddress(address)) {
+        alert('Address must be between 5 and 200 characters if provided')
+        return
+      }
+
       var profile = loadProfile()
       profile.email = email
       profile.address = address
       profile.phone = phone
       saveProfile(profile)
+
+      // Update display elements
+      var emailDisplay = getEl('contactEmailDisplay')
+      var addressDisplay = getEl('contactAddressDisplay')
+      var phoneDisplay = getEl('contactPhoneDisplay')
+
+      if (emailDisplay) emailDisplay.textContent = email || '-'
+      if (addressDisplay) addressDisplay.textContent = address || '-'
+      if (phoneDisplay) phoneDisplay.textContent = phone || '-'
 
       toggleContactEdit(false)
       try{ alert('Contact details saved successfully!') }catch(_){ }

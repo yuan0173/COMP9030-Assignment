@@ -49,9 +49,47 @@
   var cache = []
   var currentSort = 'new' // Default sort option
   var currentPage = 1
-  var itemsPerPage = 6
+  var itemsPerPage = calculateItemsPerPage()
   var totalPages = 1
   var currentQuery = '' // Search query (case-insensitive)
+
+  // Calculate optimal items per page based on screen size and grid layout
+  function calculateItemsPerPage() {
+    var screenWidth = window.innerWidth
+    var cols, rows
+
+    if (screenWidth >= 1200) {
+      // Desktop: 4 columns, 3 rows = 12 items
+      cols = 4
+      rows = 3
+    } else if (screenWidth >= 768) {
+      // Tablet: 3 columns, 3 rows = 9 items
+      cols = 3
+      rows = 3
+    } else if (screenWidth >= 640) {
+      // Small tablet: 2 columns, 4 rows = 8 items
+      cols = 2
+      rows = 4
+    } else {
+      // Mobile: 1 column, 6 rows = 6 items
+      cols = 1
+      rows = 6
+    }
+
+    return cols * rows
+  }
+
+  // Update items per page when window resizes
+  function updatePaginationOnResize() {
+    var newItemsPerPage = calculateItemsPerPage()
+    if (newItemsPerPage !== itemsPerPage) {
+      itemsPerPage = newItemsPerPage
+      // Recalculate current page to maintain similar position
+      var currentFirstItem = (currentPage - 1) * itemsPerPage
+      currentPage = Math.floor(currentFirstItem / newItemsPerPage) + 1
+      applyFilters({ preservePage: true })
+    }
+  }
   
   // Function to extract state from coordinates or locationNotes
   function extractState(locationNotes, lat, lng) {
@@ -525,5 +563,13 @@
   }
 
 
+  // Initialize
   loadAllArts()
+
+  // Listen for window resize to update pagination
+  var resizeTimeout
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimeout)
+    resizeTimeout = setTimeout(updatePaginationOnResize, 250)
+  })
 })()

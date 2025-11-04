@@ -93,8 +93,22 @@ function register(PDO $pdo, array $input): void {
     }
 
     $hash = password_hash($password, PASSWORD_DEFAULT);
-    // Extract username from email (part before @)
-    $username = explode('@', $email)[0];
+    // Generate unique username from email
+    $baseUsername = explode('@', $email)[0];
+    $username = $baseUsername;
+    $counter = 1;
+
+    // Check for username uniqueness and add counter if needed
+    while (true) {
+        $st = $pdo->prepare('SELECT id FROM users WHERE username = :u');
+        $st->execute([':u' => $username]);
+        if (!$st->fetch()) {
+            break; // Username is unique
+        }
+        $username = $baseUsername . $counter;
+        $counter++;
+    }
+
     $st = $pdo->prepare('INSERT INTO users (username, email, password_hash, role) VALUES (:u, :e, :h, :r)');
     $st->execute([':u' => $username, ':e' => $email, ':h' => $hash, ':r' => $role]);
     $uid = (int)$pdo->lastInsertId();

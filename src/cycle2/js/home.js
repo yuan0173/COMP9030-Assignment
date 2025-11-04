@@ -246,7 +246,7 @@
       var dateB = new Date(b.created_at || 0)
       return dateB - dateA // Newest first
     })
-    var featuredArts = sortedByDate.slice(0, 3)
+    var featuredArts = sortedByDate.slice(0, 8)
     featuredArts.forEach(function(item){ container.appendChild(createCard(item)) })
   }
 
