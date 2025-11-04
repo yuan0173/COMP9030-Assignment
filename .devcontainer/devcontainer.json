@@ -5,6 +5,5 @@
   "portsAttributes": {
     "8000": { "label": "PHP Server", "onAutoForward": "openBrowser" }
   },
-
   "postStartCommand": "bash -lc \"pgrep -f 'php -S 0.0.0.0:8000' >/dev/null || nohup php -S 0.0.0.0:8000 -t src >/tmp/php-server.log 2>&1 &\""
 }
