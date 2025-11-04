@@ -1,23 +1,19 @@
 {
-  "name": "COMP2030/9030 Web Dev with Apache & MySQL",
-  "dockerComposeFile": "docker-compose.yml",
-  "service": "web",
-  "workspaceFolder": "/workspaces/COMP2030-9030-web-dev",
-  "forwardPorts": [8080],
-  "customizations": {
-    "vscode": {
-      "extensions": [
-        "ms-vscode.php-debug",
-        "felixfbecker.php-intellisense",
-        "bmewburn.vscode-intelephense-client",
-        "esbenp.prettier-vscode",
-        "ms-azuretools.vscode-docker",
-        "dbaeumer.vscode-eslint",
-        "cweijan.vscode-mysql-client2",
-        "github.vscode-pull-request-github",
-        "bierner.github-markdown-preview"
-      ]
-    }
+  "name": "COMP9030-Assignment Dev Container",
+  "image": "mcr.microsoft.com/devcontainers/php:8.2",
+  "forwardPorts": [8000],
+  "portsAttributes": {
+    "8000": { "label": "PHP Server", "onAutoForward": "openBrowser" }
   },
-  "postCreateCommand": "chmod -R 777 /var/www/html"
+  "postCreateCommand": [
+    "bash",
+    "-lc",
+    "set -euxo pipefail; sudo apt-get update; sudo DEBIAN_FRONTEND=noninteractive apt-get install -y mariadb-server mariadb-client php-mysql; (sudo service mariadb start || sudo service mysql start || true); for i in $(seq 1 30); do mysqladmin ping --silent && break || sleep 1; done; DB_NAME=${MYSQL_DATABASE:-cityarts}; DB_USER=${MYSQL_USER:-cityarts}; DB_PASS=${MYSQL_PASSWORD:-cityarts}; sudo mysql -u root -e \"CREATE DATABASE IF NOT EXISTS \\\`$DB_NAME\\\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; CREATE USER IF NOT EXISTS '$DB_USER'@'localhost' IDENTIFIED BY '$DB_PASS'; GRANT ALL PRIVILEGES ON \\\`$DB_NAME\\\`.* TO '$DB_USER'@'localhost'; FLUSH PRIVILEGES;\"; SCHEMA=src/sql-exports/schema.sql; if [ -f \"$SCHEMA\" ]; then mysql -u \"$DB_USER\" -p\"$DB_PASS\" \"$DB_NAME\" < \"$SCHEMA\"; fi; ENV_FILE=.env; if [ ! -f \"$ENV_FILE\" ]; then printf \"MYSQL_HOST=127.0.0.1\\nMYSQL_PORT=3306\\nMYSQL_DATABASE=$DB_NAME\\nMYSQL_USER=$DB_USER\\nMYSQL_PASSWORD=$DB_PASS\\n\" > \"$ENV_FILE\"; fi"
+  ],
+  "postStartCommand": [
+    "bash",
+    "-lc",
+    "pgrep -f \"php -S 0.0.0.0:8000\" >/dev/null || nohup php -S 0.0.0.0:8000 -t src >/tmp/php-server.log 2>&1 &"
+  ]
 }
+
